@@ -105,3 +105,9 @@ line-height: 1;
 .sf-icon-graphic_view:before { content: "\e754"; }
 .sf-icon-text_view:before { content: "\e755"; }
 .sf-icon-page-break:before { content: "\e756"; }
+.sf-icon-align-text-left:before { content: "\e757"; }
+.sf-icon-align-text-right:before { content: "\e758"; }
+.sf-icon-align-text-top:before { content: "\e759"; }
+.sf-icon-align-text-bottom:before { content: "\e75a"; }
+.sf-icon-align-text-horizontal-center:before { content: "\e75b"; }
+.sf-icon-align-text-vertical-center:before { content: "\e75c"; }

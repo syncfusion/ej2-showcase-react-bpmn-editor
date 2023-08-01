@@ -38,13 +38,13 @@ export let connectorToolChange;
 export let propertyPanel;
 export let footTemplate;
 export let printTemplateChange;
+export let hyperLinkTemplate;
 export let offsetChange;
 export let offsetYchnage;
 export let nodeWidthChange;
 export let nodeHeightChange;
 export let aspectRatioValue;
 export let rotationChange;
-export let toolbarNodeInsert;
 export let nodeFillColor;
 export let gradientChange;
 export let gradientDirectionChange;
@@ -65,10 +65,11 @@ export let fontFamilyChange;
 export let fontSizeChange;
 export let fontColorChange;
 export let strokeColorChange;
-export let nodeBorderChange
-export let strokeWidthChange
-export let fontOpacityChange
-
+export let nodeBorderChange;
+export let strokeWidthChange;
+export let fontOpacityChange;
+export let btnHyperLink;
+export let hyperlinkInsert;
 
 
 
@@ -422,6 +423,7 @@ class App extends React.Component {
     this.dialogAnimationSettings = { effect: 'None' };
     this.exportingButtons = this.getDialogButtons('export');
     this.printingButtons = this.getDialogButtons('print');
+    this.hyperlinkButtons = this.getDialogButtons('hyperlink');
 
     loadDiagram = this.loadDiagram.bind(this);
     beforItem = this.beforeItemRender.bind(this);
@@ -439,14 +441,16 @@ class App extends React.Component {
     footTemplate = this.footerTemplate.bind(this);
     printTemplateChange = this.printTemplate.bind(this);
     diagramName = this.diagramNameChange.bind(this);
-
+    hyperLinkTemplate = this.hyperlinkTemplate.bind(this);
+    btnHyperLink = this.btnHyperLink.bind(this);
+    hyperlinkInsert = this.hyperlinkInsert.bind(this);
     offsetChange = this.offsetX.bind(this);
     offsetYchnage = this.offsetY.bind(this);
     nodeWidthChange = this.nodeWidth.bind(this);
     nodeHeightChange = this.nodeHeight.bind(this);
     aspectRatioValue = this.aspectRatioChange.bind(this);
     rotationChange = this.nodeRotationChange.bind(this);
-    toolbarNodeInsert = this.toolbarInsertClick.bind(this);
+
     nodeFillColor = this.nodeFillColorChange.bind(this);
     gradientChange = this.nodeGradientChange.bind(this);
     gradientDirectionChange = this.gradientDropDownChange.bind(this);
@@ -573,8 +577,8 @@ class App extends React.Component {
                 getNodeDefaults={this.palettes.setPaletteNodeDefaults}
                 getConnectorDefaults={this.palettes.setPaletteConnectorDefaults}
                 symbolPreview={this.palettes.symbolPreview} symbolMargin={this.palettes.symbolMargin}
-                getSymbolInfo={this.palettes.getSymbolInfo} 
-                />
+                getSymbolInfo={this.palettes.getSymbolInfo}
+              />
             </div>
           </div>
           <div className='main-content' role='main'>
@@ -599,27 +603,24 @@ class App extends React.Component {
                     <ButtonComponent id="hide-properties" className="close" iconCss="sf-icon-close" />
                   </div>
                   <div className="row db-prop-row">
-                  <div className="row db-prop-header-text"  style={{paddingTop:'10px'}}></div>
+                    <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}></div>
                     <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
                   </div>
-                  <div className="row db-prop-row" id="pageOrientation"  style={{paddingTop:'10px'}}>
-                  <div className="row db-prop-header-text" style={{paddingTop:'10px'}}>Orientation</div>
-                    <div className="col-xs-6 db-prop-col-style" style={{ marginLeft: "10px", width: "30%", paddingTop:'10px'}}>
-                      <ButtonComponent id="pagePortrait"  isPrimary='true' isToggle="true" name='pageSettings' style={{fontSize:'12px'}} className="close"  iconCss="sf-icon-portrait" cssClass="e-flat e-primary" onChange={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Portrait"/>
+                  <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}>Orientation</div>
+                  <div className="row db-prop-row" id="pageOrientation" style={{ paddingTop: '10px' }}>
+                    <div className="col-xs-6 db-prop-col-style" style={{ marginRight: "0px", paddingTop: '10px' }}>
+                      <ButtonComponent id="pagePortrait" isPrimary='true' isToggle="true" name='pageSettings' style={{ fontSize: '12px' }} iconCss="sf-icon-portrait" cssClass="e-flat e-primary" onClick={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Portrait" />
                     </div>
-                    <div className="col-xs-6 db-prop-col-style" style={{paddingTop:'10px'}}>
-                      <ButtonComponent id="pageLandscape"  isPrimary='true' isToggle="true" name="pageSettings" className="close" style={{fontSize:'12px'}} iconCss="sf-icon-landscape" cssClass="e-flat e-primary e-active" onChange={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Landscape"/>
+                    <div className="col-xs-6 db-prop-col-style" style={{ paddingTop: '10px' }}>
+                      <ButtonComponent id="pageLandscape" isPrimary='true' isToggle="true" name="pageSettings" style={{ fontSize: '12px' }} iconCss="sf-icon-landscape" cssClass="e-flat e-primary e-active" onClick={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Landscape" />
                     </div>
                   </div>
-                  <div className="row db-prop-row" id="backgroundcolor"  style={{paddingTop:'10px'}}>
-                  <div className="row db-prop-header-text">Background</div>
+                  <div className="row db-prop-row" id="backgroundcolor" style={{ paddingTop: '10px' }}>
+                    <div className="row db-prop-header-text">Background</div>
                     <div className="col-xs-6 db-col-left">
-                      <div className="db-color-container" style={{paddingTop:'10px'}}>
+                      <div className="db-color-container" style={{ paddingTop: '10px' }}>
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={colorPicker => this.colorPicker = colorPicker} mode="Palette" value={this.selectedItem.pageSettings.backgroundColor} change={this.diagramPropertyBinding.pageBackgroundChange1.bind(this.diagramPropertyBinding)} />
-                        </div>
-                        <div className="db-color-btn">
-                          <ButtonComponent iconCss='sf-icon-Pickers tb-icons' />
+                          <ColorPickerComponent ref={colorPicker => this.colorPicker = colorPicker} showButtons="" mode="Palette" value={this.selectedItem.pageSettings.backgroundColor} change={this.diagramPropertyBinding.pageBackgroundChange1.bind(this.diagramPropertyBinding)} />
                         </div>
                       </div>
                     </div>
@@ -634,29 +635,30 @@ class App extends React.Component {
                       Properties
                       <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
                     </div>
+                    <div className="db-prop-separator" style={{ backgroundColor: "#b5b5b5", marginBottom: "15px" }}></div>
                     <div className="row db-prop-header-text">
                       Dimensions
                     </div>
                     <div className="row db-prop-row">
-                      <div className="col-xs-6 db-col-left">
+                      <div className="col-xs-6 db-col-left" style={{ width: "97px", paddingRight: '5px' }}>
                         <div className="db-text-container">
                           <div className="db-text">
                             <span>X</span>
                           </div>
                           <div className="db-text-input">
-                            <NumericTextBoxComponent ref={nodeOffsetX => (this.nodeOffsetX = nodeOffsetX)} id="nodeOffsetX" format="n0"
+                            <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetX => (this.nodeOffsetX = nodeOffsetX)} id="nodeOffsetX" format="n0"
                               // value={this.selectedItem.nodeProperties.offsetX} 
                               change={offsetChange} />
                           </div>
                         </div>
                       </div>
-                      <div className="col-xs-6 db-col-right">
+                      <div className="col-xs-6 db-col-right" style={{ width: "97px" }}>
                         <div className="db-text-container">
                           <div className="db-text">
                             <span>Y</span>
                           </div>
                           <div className="db-text-input">
-                            <NumericTextBoxComponent ref={nodeOffsetY => (this.nodeOffsetY = nodeOffsetY)} id="nodeOffsetY" format="n0"
+                            <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetY => (this.nodeOffsetY = nodeOffsetY)} id="nodeOffsetY" format="n0"
                               // value={this.selectedItem.nodeProperties.offsetY} 
                               change={offsetYchnage} />
                           </div>
@@ -664,25 +666,25 @@ class App extends React.Component {
                       </div>
                     </div>
                     <div className="row db-prop-row">
-                      <div className="col-xs-6 db-col-left">
+                      <div className="col-xs-6 db-col-left" style={{ width: "97px", paddingRight: '5px' }}>
                         <div className="db-text-container">
                           <div className="db-text">
                             <span>W</span>
                           </div>
                           <div className="db-text-input">
-                            <NumericTextBoxComponent ref={width => (this.width = width)} id="nodeWidth" min={1} format="n0"
+                            <NumericTextBoxComponent style={{ width: "72px" }} ref={width => (this.width = width)} id="nodeWidth" min={1} format="n0"
                               // value={this.selectedItem.nodeProperties.width}
                               change={nodeWidthChange} />
                           </div>
                         </div>
                       </div>
-                      <div className="col-xs-6 db-col-right">
+                      <div className="col-xs-6 db-col-right" style={{ width: "97px" }}>
                         <div className="db-text-container">
                           <div className="db-text">
                             <span>H</span>
                           </div>
                           <div className="db-text-input">
-                            <NumericTextBoxComponent ref={height => (this.height = height)} id="nodeHeight" min={1} format="n0"
+                            <NumericTextBoxComponent style={{ width: "72px" }} ref={height => (this.height = height)} id="nodeHeight" min={1} format="n0"
                               // value={this.selectedItem.nodeProperties.height} 
                               change={nodeHeightChange} />
                           </div>
@@ -690,20 +692,20 @@ class App extends React.Component {
                       </div>
                     </div>
                     <div className="row db-prop-row">
-                      <div className="col-xs-6 db-col-left">
+                      <div className="col-xs-6 db-col-left" >
                         <CheckBoxComponent ref={aspectRatio => (this.aspectRatio = aspectRatio)} id='aspectRatio' label="Aspect Ratio" checked={this.selectedItem.nodeProperties.aspectRatio} change={aspectRatioValue} />
                       </div>
                     </div>
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
-                        <span className="db-prop-text-style">Rotate</span>
+                        <span className="db-prop-header-text">Rotate</span>
                       </div>
                     </div>
                     <div className="row">
                       <div className="col-xs-6 db-col-left">
                         <div className="db-text-container">
                           <div className="db-text">
-                            <ButtonComponent iconCss='sf-icon-Rotate1 tb-icons' />
+                            <ButtonComponent iconCss='sf-icon-rotate tb-icons' />
                           </div>
                           <div className="db-text-input">
                             <NumericTextBoxComponent ref={rotate => (this.rotate = rotate)} id="nodeRotateAngle" format="n0"
@@ -713,17 +715,13 @@ class App extends React.Component {
                         </div>
                       </div>
                     </div>
-                    <div className="db-prop-separator" />
-                    <div className="row db-prop-header-text">
-                      Insert</div>
+                    <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }} />
+                    {/* <div className="row db-prop-header-text">
+                      Insert</div> */}
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
-                        <ToolbarComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} id='toolbarNodeInsert' overflowMode='Scrollable' clicked={toolbarNodeInsert}>
-                          <ItemsDirective>
-                            <ItemDirective prefixIcon="sf-icon-InsertLink tb-icons" tooltipText="Insert Link" cssClass="tb-item-start" />
-                            {/* <ItemDirective prefixIcon="sf-icon-InsertImage tb-icons" tooltipText="Insert Image" cssClass="tb-item-end" /> */}
-                          </ItemsDirective>
-                        </ToolbarComponent>
+                        <ButtonComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} id='insertHyperlink' content="Insert Link" onClick={hyperlinkInsert} cssClass="e-outline" isPrimary="true" />
+
                       </div>
                     </div>
                     <div className="db-prop-separator" />
@@ -731,7 +729,7 @@ class App extends React.Component {
                   <div id='nodeStyleProperties' className="db-node-style-prop">
                     <div className="row db-background-style">
                       <div className="row db-prop-header-text">
-                        Background and Border Styles
+                        Background Type
                       </div>
                       <div className="row db-prop-row">
                         <div className="col-xs-6 db-col-left">
@@ -767,6 +765,7 @@ class App extends React.Component {
                     <div className="row db-border-style">
                       <div className="row db-prop-header-text db-border-style-header">
                         Border/Line Styles
+                        <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
                       </div>
                       <div className="row db-prop-row">
                         <div className="col-xs-4 db-col-right">
@@ -783,10 +782,7 @@ class App extends React.Component {
                         <div className="col-xs-4 db-col-left">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
-                            </div>
-                            <div className="db-color-btn">
-                              <ButtonComponent iconCss='sf-icon-Pickers tb-icons' />
+                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='false' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
                             </div>
                           </div>
                         </div>
@@ -817,141 +813,159 @@ class App extends React.Component {
                     Connector Properties
                     <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
                   </div>
+                  <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }}></div>
                   <div className="row db-prop-row">
                     <div className="col-xs-6 db-col-left db-prop-text-style">
                       <span className="db-prop-text-style">Connector Type</span>
+                    </div>
+                    <div className="col-xs-4 db-col-left db-prop-text-style" style={{ marginLeft: "19px" }} >
+                      <span className="db-prop-text-style">Color</span>
                     </div>
                   </div>
                   <div className="row">
                     <div className="col-xs-6 db-col-left">
                       <DropDownListComponent ref={lineType => this.lineType = lineType} value={this.selectedItem.connectorProperties.lineType} dataSource={this.dropDownDataSources.lineTypes} fields={this.dropdownListFields} change={lineTypeChange} />
                     </div>
-                  </div>
-                  <div className="row db-prop-row">
-                    <div className="col-xs-6 db-col-left">
-                      <div className="db-color-container">
+                    <div className="col-xs-4 db-col-left">
+                      <div className="db-color-container" style={{ width: '77px', marginLeft: "18px" }}>
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={lineColor => this.lineColor = lineColor} mode="Palette" type="color" id="lineColor" value={this.selectedItem.connectorProperties.lineColor} change={lineColorChange} />
-                        </div>
-                        <div className="db-color-btn">
-                          <ButtonComponent iconCss='sf-icon-Pickers tb-icons' />
+                          <ColorPickerComponent ref={lineColor => this.lineColor = lineColor} showButtons="false" mode="Palette" type="color" id="lineColor" value={this.selectedItem.connectorProperties.lineColor} change={lineColorChange} />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-8 db-col-left db-prop-text-style">
+                    <div className="col-xs-6 db-col-left db-prop-text-style">
                       <span className="db-prop-text-style">Stroke Style</span>
                     </div>
-                    <div className="col-xs-4 db-col-right db-prop-text-style">
+                    <div className="col-xs-4 db-col-right db-prop-text-style" style={{ marginLeft: "18px" }}>
                       <span className="db-prop-text-style">Thickness</span>
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-xs-8 db-col-left">
+                    <div className="col-xs-6 db-col-left">
                       <DropDownListComponent ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.borderStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
                     </div>
-                    <div className="col-xs-4 db-col-right">
-                      <NumericTextBoxComponent min={0.5} step={0.5} ref={lineWidth => this.lineWidth = lineWidth} value={this.selectedItem.connectorProperties.lineWidth} change={lineWidthChange} />
+                    <div className="col-xs-6 db-col-right">
+                      <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
+                        <div className="db-text-input">
+                          <NumericTextBoxComponent style={{ width: "74px" }} min={0.5} step={0.5} ref={lineWidth => this.lineWidth = lineWidth} value={this.selectedItem.connectorProperties.lineWidth} change={lineWidthChange} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-8 db-col-left db-prop-text-style">
+                    <div className="col-xs-6 db-col-left db-prop-text-style">
                       <span className="db-prop-text-style">Start Arrow</span>
                     </div>
-                    <div className="col-xs-4 db-col-right db-prop-text-style">
+                    <div className="col-xs-4 db-col-right db-prop-text-style" style={{ marginLeft: "19px" }}>
                       <span className="db-prop-text-style">Size</span>
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-xs-8 db-col-left">
+                    <div className="col-xs-6 db-col-left">
                       <DropDownListComponent ref={sourceType => this.sourceType = sourceType} value={this.selectedItem.connectorProperties.sourceType} dataSource={this.dropDownDataSources.decoratorList} fields={this.dropdownListFields} change={sourceTypeChange} />
                     </div>
-                    <div className="col-xs-4 db-col-right">
-                      <NumericTextBoxComponent ref={sourceSize => this.sourceSize = sourceSize} min={1} step={1} value={this.selectedItem.connectorProperties.sourceSize} change={sourceSizeChange} />
+                    <div className="col-xs-6 db-col-right">
+                      <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
+                        <div className="db-text-input">
+                          <NumericTextBoxComponent style={{ width: "74px" }} ref={sourceSize => this.sourceSize = sourceSize} min={1} step={1} value={this.selectedItem.connectorProperties.sourceSize} change={sourceSizeChange} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-8 db-col-left db-prop-text-style">
+                    <div className="col-xs-6 db-col-left db-prop-text-style">
                       <span className="db-prop-text-style">End Arrow</span>
                     </div>
-                    <div className="col-xs-4 db-col-right db-prop-text-style">
+                    <div className="col-xs-4 db-col-right db-prop-text-style" style={{ marginLeft: "19px" }}>
                       <span className="db-prop-text-style">Size</span>
                     </div>
                   </div>
                   <div className="row">
-                    <div className="col-xs-8 db-col-left">
+                    <div className="col-xs-6 db-col-left">
                       <DropDownListComponent ref={targetType => this.targetType = targetType} value={this.selectedItem.connectorProperties.targetType} dataSource={this.dropDownDataSources.decoratorList} fields={this.dropdownListFields} change={targetTypeChange} />
                     </div>
-                    <div className="col-xs-4 db-col-right">
-                      <NumericTextBoxComponent ref={targetSize => this.targetSize = targetSize} min={1} step={1} value={this.selectedItem.connectorProperties.targetSize} change={targetSizeChange} />
+                    <div className="col-xs-6 db-col-right">
+                      <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
+                        <div className="db-text-input">
+                          <NumericTextBoxComponent style={{ width: "74px" }} ref={targetSize => this.targetSize = targetSize} min={1} step={1} value={this.selectedItem.connectorProperties.targetSize} change={targetSizeChange} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-8 db-col-left" style={{ marginTop: "5px" }}>
+                    <div className="col-xs-6 db-col-left" style={{ marginTop: "5px" }}>
                       <CheckBoxComponent ref={bridge => this.bridge = bridge} id='lineJump' label="Bridging" checked={this.selectedItem.connectorProperties.lineJump} change={bridgeChange} />
                     </div>
-                    <div className="col-xs-4 db-col-right" id="lineJumpSizeDiv" style={{ display: "none" }}>
-                      <NumericTextBoxComponent ref={bridgeSize => this.bridgeSize = bridgeSize} min={1} step={1} value={this.selectedItem.connectorProperties.lineJumpSize} change={bridgeSizeChange} />
+                    <div className="col-xs-6 db-col-right" id="lineJumpSizeDiv" style={{ display: "none" }}>
+                      <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
+                        <div className="db-text-input">
+                          <NumericTextBoxComponent style={{ width: "74px" }} ref={bridgeSize => this.bridgeSize = bridgeSize} min={1} step={1} value={this.selectedItem.connectorProperties.lineJumpSize} change={bridgeSizeChange} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
                     <div className="col-xs-2 db-col-right db-prop-text-style" style={{ paddingTop: "6px" }}>
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
-                    <div className="col-xs-8 db-col-left" style={{ paddingRight: "10px" }}>
+                    <div className="col-xs-8 db-col-left" style={{ paddingRight: "15px", paddingLeft: '15px' }}>
                       <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} value={this.selectedItem.connectorProperties.opacity} min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
-                      <input id='connectorOpacitySliderText' type="text" readOnly={true} className="db-readonly-input" />
+                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} type="text" readOnly={true} className="db-readonly-input" />
                     </div>
                   </div>
                 </div>
                 <div id='textPropertyContainer' className="db-text-prop-container" style={{ display: "none" }}>
                   <div className="db-prop-separator" />
-                  <div className="row db-prop-header-text">
-                    Text
-                    <ButtonComponent id="hide-properties" iconCss='sf-icon-close tb-icons' />
+                  <div className="col-xs-8 db-col-left db-prop-text-style">
+                    <span className="db-prop-text-style">Text</span>
                   </div>
-                  <div className="row db-prop-row">
-                    <div className="col-xs-8 db-col-left">
-                      <DropDownListComponent ref={fontFamily => this.fontFamily = fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
+                  <div className="col-xs-4 db-col-left db-prop-text-style">
+                    <span className="db-prop-text-style">Size</span>
+                  </div>
+                  <div className="row db-prop-row" style={{marginTop:'5px'}}>
+                    <div className="col-xs-8 db-col-left" style={{ width: "140px" }}>
+                      <DropDownListComponent style={{ height: '35px' }} ref={fontFamily => this.fontFamily = fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
                     </div>
                     <div className="col-xs-4 db-col-right">
-                      <NumericTextBoxComponent min={1} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
-                    </div>
-                  </div>
-                  <div className="row db-prop-row">
-                    <div className="col-xs-6 db-col-left" id="textPositionDiv">
-                      <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={4} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
-                    </div>
-                    <div className="col-xs-6 db-col-right" id="textColorDiv">
-                      <div className="db-color-container">
-                        <div className="db-color-input">
-                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
-                        </div>
-                        <div className="db-color-btn">
-                          <ButtonComponent iconCss='sf-icon-ColorPickers tb-icons' />
+                      <div class="db-text-container">
+                        <div class="db-text-input">
+                          <NumericTextBoxComponent style={{ width: '75px' }} min={1} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
+                    <div className="col-xs-8 db-col-left" id="textPositionDiv" style={{width: '140px'}}>
+                      <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={4} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
+                    </div>
+                    <div className="col-xs-4 db-col-right" id="textColorDiv" style={{width:'75px',}}>
+                      <div className="db-color-container">
+                        <div className="db-color-input">
+                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row db-prop-row" style={{ marginTop: '10px' }}>
                     <div className="col-xs-6 db-col-left">
                       <ToolbarComponent id='toolbarTextStyle' overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextStyleChange.bind(this.diagramPropertyBinding)}>
                         <ItemsDirective>
-                          <ItemDirective prefixIcon="sf-icon-Bold tb-icons" tooltipText="Bold" cssClass="tb-item-start" />
-                          <ItemDirective prefixIcon="sf-icon-Italic tb-icons" tooltipText="Italic" cssClass="tb-item-middle" />
-                          <ItemDirective prefixIcon="sf-icon-Underline tb-icons" tooltipText="Underline" cssClass="tb-item-end" />
+                          <ItemDirective prefixIcon="sf-icon-bold tb-icons" tooltipText="Bold" cssClass="tb-item-start" />
+                          <ItemDirective prefixIcon="sf-icon-italic tb-icons" tooltipText="Italic" cssClass="tb-item-middle" />
+                          <ItemDirective prefixIcon="sf-icon-underline tb-icons" tooltipText="Underline" cssClass="tb-item-end" />
                         </ItemsDirective>
                       </ToolbarComponent>
                     </div>
                     <div className="col-xs-6 db-col-right">
                       <ToolbarComponent id='toolbarTextSubAlignment' overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextSubAlignChange.bind(this.diagramPropertyBinding)}>
                         <ItemsDirective>
-                          <ItemDirective prefixIcon="sf-icon-ParaAlignLeft tb-icons" tooltipText="Align Text Left" cssClass="tb-item-start" />
-                          <ItemDirective prefixIcon="sf-icon-ParaAlignCenter tb-icons" tooltipText="Align Text Center" cssClass="tb-item-middle" />
-                          <ItemDirective prefixIcon="sf-icon-ParaAlignRight tb-icons" tooltipText="Align Text Right" cssClass="tb-item-end" />
+                          <ItemDirective prefixIcon="sf-icon-align-left tb-icons" tooltipText="Align Text Left" cssClass="tb-item-start" />
+                          <ItemDirective prefixIcon="sf-icon-align-center tb-icons" tooltipText="Align Text Center" cssClass="tb-item-middle" />
+                          <ItemDirective prefixIcon="sf-icon-align-right tb-icons" tooltipText="Align Text Right" cssClass="tb-item-end" />
                         </ItemsDirective>
                       </ToolbarComponent>
                     </div>
@@ -959,20 +973,20 @@ class App extends React.Component {
                   <div className="row db-prop-row" id='toolbarTextAlignmentDiv'>
                     <ToolbarComponent id='toolbarTextAlignment' ref={toolbarTextAlignment => toolbarTextAlignment = toolbarTextAlignment} overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextAlignChange.bind(this.diagramPropertyBinding)}>
                       <ItemsDirective>
-                        <ItemDirective prefixIcon="sf-icon-TextLeft tb-icons" tooltipText="Align Right" cssClass="tb-item-start" />
-                        <ItemDirective prefixIcon="sf-icon-TextVerticalCenter tb-icons" tooltipText="Align Center" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-TextRight tb-icons" tooltipText="Align Left" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-TextTop tb-icons" tooltipText="Align Bottom" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-TextHorizontalCenter tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-TextBottom tb-icons" tooltipText="Align Top" cssClass="tb-item-end" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-left tb-icons" tooltipText="Align Left" cssClass="tb-item-start" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-vertical-center: tb-icons" tooltipText="Align Center" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-right tb-icons" tooltipText="Align Right" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-top tb-icons" tooltipText="Align Top" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-horizontal-center tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-bottom tb-icons" tooltipText="Align Bottom" cssClass="tb-item-end" />
                       </ItemsDirective>
                     </ToolbarComponent>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{ paddingTop: "6px" }}>
+                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{marginRight:'15px' ,paddingTop: "6px" }}>
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
-                    <div className="col-xs-8 db-col-left" style={{ paddingRight: "10px" }}>
+                    <div className="col-xs-8 db-col-left" style={{ width:'130px',paddingRight: "10px" }}>
                       <SliderComponent ref={fontOpacity => this.fontOpacity = fontOpacity} value={this.selectedItem.textProperties.opacity} min={0} max={100} step={10} type='MinRange' change={fontOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
@@ -987,7 +1001,7 @@ class App extends React.Component {
       </div>
       <DialogComponent ref={dialog => this.exportDialog = dialog} id="exportDialog" width={"400px"} header='Export Diagram' target={this.dlgTarget} isModal={true} animationSettings={this.dialogAnimationSettings} buttons={this.exportingButtons} showCloseIcon={true} content={footTemplate} visible={this.dialogVisibility} />
       <DialogComponent id="printDialog" ref={dialog => this.printDialog = dialog} width={"335px"} header='Print Diagram' target={this.dlgTarget} isModal={true} animationSettings={this.dialogAnimationSettings} buttons={this.printingButtons} content={printTemplateChange} visible={this.dialogVisibility} />
-
+      <DialogComponent id="hyperlinkDialog" ref={dialog => this.hyperlinkDialog = dialog} width={"400px"} header='Insert Link' target={this.dlgTarget} isModal={true} visible={this.dialogVisibility} animationSettings={this.dialogAnimationSettings} showCloseIcon={true} buttons={this.hyperlinkButtons} content={hyperLinkTemplate} />
     </div>);
   }
   renameDiagram() {
@@ -1043,7 +1057,7 @@ class App extends React.Component {
       shortCutSpan.textContent = shortCutText;
       shortCutSpan.style.pointerEvents = 'none';
       args.element.appendChild(shortCutSpan);
-      shortCutSpan.setAttribute('class', 'db-shortcut');
+      shortCutSpan.setAttribute('className', 'db-shortcut');
     }
     const status = this.UtilityMethods.enableMenuItems(args.item.text, this.selectedItem);
     if (status) {
@@ -1069,7 +1083,13 @@ class App extends React.Component {
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
     }
   }
-
+  lineItemTemplate(data) {
+    return (<div className='db-ddl-template-style'><span className={data.className} /></div>);
+  }
+  // set the value to value template
+  lineValueTemplate(data) {
+    return (<div className='db-ddl-template-style'><span className={data.className} /></div>);
+  }
   footerTemplate() {
     return (<div id="exportDialogContent">
       <div className="row">
@@ -1168,6 +1188,11 @@ class App extends React.Component {
           click: this.btnPrintClick.bind(this), buttonModel: { content: 'Print', cssClass: 'e-flat e-db-primary', isPrimary: true }
         });
         break;
+      case 'hyperlink':
+        buttons.push({
+          click: this.btnHyperLink.bind(this), buttonModel: { content: 'Apply', cssClass: 'e-flat e-db-primary', isPrimary: true }
+        });
+        break;
     }
     buttons.push({
       click: this.btnCancelClick.bind(this), buttonModel: { content: 'Cancel', cssClass: 'e-flat', isPrimary: true }
@@ -1229,6 +1254,8 @@ class App extends React.Component {
       case 'printDialog':
         this.printDialog.hide();
         break;
+      case 'hyperlinkDialog':
+        this.hyperlinkDialog.hide();
 
     }
   }
@@ -1336,7 +1363,7 @@ class App extends React.Component {
     </div>);
   }
   propertyPanel() {
-    this.selectedItem.utilityMethods.hideElements('hide-properties',this.selectedItem.selectedDiagram)
+    this.selectedItem.utilityMethods.hideElements('hide-properties', this.selectedItem.selectedDiagram)
   }
 
   connectorToolChange(args) {
@@ -1948,29 +1975,55 @@ class App extends React.Component {
     this.selectedItem.textProperties.opacity.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'opacity', propertyValue: args });
   }
-  toolbarInsertClick(args) {
+  hyperlinkInsert(args) {
     const diagram = this.selectedItem.selectedDiagram;
-    const commandType = args.item.tooltipText.replace(/[' ']/g, '');
     if (diagram.selectedItems.nodes.length > 0) {
-      // eslint-disable-next-line
-      switch (commandType.toLowerCase()) {
-        case 'insertlink':
-          document.getElementById('hyperlink').value = '';
-          document.getElementById('hyperlinkText').value = '';
-          if (diagram.selectedItems.nodes[0].annotations.length > 0) {
-            const annotation = diagram.selectedItems.nodes[0].annotations[0];
-            if (annotation.hyperlink.link || annotation.content) {
-              document.getElementById('hyperlink').value = annotation.hyperlink.link;
-              document.getElementById('hyperlinkText').value = (annotation.hyperlink.content || annotation.content);
-            }
-          }
-          this.hyperlinkDialog.show();
-          break;
-        // case 'insertimage':
-        //   CommonKeyboardCommands.openUploadBox(false, '.jpg,.png,.bmp');
-        //   break;
+      document.getElementById('hyperlink').value = '';
+      document.getElementById('hyperlinkText').value = '';
+      if (diagram.selectedItems.nodes[0].annotations.length > 0) {
+        const annotation = diagram.selectedItems.nodes[0].annotations[0];
+        if (annotation.hyperlink.link || annotation.content) {
+          document.getElementById('hyperlink').value = annotation.hyperlink.link;
+          document.getElementById('hyperlinkText').value = (annotation.hyperlink.content || annotation.content);
+        }
       }
+      this.hyperlinkDialog.show();
     }
+  }
+  btnHyperLink() {
+    const node = this.selectedItem.selectedDiagram.selectedItems.nodes[0];
+    if (node.annotations.length > 0) {
+      node.annotations[0].hyperlink.link = document.getElementById('hyperlink').value;
+      node.annotations[0].hyperlink.content = document.getElementById('hyperlinkText').value;
+      this.selectedItem.selectedDiagram.dataBind();
+    }
+    else {
+      const annotation = {
+        hyperlink: {
+          content: document.getElementById('hyperlinkText').value,
+          link: document.getElementById('hyperlink').value
+        }
+      };
+      this.selectedItem.selectedDiagram.addLabels(node, [annotation]);
+      this.selectedItem.selectedDiagram.dataBind();
+    }
+    this.hyperlinkDialog.hide();
+  }
+  hyperlinkTemplate() {
+    return (<div id="hyperlinkDialogContent">
+      <div className="row">
+        <div className="row">Enter URL</div>
+        <div className="row db-dialog-child-prop-row">
+          <input type="text" id="hyperlink" />
+        </div>
+      </div>
+      <div className="row db-dialog-prop-row">
+        <div className="row">Link Text (Optional)</div>
+        <div className="row db-dialog-child-prop-row">
+          <input type="text" id="hyperlinkText" />
+        </div>
+      </div>
+    </div>);
   }
 
 }

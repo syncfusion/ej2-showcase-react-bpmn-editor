@@ -172,11 +172,11 @@ export class DiagramClientSideEvents {
             if (showConnectorPanel) {
                 nodeContainer.classList.add('connector');
             }
-            this.selectedItem.utilityMethods.bindNodeProperties(selectItem1.nodes[0], this.selectedItem);
+            // this.selectedItem.utilityMethods.bindNodeProperties(selectItem1.nodes[0], this.selectedItem);
         }
         if (showConnectorPanel && !showNodePanel) {
             document.getElementById('connectorPropertyContainer').style.display = '';
-            this.selectedItem.utilityMethods.bindConnectorProperties(selectItem1.connectors[0], this.selectedItem);
+            // this.selectedItem.utilityMethods.bindConnectorProperties(selectItem1.connectors[0], this.selectedItem);
         }
         if (showTextPanel || showConTextPanel) {
             document.getElementById('textPropertyContainer').style.display = '';
@@ -204,45 +204,45 @@ export class DiagramClientSideEvents {
         if (selectedObject instanceof Node) {
             this.selectedItem.utilityMethods.objectTypeChange('node');
             object = selectedObject;
-            this.selectedItem.utilityMethods.bindNodeProperties(object, this.selectedItem);
+            // this.selectedItem.utilityMethods.bindNodeProperties(object, this.selectedItem);
         }
         else if (selectedObject instanceof Connector) {
             this.selectedItem.utilityMethods.objectTypeChange('connector');
             object = selectedObject;
-            this.selectedItem.utilityMethods.bindConnectorProperties(object, this.selectedItem);
+            // this.selectedItem.utilityMethods.bindConnectorProperties(object, this.selectedItem);
         }
         if (object.shape && object.shape.type === 'Text') {
             document.getElementById('textPropertyContainer').style.display = '';
             document.getElementById('toolbarTextAlignmentDiv').style.display = 'none';
             document.getElementById('textPositionDiv').style.display = 'none';
             document.getElementById('textColorDiv').className = 'col-xs-6 db-col-left';
-            this.selectedItem.utilityMethods.bindTextProperties(object.style, this.selectedItem);
+            // this.selectedItem.utilityMethods.bindTextProperties(object.style, this.selectedItem);
         }
-        else if (object.annotations.length > 0 && object.annotations[0].content) {
-            document.getElementById('textPropertyContainer').style.display = '';
-            let annotation;
-            document.getElementById('toolbarTextAlignmentDiv').style.display = '';
-            document.getElementById('textPositionDiv').style.display = '';
-            document.getElementById('textColorDiv').className = 'col-xs-6 db-col-right';
-            this.selectedItem.utilityMethods.bindTextProperties(object.annotations[0].style, this.selectedItem);
-            this.selectedItem.utilityMethods.updateHorVertAlign(object.annotations[0].horizontalAlignment, object.annotations[0].verticalAlignment);
-            if (object.annotations[0] instanceof ShapeAnnotation) {
-                annotation = object.annotations[0];
-                this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getNodeTextPositions();
-                this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition;
-                this.ddlTextPosition.dataBind();
-                this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition = this.selectedItem.utilityMethods.getPosition(annotation.offset);
-                this.ddlTextPosition.dataBind();
-            }
-            else if (object.annotations[0] instanceof PathAnnotation) {
-                annotation = object.annotations[0];
-                this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getConnectorTextPositions();
-                this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition;
-                this.ddlTextPosition.dataBind();
-                this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition = annotation.alignment;
-                this.ddlTextPosition.dataBind();
-            }
-        }
+        // else if (object.annotations.length > 0 && object.annotations[0].content) {
+        //     document.getElementById('textPropertyContainer').style.display = '';
+        //     let annotation;
+        //     document.getElementById('toolbarTextAlignmentDiv').style.display = '';
+        //     document.getElementById('textPositionDiv').style.display = '';
+        //     document.getElementById('textColorDiv').className = 'col-xs-6 db-col-right';
+        //     // this.selectedItem.utilityMethods.bindTextProperties(object.annotations[0].style, this.selectedItem);
+        //     this.selectedItem.utilityMethods.updateHorVertAlign(object.annotations[0].horizontalAlignment, object.annotations[0].verticalAlignment);
+        //     if (object.annotations[0] instanceof ShapeAnnotation) {
+        //         annotation = object.annotations[0];
+        //         this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getNodeTextPositions();
+        //         this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition;
+        //         this.ddlTextPosition.dataBind();
+        //         this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition = this.selectedItem.utilityMethods.getPosition(annotation.offset);
+        //         this.ddlTextPosition.dataBind();
+        //     }
+        //     else if (object.annotations[0] instanceof PathAnnotation) {
+        //         annotation = object.annotations[0];
+        //         this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getConnectorTextPositions();
+        //         this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition;
+        //         this.ddlTextPosition.dataBind();
+        //         this.ddlTextPosition.value = this.selectedItem.textProperties.textPosition = annotation.alignment;
+        //         this.ddlTextPosition.dataBind();
+        //     }
+        // }
     }
     contextMenuOpen(args){
         let diagram = this.selectedItem.selectedDiagram;
@@ -655,11 +655,13 @@ export class DiagramPropertyBinding {
                     this.selectedItem.pageSettings.isPortrait = true;
                     this.selectedItem.pageSettings.isLandscape = false;
                     diagram.pageSettings.orientation = 'Portrait';
+                    document.getElementById('pageLandscape').classList.remove('e-active');
                     break;
                 case 'pageLandscape':
                     this.selectedItem.pageSettings.isPortrait = false;
                     this.selectedItem.pageSettings.isLandscape = true;
                     diagram.pageSettings.orientation = 'Landscape';
+                    document.getElementById('pagePortrait').classList.remove('e-active');
                     break;
             }
             diagram.dataBind();

@@ -632,9 +632,6 @@ input, button, select, textarea {
     border-right: 0px;
 }
 
-#toolbarNodeInsert {
-    width: 34px !important;
-}
 
 .db-property-editor-container .e-toolbar .e-toolbar-items .e-toolbar-item:not(.e-separator) {
     width: calc(100% / 3);
