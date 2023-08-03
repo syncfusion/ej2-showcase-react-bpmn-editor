@@ -2,6 +2,7 @@ import { Node, Connector, ShapeAnnotation, PathAnnotation,SelectorConstraints } 
 
 
 export class DiagramClientSideEvents {
+    
     constructor(selectedItem, page) {
         this.selectedItem = selectedItem;
         this.page = page;
@@ -19,14 +20,13 @@ export class DiagramClientSideEvents {
                 this.enableToolbarItems(selectedItems);
                 if (selectedItems.length > 1) {
                     multiSelect = true;
-                    this.multipleSelectionSettings(selectedItems);
                     for(var i =7;i<=27;i++){
                         toolbarEditor.items[i].visible = true;
-                    } 
+                    }
+                    this.multipleSelectionSettings(selectedItems);
                 }
                 else if (selectedItems.length === 1) {
                     multiSelect = false;
-                    this.singleSelectionSettings(selectedItems[0]);
                     for(var i=7;i<=27;i++){
                         if(i<=18)
                         {
@@ -37,9 +37,10 @@ export class DiagramClientSideEvents {
     
                         }
                     }
+                    this.singleSelectionSettings(selectedItems[0]);
                 }
                 else {
-                    this.selectedItem.utilityMethods.objectTypeChange('diagram');
+                    this.selectedItem.utilityMethods.objectTypeChange('diagram');//diagram
                     for(var i =7;i<=27;i++){
                         toolbarEditor.items[i].visible = false;
                     } 
@@ -204,7 +205,7 @@ export class DiagramClientSideEvents {
         if (selectedObject instanceof Node) {
             this.selectedItem.utilityMethods.objectTypeChange('node');
             object = selectedObject;
-            this.selectedItem.utilityMethods.bindNodeProperties(object, this.selectedItem);
+            // this.selectedItem.utilityMethods.bindNodeProperties(object, this.selectedItem);
         }
         else if (selectedObject instanceof Connector) {
             this.selectedItem.utilityMethods.objectTypeChange('connector');
@@ -644,10 +645,8 @@ export class DiagramPropertyBinding {
         }
     }
     pageOrientationChange(args) {
-        if (args.event) {
-            // const pageWidth: number = Number(this.selectedItem.pageSettings.pageWidth);
-            //  const pageHeight: number = Number(this.selectedItem.pageSettings.pageHeight);
-            const target = args.event.target;
+        if (args) {
+            const target = args.currentTarget;
             const diagram = this.selectedItem.selectedDiagram;
             // eslint-disable-next-line
             switch (target.id) {

@@ -39,8 +39,8 @@ export let propertyPanel;
 export let footTemplate;
 export let printTemplateChange;
 export let hyperLinkTemplate;
-export let offsetChange;
-export let offsetYchnage;
+export let offsetXChange;
+export let offsetYchange;
 export let nodeWidthChange;
 export let nodeHeightChange;
 export let aspectRatioValue;
@@ -444,8 +444,8 @@ class App extends React.Component {
     hyperLinkTemplate = this.hyperlinkTemplate.bind(this);
     btnHyperLink = this.btnHyperLink.bind(this);
     hyperlinkInsert = this.hyperlinkInsert.bind(this);
-    offsetChange = this.offsetX.bind(this);
-    offsetYchnage = this.offsetY.bind(this);
+    offsetXChange = this.offsetX.bind(this);
+    offsetYchange = this.offsetY.bind(this);
     nodeWidthChange = this.nodeWidth.bind(this);
     nodeHeightChange = this.nodeHeight.bind(this);
     aspectRatioValue = this.aspectRatioChange.bind(this);
@@ -477,6 +477,7 @@ class App extends React.Component {
     this.generateDiagram();
     this.uploader();
     document.onmouseover = this.menumouseover.bind(this);
+    this.diagramEvents.ddlTextPosition = this.ddlTextPosition;
   }
   render() {
     return (<div>
@@ -538,25 +539,25 @@ class App extends React.Component {
                   <ItemDirective prefixIcon='sf-icon-straight_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-dropdown-btn" />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
                   <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-group tb-icons' tooltipText='Group' cssClass='tb-item-start' />
-                  <ItemDirective prefixIcon="sf-icon-ungroup tb-icons" tooltipText="UnGroup" cssClass="tb-item-end" />
-                  <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-align_left' tooltipText='AlignLeft' cssClass='tb-item-start' />
-                  <ItemDirective prefixIcon='sf-icon-align_center' tooltipText='AlignCenter' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-align_right' tooltipText='AlignRight' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-align_top' tooltipText='AlignTop' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-align_middle' tooltipText='AlignMiddle' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-align_bottom' tooltipText='AlignBottom' cssClass='tb-item-end' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_vertical' tooltipText='Distribute Vertically' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal' tooltipText='Distribute Horizontally' cssClass='tb-item-middle' />
-                  <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-send-to-back' tooltipText='Send To Back' cssClass='tb-item-start' />
-                  <ItemDirective prefixIcon='sf-icon-bring-to-front' tooltipText='Bring To Front' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-send-backward' tooltipText='Send Backward' cssClass='tb-item-middle' />
-                  <ItemDirective prefixIcon='sf-icon-bring-forward' tooltipText='Bring Forward' cssClass='tb-item-end' />
-                  <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-lock' tooltipText='Lock' cssClass='tb-item-start' />
-                  <ItemDirective prefixIcon='sf-icon-delete' tooltipText='Delete' cssClass='tb-item-end' />
+                  <ItemDirective prefixIcon='sf-icon-group tb-icons' tooltipText='Group' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon="sf-icon-ungroup tb-icons" tooltipText="UnGroup" cssClass="tb-item-end" align='Center' />
+                  <ItemDirective type="Separator" align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_left' tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_center' tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_right' tooltipText='AlignRight' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_top' tooltipText='AlignTop' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_middle' tooltipText='AlignMiddle' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_bottom' tooltipText='AlignBottom' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_vertical' tooltipText='Distribute Vertically' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal' tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective type="Separator" align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-send-to-back' tooltipText='Send To Back' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-bring-to-front' tooltipText='Bring To Front' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-send-backward' tooltipText='Send Backward' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-bring-forward' tooltipText='Bring Forward' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective type="Separator" align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-lock' tooltipText='Lock' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-delete' tooltipText='Delete' cssClass='tb-item-end' align='Center' />
                   <ItemDirective type="Separator" />
                   <ItemDirective cssClass="tb-item-end tb-zoom-dropdown-btn" template={zoomTemplate} align='Right' />
 
@@ -600,7 +601,8 @@ class App extends React.Component {
                 <div id='diagramPropertyContainer' className="db-diagram-prop-container">
                   <div className="row db-prop-header-text">
                     Page Settings
-                    <ButtonComponent id="hide-properties" className="close" iconCss="sf-icon-close" />
+                    {/* <ButtonComponent id="hide-properties" className="close" iconCss="sf-icon-close"><i className="sf-icon-close"></i></ButtonComponent> */}
+                    <ButtonComponent  id="hide-properties" className="close" style={{ fontSize: '15px', width:"20px", height:'20px' }} iconCss="sf-icon-close" cssClass="e-flat"/>
                   </div>
                   <div className="row db-prop-row">
                     <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}></div>
@@ -613,6 +615,28 @@ class App extends React.Component {
                     </div>
                     <div className="col-xs-6 db-prop-col-style" style={{ paddingTop: '10px' }}>
                       <ButtonComponent id="pageLandscape" isPrimary='true' isToggle="true" name="pageSettings" style={{ fontSize: '12px' }} iconCss="sf-icon-landscape" cssClass="e-flat e-primary e-active" onClick={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Landscape" />
+                    </div>
+                  </div>
+                  <div className="row db-prop-row" id='pageDimension' style={{ display: "none" }}>
+                    <div className="col-xs-6 db-col-left">
+                      <div className="db-text-container">
+                        <div className="db-text">
+                          <span>W</span>
+                        </div>
+                        <div className="db-text-input">
+                          <NumericTextBoxComponent id="pageWidth" min={100} format={"n0"} value={this.selectedItem.pageSettings.pageWidth} change={this.diagramPropertyBinding.pageDimensionChange.bind(this.diagramPropertyBinding)} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-xs-6 db-col-right">
+                      <div className="db-text-container">
+                        <div className="db-text">
+                          <span>H</span>
+                        </div>
+                        <div className="db-text-input">
+                          <NumericTextBoxComponent id="pageHeight" min={100} format={"n0"} value={this.selectedItem.pageSettings.pageHeight} change={this.diagramPropertyBinding.pageDimensionChange.bind(this.diagramPropertyBinding)} />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="row db-prop-row" id="backgroundcolor" style={{ paddingTop: '10px' }}>
@@ -645,10 +669,10 @@ class App extends React.Component {
                           <div className="db-text">
                             <span>X</span>
                           </div>
-                          <div className="db-text-input">
+                          <div className="db-text-input" style={{paddingRight:'0px', paddingTop:'0px'}}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetX => (this.nodeOffsetX = nodeOffsetX)} id="nodeOffsetX" format="n0"
-                              // value={this.selectedItem.nodeProperties.offsetX} 
-                              change={offsetChange} />
+                              value={this.selectedItem.nodeProperties.offsetX} 
+                              change={offsetXChange} />
                           </div>
                         </div>
                       </div>
@@ -657,10 +681,10 @@ class App extends React.Component {
                           <div className="db-text">
                             <span>Y</span>
                           </div>
-                          <div className="db-text-input">
+                          <div className="db-text-input" style={{paddingRight:'0px', paddingTop:'0px'}}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetY => (this.nodeOffsetY = nodeOffsetY)} id="nodeOffsetY" format="n0"
-                              // value={this.selectedItem.nodeProperties.offsetY} 
-                              change={offsetYchnage} />
+                              value={this.selectedItem.nodeProperties.offsetY} 
+                              change={offsetYchange} />
                           </div>
                         </div>
                       </div>
@@ -671,9 +695,9 @@ class App extends React.Component {
                           <div className="db-text">
                             <span>W</span>
                           </div>
-                          <div className="db-text-input">
+                          <div className="db-text-input" style={{paddingRight:'0px', paddingTop:'0px'}}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={width => (this.width = width)} id="nodeWidth" min={1} format="n0"
-                              // value={this.selectedItem.nodeProperties.width}
+                              value={this.selectedItem.nodeProperties.width}
                               change={nodeWidthChange} />
                           </div>
                         </div>
@@ -683,9 +707,9 @@ class App extends React.Component {
                           <div className="db-text">
                             <span>H</span>
                           </div>
-                          <div className="db-text-input">
+                          <div className="db-text-input" style={{paddingRight:'0px', paddingTop:'0px'}}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={height => (this.height = height)} id="nodeHeight" min={1} format="n0"
-                              // value={this.selectedItem.nodeProperties.height} 
+                              value={this.selectedItem.nodeProperties.height} 
                               change={nodeHeightChange} />
                           </div>
                         </div>
@@ -704,20 +728,18 @@ class App extends React.Component {
                     <div className="row">
                       <div className="col-xs-6 db-col-left">
                         <div className="db-text-container">
-                          <div className="db-text">
+                          <div className="db-text" style={{marginTop:'0px'}}>
                             <ButtonComponent iconCss='sf-icon-rotate tb-icons' />
                           </div>
-                          <div className="db-text-input">
+                          <div className="db-text-input" style={{paddingRight:'0px', paddingTop:'0px'}}>
                             <NumericTextBoxComponent ref={rotate => (this.rotate = rotate)} id="nodeRotateAngle" format="n0"
-                              // value={this.selectedItem.nodeProperties.rotateAngle}
+                              value={this.selectedItem.nodeProperties.rotateAngle}
                               change={rotationChange} />
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }} />
-                    {/* <div className="row db-prop-header-text">
-                      Insert</div> */}
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
                         <ButtonComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} id='insertHyperlink' content="Insert Link" onClick={hyperlinkInsert} cssClass="e-outline" isPrimary="true" />
@@ -735,10 +757,7 @@ class App extends React.Component {
                         <div className="col-xs-6 db-col-left">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent ref={fillColor => (this.fillColor = fillColor)} type="color" mode="Palette" value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} id="nodeFillColor" />
-                            </div>
-                            <div className="db-color-btn">
-                              <ButtonComponent iconCss='sf-icon-ColorPickers tb-icons' />
+                              <ColorPickerComponent ref={fillColor => (this.fillColor = fillColor)} showButtons='false' type="color" mode="Palette" value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} id="nodeFillColor" />
                             </div>
                           </div>
                         </div>
@@ -753,10 +772,7 @@ class App extends React.Component {
                         <div className="col-xs-4 db-col-right">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent type="color" mode="Palette" ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} change={gradientColorChange} />
-                            </div>
-                            <div className="db-color-btn">
-                              <ButtonComponent iconCss='sf-icon-ColorPickers tb-icons' />
+                              <ColorPickerComponent type="color" mode="Palette" showButtons='false' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} change={gradientColorChange} />
                             </div>
                           </div>
                         </div>
@@ -768,37 +784,40 @@ class App extends React.Component {
                         <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
                       </div>
                       <div className="row db-prop-row">
-                        <div className="col-xs-4 db-col-right">
-                          <span className="db-prop-text-style">Stroke Color</span>
-                        </div>
-                        <div className="col-xs-4 db-col-center">
+                        <div className="col-xs-6 db-col-right">
                           <span className="db-prop-text-style">Stroke Style</span>
                         </div>
-                        <div className="col-xs-4 db-col-left">
-                          <span className="db-prop-text-style">Stroke Width</span>
+                        <div className="col-xs-2 db-col-left" style={{marginLeft:'-6px'}}>
+                          <span className="db-prop-text-style">Color</span>
+                        </div>
+                        <div className="col-xs-2 db-col-center" style={{marginLeft:'6px'}}>
+                          <span className="db-prop-text-style">Thickness</span>
                         </div>
                       </div>
                       <div className="row">
-                        <div className="col-xs-4 db-col-left">
-                          <div className="db-color-container">
-                            <div className="db-color-input">
-                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='false' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
+                        <div className="col-xs-6 db-col-right" style={{width:"90px"}}>
+                            <DropDownListComponent ref={nodeBorder => this.nodeBorder = nodeBorder} id="nodeBorderStyle" value={this.selectedItem.nodeProperties.strokeStyle} dataSource={this.dropDownDataSources.borderStyles} popupWidth={"160px"} fields={this.dropdownListFields} change={nodeBorderChange} itemTemplate={this.nodeBorderItemTemplate} valueTemplate={this.nodeBorderValueTemplate} />
+                        </div>
+                        <div className="col-xs-2 db-col-center">
+                          <div class="db-color-container" style={{width:"55px",height:"26px", marginLeft:"0px"}}>
+                            <div class="db-color-input">
+                            <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='false' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
                             </div>
                           </div>
                         </div>
-
-                        <div className="col-xs-4 db-col-center">
-                          <DropDownListComponent ref={nodeBorder => this.nodeBorder = nodeBorder} id="nodeBorderStyle" value={this.selectedItem.nodeProperties.strokeStyle} dataSource={this.dropDownDataSources.borderStyles} popupWidth={"160px"} fields={this.dropdownListFields} change={nodeBorderChange} itemTemplate={this.nodeBorderItemTemplate} valueTemplate={this.nodeBorderValueTemplate} />
-                        </div>
-                        <div className="col-xs-4 db-col-right">
-                          <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} id="nodeStrokeWidth" min={0} step={0.5} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
+                        <div className="col-xs-4 db-col-center" style={{width:"70px", marginLeft:"25px"}}>
+                          <div class="db-text-container" style={{width:"70px"}}>
+                            <div class="db-text-input">
+                              <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} style={{width:"70px"}} id="nodeStrokeWidth" min={0} step={0.5} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="row db-prop-row">
-                        <div className="col-xs-2 db-col-right db-prop-text-style" style={{ paddingTop: "6px" }}>
+                        <div className="col-xs-2 db-col-right db-prop-text-style" style={{ marginRight:"15px",paddingTop: "6px" }}>
                           <span className="db-prop-text-style">Opacity</span>
                         </div>
-                        <div className="col-xs-8 db-col-left" style={{ paddingRight: "10px" }}>
+                        <div className="col-xs-8 db-col-left" style={{width:"130px", paddingRight: "10px" }}>
                           <SliderComponent ref={opacity => this.opacity = opacity} value={this.selectedItem.nodeProperties.opacity} min={0} max={100} step={10} type='MinRange' change={opacityChange} />
                         </div>
                         <div className="col-xs-2 db-col-right">
@@ -926,26 +945,26 @@ class App extends React.Component {
                   <div className="col-xs-4 db-col-left db-prop-text-style">
                     <span className="db-prop-text-style">Size</span>
                   </div>
-                  <div className="row db-prop-row" style={{marginTop:'5px'}}>
+                  <div className="row db-prop-row" style={{ marginTop: '5px' }}>
                     <div className="col-xs-8 db-col-left" style={{ width: "140px" }}>
                       <DropDownListComponent style={{ height: '35px' }} ref={fontFamily => this.fontFamily = fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
                     </div>
                     <div className="col-xs-4 db-col-right">
-                      <div class="db-text-container">
-                        <div class="db-text-input">
+                      <div className="db-text-container">
+                        <div className="db-text-input">
                           <NumericTextBoxComponent style={{ width: '75px' }} min={1} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-8 db-col-left" id="textPositionDiv" style={{width: '140px'}}>
+                    <div className="col-xs-8 db-col-left" id="textPositionDiv" style={{ width: '140px' }}>
                       <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={4} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
                     </div>
-                    <div className="col-xs-4 db-col-right" id="textColorDiv" style={{width:'75px',}}>
+                    <div className="col-xs-4 db-col-right" id="textColorDiv" style={{ width: '75px', }}>
                       <div className="db-color-container">
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
+                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} showButtons='false'  mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
                         </div>
                       </div>
                     </div>
@@ -960,7 +979,7 @@ class App extends React.Component {
                         </ItemsDirective>
                       </ToolbarComponent>
                     </div>
-                    <div className="col-xs-6 db-col-right">
+                    <div className="col-xs-6 db-col-right" >
                       <ToolbarComponent id='toolbarTextSubAlignment' overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextSubAlignChange.bind(this.diagramPropertyBinding)}>
                         <ItemsDirective>
                           <ItemDirective prefixIcon="sf-icon-align-left tb-icons" tooltipText="Align Text Left" cssClass="tb-item-start" />
@@ -970,23 +989,23 @@ class App extends React.Component {
                       </ToolbarComponent>
                     </div>
                   </div>
-                  <div className="row db-prop-row" id='toolbarTextAlignmentDiv'>
+                  <div className="row db-prop-row" id='toolbarTextAlignmentDiv'  style={{ marginTop: '20px' }}>
                     <ToolbarComponent id='toolbarTextAlignment' ref={toolbarTextAlignment => toolbarTextAlignment = toolbarTextAlignment} overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextAlignChange.bind(this.diagramPropertyBinding)}>
                       <ItemsDirective>
-                        <ItemDirective prefixIcon="sf-icon-align-text-left tb-icons" tooltipText="Align Left" cssClass="tb-item-start" />
-                        <ItemDirective prefixIcon="sf-icon-align-text-vertical-center: tb-icons" tooltipText="Align Center" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align-text-right tb-icons" tooltipText="Align Right" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align-text-top tb-icons" tooltipText="Align Top" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align-text-horizontal-center tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align-text-bottom tb-icons" tooltipText="Align Bottom" cssClass="tb-item-end" />
+                        <ItemDirective prefixIcon="sf-icon-align_left tb-icons" tooltipText="Align Right" cssClass="tb-item-start" />
+                        <ItemDirective prefixIcon="sf-icon-align_center tb-icons" tooltipText="Align Center" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align_right tb-icons" tooltipText="Align Left" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align_top tb-icons" tooltipText="Align Bottom" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align_middle tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align_bottom tb-icons" tooltipText="Align Top" cssClass="tb-item-end" />
                       </ItemsDirective>
                     </ToolbarComponent>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{marginRight:'15px' ,paddingTop: "6px" }}>
+                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{ marginRight: '15px', paddingTop: "6px" }}>
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
-                    <div className="col-xs-8 db-col-left" style={{ width:'130px',paddingRight: "10px" }}>
+                    <div className="col-xs-8 db-col-left" style={{ width: '130px', paddingRight: "10px" }}>
                       <SliderComponent ref={fontOpacity => this.fontOpacity = fontOpacity} value={this.selectedItem.textProperties.opacity} min={0} max={100} step={10} type='MinRange' change={fontOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
