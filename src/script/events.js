@@ -8,16 +8,17 @@ export class DiagramClientSideEvents {
         this.page = page;
     }
     selectionChange(args) {
-        const diagram = this.selectedItem.selectedDiagram;
-        if (this.selectedItem.preventSelectionChange || this.selectedItem.isLoading) {
-            return;
-        }
+        
         if (args.state === 'Changed') {
+            const diagram = this.selectedItem.selectedDiagram;
             var multiSelect;
             var toolbarEditor = document.getElementById("toolbarEditor").ej2_instances[0];
-                let selectedItems = this.selectedItem.selectedDiagram.selectedItems.nodes;
+                let selectedItems = diagram.selectedItems.nodes;
                 selectedItems = selectedItems.concat(this.selectedItem.selectedDiagram.selectedItems.connectors);
                 this.enableToolbarItems(selectedItems);
+                var nodeContainer = document.getElementById('nodePropertyContainer');
+                nodeContainer.classList.remove('multiple');
+                nodeContainer.classList.remove('connector');
                 if (selectedItems.length > 1) {
                     multiSelect = true;
                     for(var i =7;i<=27;i++){
@@ -36,6 +37,10 @@ export class DiagramClientSideEvents {
                             toolbarEditor.items[i].visible = true;
     
                         }
+                    }
+                    if(selectedItems[0].children && selectedItems[0].children.length>0)
+                    {
+                        toolbarEditor.items[9].visible = true;
                     }
                     this.singleSelectionSettings(selectedItems[0]);
                 }
@@ -173,11 +178,11 @@ export class DiagramClientSideEvents {
             if (showConnectorPanel) {
                 nodeContainer.classList.add('connector');
             }
-            // this.selectedItem.utilityMethods.bindNodeProperties(selectItem1.nodes[0], this.selectedItem);
+            this.selectedItem.utilityMethods.bindNodeProperties(selectItem1.nodes[0], this.selectedItem);
         }
         if (showConnectorPanel && !showNodePanel) {
             document.getElementById('connectorPropertyContainer').style.display = '';
-            // this.selectedItem.utilityMethods.bindConnectorProperties(selectItem1.connectors[0], this.selectedItem);
+            this.selectedItem.utilityMethods.bindConnectorProperties(selectItem1.connectors[0], this.selectedItem);
         }
         if (showTextPanel || showConTextPanel) {
             document.getElementById('textPropertyContainer').style.display = '';
@@ -205,7 +210,7 @@ export class DiagramClientSideEvents {
         if (selectedObject instanceof Node) {
             this.selectedItem.utilityMethods.objectTypeChange('node');
             object = selectedObject;
-            // this.selectedItem.utilityMethods.bindNodeProperties(object, this.selectedItem);
+            this.selectedItem.utilityMethods.bindNodeProperties(object, this.selectedItem);
         }
         else if (selectedObject instanceof Connector) {
             this.selectedItem.utilityMethods.objectTypeChange('connector');
@@ -225,7 +230,7 @@ export class DiagramClientSideEvents {
             document.getElementById('toolbarTextAlignmentDiv').style.display = '';
             document.getElementById('textPositionDiv').style.display = '';
             document.getElementById('textColorDiv').className = 'col-xs-6 db-col-right';
-            // this.selectedItem.utilityMethods.bindTextProperties(object.annotations[0].style, this.selectedItem);
+            this.selectedItem.utilityMethods.bindTextProperties(object.annotations[0].style, this.selectedItem);
             this.selectedItem.utilityMethods.updateHorVertAlign(object.annotations[0].horizontalAlignment, object.annotations[0].verticalAlignment);
             if (object.annotations[0] instanceof ShapeAnnotation) {
                 annotation = object.annotations[0];

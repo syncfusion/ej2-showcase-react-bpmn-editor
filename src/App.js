@@ -471,6 +471,9 @@ class App extends React.Component {
     fontSizeChange = this.nodeFontSizeChange.bind(this);
     fontColorChange = this.nodeFontColor.bind(this);
     fontOpacityChange = this.fontOpacityChangeEvent.bind(this);
+    strokeWidthChange = this.nodeStrokeWidthChange.bind(this);
+    nodeBorderChange = this.nodeBoderStyleChange.bind(this);
+    strokeColorChange = this.nodeStrokeColorChange.bind(this);
 
   }
   componentDidMount() {
@@ -478,6 +481,8 @@ class App extends React.Component {
     this.uploader();
     document.onmouseover = this.menumouseover.bind(this);
     this.diagramEvents.ddlTextPosition = this.ddlTextPosition;
+    const context = this;
+    setTimeout(() => { context.loadPage(); }, 2000);
   }
   render() {
     return (<div>
@@ -488,14 +493,11 @@ class App extends React.Component {
         <div className='header navbar'>
           <div className="db-header-container">
             <div className="db-diagram-name-container">
-              <span id='diagramName' className="db-diagram-name" style={{
-                width: "250px", overflow: "hidden",
-                textOverflow: "ellipse", whiteSpace: "nowrap",
-              }} onClick={this.renameDiagram}>
+              <span id='diagramName' className="db-diagram-name" onClick={this.renameDiagram}>
                 Untitled Diagram
               </span>
-              <input id='diagramEditable' type="text" className="db-diagram-name" onFocus={this.diagramNameKeyDown} />
-              <span id='diagramreport' className="db-diagram-name db-save-text" />
+              <input id='diagramEditable' type="text" className="db-diagram-name" onFocus={this.diagramNameKeyDown} onBlur={this.diagramNameChange}/>
+              <span id='diagramreport' className="db-diagram-name db-save-text" style={{float:"right"}}/>
             </div>
             <div className='db-menu-container'>
               <div className="db-menu-style">
@@ -715,11 +717,11 @@ class App extends React.Component {
                         </div>
                       </div>
                     </div>
-                    <div className="row db-prop-row">
+                    {/* <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left" >
                         <CheckBoxComponent ref={aspectRatio => (this.aspectRatio = aspectRatio)} id='aspectRatio' label="Aspect Ratio" checked={this.selectedItem.nodeProperties.aspectRatio} change={aspectRatioValue} />
                       </div>
-                    </div>
+                    </div> */}
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
                         <span className="db-prop-header-text">Rotate</span>
@@ -761,11 +763,11 @@ class App extends React.Component {
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div id='gradientStyle' className="row db-prop-row db-gradient-style-hide">
                         <div className="col-xs-4 db-col-left">
                           <CheckBoxComponent ref={gradient => (this.gradient = gradient)} id='gradient' label="Gradient" checked={this.selectedItem.nodeProperties.gradient} change={gradientChange} />
                         </div>
+                      </div>
+                      <div id='gradientStyle' className="row db-prop-row db-gradient-style-hide">
                         <div className="col-xs-4 db-col-center">
                           <DropDownListComponent ref={gradientDirection => this.gradientDirection = gradientDirection} value={this.selectedItem.nodeProperties.gradientDirection} dataSource={this.dropDownDataSources.gradientDirections} fields={this.dropdownListFields} popupHeight={"200px"} change={gradientDirectionChange} />
                         </div>
@@ -785,29 +787,29 @@ class App extends React.Component {
                       </div>
                       <div className="row db-prop-row">
                         <div className="col-xs-6 db-col-right">
-                          <span className="db-prop-text-style">Stroke Style</span>
+                          <span className="db-prop-text-style">Border Type</span>
                         </div>
-                        <div className="col-xs-2 db-col-left" style={{marginLeft:'-6px'}}>
+                        <div className="col-xs-2 db-col-left" style={{marginLeft:'-15px'}}>
                           <span className="db-prop-text-style">Color</span>
                         </div>
-                        <div className="col-xs-2 db-col-center" style={{marginLeft:'6px'}}>
+                        <div className="col-xs-2 db-col-center" style={{marginLeft:'16px'}}>
                           <span className="db-prop-text-style">Thickness</span>
                         </div>
                       </div>
                       <div className="row">
                         <div className="col-xs-6 db-col-right" style={{width:"90px"}}>
-                            <DropDownListComponent ref={nodeBorder => this.nodeBorder = nodeBorder} id="nodeBorderStyle" value={this.selectedItem.nodeProperties.strokeStyle} dataSource={this.dropDownDataSources.borderStyles} popupWidth={"160px"} fields={this.dropdownListFields} change={nodeBorderChange} itemTemplate={this.nodeBorderItemTemplate} valueTemplate={this.nodeBorderValueTemplate} />
+                            <DropDownListComponent ref={nodeBorder => this.nodeBorder = nodeBorder} id="nodeBorderStyle" value={this.selectedItem.nodeProperties.strokeStyle} dataSource={this.dropDownDataSources.borderStyles} popupWidth={"160px"} fields={this.dropdownListFields} change={nodeBorderChange} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} />
                         </div>
                         <div className="col-xs-2 db-col-center">
-                          <div class="db-color-container" style={{width:"55px",height:"26px", marginLeft:"0px"}}>
-                            <div class="db-color-input">
+                          <div className="db-color-container" style={{width:"55px",height:"26px", marginLeft:"0px"}}>
+                            <div className="db-color-input">
                             <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='false' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
                             </div>
                           </div>
                         </div>
                         <div className="col-xs-4 db-col-center" style={{width:"70px", marginLeft:"25px"}}>
-                          <div class="db-text-container" style={{width:"70px"}}>
-                            <div class="db-text-input">
+                          <div className="db-text-container" style={{width:"70px"}}>
+                            <div className="db-text-input">
                               <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} style={{width:"70px"}} id="nodeStrokeWidth" min={0} step={0.5} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
                             </div>
                           </div>
@@ -1039,7 +1041,7 @@ class App extends React.Component {
   diagramNameChange() {
     document.getElementById('diagramName').innerHTML = document.getElementById('diagramEditable').value;
     document.getElementsByClassName('db-diagram-name-container')[0].classList.remove('db-edit-name');
-    this.selectedItem.exportSettings.fileName = document.getElementById('diagramName').innerHTML;
+    // this.selectedItem.exportSettings.fileName = document.getElementById('diagramName').innerHTML;
   }
   generateDiagram() {
     this.selectedItem.selectedDiagram = this.diagram;
@@ -1069,6 +1071,39 @@ class App extends React.Component {
     let diagrm = document.getElementById('diagram').ej2_instances[0];
     diagrm.loadDiagram(event.target.result);
   }
+  loadPage() {
+    document.getElementsByClassName('diagrambuilder-container')[0].style.display = '';
+    this.selectedItem.selectedDiagram.updateViewPort();
+    this.selectedItem.nodeProperties.offsetX = this.nodeOffsetX;
+    this.selectedItem.nodeProperties.offsetY = this.nodeOffsetY;
+    this.selectedItem.nodeProperties.width = this.width;
+    this.selectedItem.nodeProperties.height = this.height;
+    this.selectedItem.nodeProperties.rotateAngle = this.rotate;
+    this.selectedItem.nodeProperties.aspectRatio = this.aspectRatio;
+    this.selectedItem.nodeProperties.fillColor = this.fillColor;
+    this.selectedItem.nodeProperties.gradientDirection = this.gradientDirection;
+    this.selectedItem.nodeProperties.gradientColor = this.gradientColor;
+    this.selectedItem.nodeProperties.strokeStyle = this.nodeBorder;
+    this.selectedItem.nodeProperties.opacity = this.opacity;
+    this.selectedItem.connectorProperties.lineType = this.lineType;
+    this.selectedItem.connectorProperties.lineColor = this.lineColor;
+    this.selectedItem.connectorProperties.lineStyle = this.lineStyle;
+    this.selectedItem.connectorProperties.lineWidth = this.lineWidth;
+    this.selectedItem.nodeProperties.strokeWidth = this.strokeWidth;
+    this.selectedItem.nodeProperties.strokeColor = this.strokeColor;
+    this.selectedItem.connectorProperties.sourceType = this.sourceType;
+    this.selectedItem.connectorProperties.targetType = this.targetType;
+    this.selectedItem.connectorProperties.sourceSize = this.sourceSize;
+    this.selectedItem.connectorProperties.targetSize = this.targetSize;
+    this.selectedItem.connectorProperties.lineJump = this.bridge;
+    this.selectedItem.connectorProperties.lineJumpSize = this.bridgeSize;
+    this.selectedItem.connectorProperties.opacity = this.connectorOpacity;
+    this.selectedItem.textProperties.fontFamily = this.fontFamily;
+    this.selectedItem.textProperties.fontSize = this.fontSize;
+    this.selectedItem.textProperties.fontColor = this.fontColor;
+    this.selectedItem.textProperties.opacity = this.fontOpacity;      
+    this.selectedItem.exportSettings.fileName = document.getElementById('diagramName').innerHTML;
+}
   beforeItemRender(args) {
     const shortCutText = this.getShortCutKey(args.item.text);
     if (shortCutText) {
@@ -1116,7 +1151,7 @@ class App extends React.Component {
           File Name
         </div>
         <div className="row db-dialog-child-prop-row">
-          <input type="text" id="exportfileName" value={this.selectedItem.exportSettings.fileName} />
+          <input type="text" id="exportfileName" value={this.UtilityMethods.fileName} />
         </div>
       </div>
       <div className="row db-dialog-prop-row">
@@ -1222,9 +1257,9 @@ class App extends React.Component {
     var diagram = this.selectedItem.selectedDiagram;
     var region = document.getElementById("exportRegion").ej2_instances[0];
     var format = document.getElementById("exportFormat").ej2_instances[0];
-    // var fileName = document.getElementById("exportfileName").ej2_instances[0];
+    // var fileName = document.getElementById("diagramEditable").ej2_instances[0];
     diagram.exportDiagram({
-      fileName: this.selectedItem.exportSettings.fileName,
+      fileName: document.getElementById('diagramName').innerHTML,
       format: format.value,
       region: region.value,
       multiplePage: diagram.pageSettings.multiplePage
@@ -1993,6 +2028,18 @@ class App extends React.Component {
   fontOpacityChangeEvent(args) {
     this.selectedItem.textProperties.opacity.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'opacity', propertyValue: args });
+  }
+  nodeStrokeWidthChange(args) {
+    this.selectedItem.nodeProperties.strokeWidth.value = args.value;
+    this.selectedItem.nodePropertyChange({ propertyName: 'strokeWidth', propertyValue: args });
+  }
+  nodeBoderStyleChange(args) {
+      this.selectedItem.nodeProperties.strokeStyle.value = args.value;
+      this.selectedItem.nodePropertyChange({ propertyName: 'strokeStyle', propertyValue: args });
+  }
+  nodeStrokeColorChange(args) {
+      this.selectedItem.nodeProperties.strokeColor.value = args.currentValue.hex;
+      this.selectedItem.nodePropertyChange({ propertyName: 'strokeColor', propertyValue: args });
   }
   hyperlinkInsert(args) {
     const diagram = this.selectedItem.selectedDiagram;
