@@ -2,7 +2,7 @@ import { createElement, closest, formatUnit } from "@syncfusion/ej2-base";
 import { DiagramComponent, SelectorConstraints, Overview, SymbolPaletteComponent, Keys, KeyModifiers, DiagramAction, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, HierarchicalTree, MindMap as MindMapTree, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
 import { Diagram, SnapConstraints, ControlPointsVisibility, BezierSmoothness } from "@syncfusion/ej2-react-diagrams";
 import { DropDownButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
-import { DiagramClientSideEvents, OrgChartPropertyBinding } from "./script/events";
+import { DiagramClientSideEvents} from "./script/events";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { ToolbarComponent, ItemsDirective, ItemDirective, ContextMenuComponent, ContextMenuSettingsModel } from '@syncfusion/ej2-react-navigations';
 import * as React from 'react';
@@ -448,9 +448,8 @@ class App extends React.Component {
     offsetYchange = this.offsetY.bind(this);
     nodeWidthChange = this.nodeWidth.bind(this);
     nodeHeightChange = this.nodeHeight.bind(this);
-    aspectRatioValue = this.aspectRatioChange.bind(this);
     rotationChange = this.nodeRotationChange.bind(this);
-
+    aspectRatioValue = this.aspectRatioChange.bind(this);
     nodeFillColor = this.nodeFillColorChange.bind(this);
     gradientChange = this.nodeGradientChange.bind(this);
     gradientDirectionChange = this.gradientDropDownChange.bind(this);
@@ -538,7 +537,7 @@ class App extends React.Component {
                   <ItemDirective type="Separator" />
                   <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' />
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
-                  <ItemDirective prefixIcon='sf-icon-straight_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-dropdown-btn" />
+                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-drawtools-dropdown-btn tb-dropdown-btn" />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
                   <ItemDirective type="Separator" />
                   <ItemDirective prefixIcon='sf-icon-group tb-icons' tooltipText='Group' cssClass='tb-item-start' align='Center' />
@@ -603,8 +602,7 @@ class App extends React.Component {
                 <div id='diagramPropertyContainer' className="db-diagram-prop-container">
                   <div className="row db-prop-header-text">
                     Page Settings
-                    {/* <ButtonComponent id="hide-properties" className="close" iconCss="sf-icon-close"><i className="sf-icon-close"></i></ButtonComponent> */}
-                    <ButtonComponent  id="hide-properties" className="close" style={{ fontSize: '15px', width:"20px", height:'20px' }} iconCss="sf-icon-close" cssClass="e-flat"/>
+                    <ButtonComponent  id="hide-properties" style={{float:'right', marginTop:"-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                   </div>
                   <div className="row db-prop-row">
                     <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}></div>
@@ -659,7 +657,7 @@ class App extends React.Component {
                   <div className="db-node-behaviour-prop">
                     <div className="row db-prop-header-text">
                       Properties
-                      <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
+                      <ButtonComponent  id="hide-properties" style={{float:'right', marginTop:"-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                     </div>
                     <div className="db-prop-separator" style={{ backgroundColor: "#b5b5b5", marginBottom: "15px" }}></div>
                     <div className="row db-prop-header-text">
@@ -768,7 +766,7 @@ class App extends React.Component {
                         </div>
                       </div>
                       <div id='gradientStyle' className="row db-prop-row db-gradient-style-hide">
-                        <div className="col-xs-4 db-col-center">
+                        <div className="col-xs-6 db-col-center">
                           <DropDownListComponent ref={gradientDirection => this.gradientDirection = gradientDirection} value={this.selectedItem.nodeProperties.gradientDirection} dataSource={this.dropDownDataSources.gradientDirections} fields={this.dropdownListFields} popupHeight={"200px"} change={gradientDirectionChange} />
                         </div>
                         <div className="col-xs-4 db-col-right">
@@ -783,7 +781,7 @@ class App extends React.Component {
                     <div className="row db-border-style">
                       <div className="row db-prop-header-text db-border-style-header">
                         Border/Line Styles
-                        <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
+                        <ButtonComponent  id="hide-properties" style={{float:'right', marginTop:"-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                       </div>
                       <div className="row db-prop-row">
                         <div className="col-xs-6 db-col-right">
@@ -832,7 +830,7 @@ class App extends React.Component {
                 <div id='connectorPropertyContainer' className="db-connector-prop-container" style={{ display: "none" }}>
                   <div className="row db-prop-header-text">
                     Connector Properties
-                    <ButtonComponent id="hide-properties" className="close" iconCss='sf-icon-close tb-icons' />
+                    <ButtonComponent  id="hide-properties" style={{float:'right', marginTop:"-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                   </div>
                   <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }}></div>
                   <div className="row db-prop-row">
@@ -994,12 +992,12 @@ class App extends React.Component {
                   <div className="row db-prop-row" id='toolbarTextAlignmentDiv'  style={{ marginTop: '20px' }}>
                     <ToolbarComponent id='toolbarTextAlignment' ref={toolbarTextAlignment => toolbarTextAlignment = toolbarTextAlignment} overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextAlignChange.bind(this.diagramPropertyBinding)}>
                       <ItemsDirective>
-                        <ItemDirective prefixIcon="sf-icon-align_left tb-icons" tooltipText="Align Right" cssClass="tb-item-start" />
-                        <ItemDirective prefixIcon="sf-icon-align_center tb-icons" tooltipText="Align Center" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align_right tb-icons" tooltipText="Align Left" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align_top tb-icons" tooltipText="Align Bottom" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align_middle tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align_bottom tb-icons" tooltipText="Align Top" cssClass="tb-item-end" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-left tb-icons" tooltipText="Align Right" cssClass="tb-item-start" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-horizontal-center tb-icons" tooltipText="Align Center" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-rignt tb-icons" tooltipText="Align Left" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-top tb-icons" tooltipText="Align Bottom" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-vertical-center tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-top tb-icons" tooltipText="Align Top" cssClass="tb-item-end" />
                       </ItemsDirective>
                     </ToolbarComponent>
                   </div>
@@ -1111,7 +1109,7 @@ class App extends React.Component {
       shortCutSpan.textContent = shortCutText;
       shortCutSpan.style.pointerEvents = 'none';
       args.element.appendChild(shortCutSpan);
-      shortCutSpan.setAttribute('className', 'db-shortcut');
+      shortCutSpan.setAttribute('class', 'db-shortcut');
     }
     const status = this.UtilityMethods.enableMenuItems(args.item.text, this.selectedItem);
     if (status) {
@@ -1403,7 +1401,7 @@ class App extends React.Component {
       }
     }
     toolbarObj.dataBind();
-    //document.getElementById('conTypeBtn').classList.remove('tb-item-selected');
+    // document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
   };
   zoomTemplate() {
     return (<div id="template_toolbar">
@@ -1412,8 +1410,8 @@ class App extends React.Component {
   }
 
   connectorTool() {
-    return (<div id="connector_toolbar">
-      <DropDownButtonComponent id="connectorTool" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} />
+    return (<div id="template_toolbar">
+      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange}  iconCss='sf-icon-orthogonal_line'/>
     </div>);
   }
   propertyPanel() {
@@ -1427,7 +1425,7 @@ class App extends React.Component {
     diagram.tool = DiagramTools.ContinuousDraw;
     diagram.selectedItems.userHandles = [];
     diagram.dataBind();
-    args.item.cssClass += ' tb-item-selected';
+    document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
   }
   zoomChange(args) {
     var zoomCurrentValue = document.getElementById("btnZoomIncrement").ej2_instances[0];

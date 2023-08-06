@@ -59,9 +59,9 @@ export class DropDownDataSources {
             { iconCss: 'sf-icon-Triangle', text: 'Polygon' }
         ];
         this.drawConnectorsList = [
-            { iconCss: 'sf-icon-StraightLine', text: 'Straight' },
-            { iconCss: 'sf-icon-ConnectorMode', text: 'Orthogonal' },
-            { iconCss: 'sf-icon-BeizerLine', text: 'Bezier' }
+            { iconCss: 'sf-icon-straight_line', text: 'Straight' },
+            { iconCss: 'sf-icon-orthogonal_line', text: 'Orthogonal' },
+            { iconCss: 'sf-icon-beizer', text: 'Bezier' }
         ];
         this.orderCommandsList = [
             { iconCss: 'sf-icon-Sendback', text: 'Send To Back' },

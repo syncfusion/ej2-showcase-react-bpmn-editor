@@ -520,6 +520,7 @@ export class SelectorViewModel {
         this.exportSettings = new ExportSettings();
         this.printSettings = new PrintSettings();
         this.pageSettings = new PageSettings();
+        this.utilityMethods = new UtilityMethods();
         this.scrollSettings = new ScrollSettings();
         this.utilityMethods = new UtilityMethods();
         this.nodeProperties.propertyChange = this.nodePropertyChange.bind(this);
@@ -544,6 +545,21 @@ export class SelectorViewModel {
                         const propertyName1 = args.propertyName.toString().toLowerCase();
                         // eslint-disable-next-line
                         switch (propertyName1) {
+                            case 'fillcolor':
+                                node.style.fill = this.getColor(this.nodeProperties.fillColor);
+                                if (this.nodeProperties.gradient) {
+                                    this.nodeProperties.getGradient(node);
+                                }
+                                break;
+                            case 'strokecolor':
+                                node.style.strokeColor = this.getColor(this.nodeProperties.strokeColor);
+                                break;
+                            case 'strokewidth':
+                                node.style.strokeWidth = this.nodeProperties.strokeWidth;
+                                break;
+                            case 'strokestyle':
+                                node.style.strokeDashArray = this.nodeProperties.strokeStyle;
+                                break;
                             case 'offsetx':
                                 node.offsetX = this.nodeProperties.offsetX.value;
                                 break;
@@ -561,6 +577,17 @@ export class SelectorViewModel {
                                 break;
                             case 'aspectratio':
                                 node.constraints = node.constraints ^ NodeConstraints.AspectRatio;
+                                break;
+                            case 'opacity':
+                                node.style.opacity = this.nodeProperties.opacity / 100;
+                                this.nodeProperties.opacityText = this.nodeProperties.opacity + '%';
+                                break;
+                            case 'gradient':
+                                if (!this.nodeProperties.gradient) {
+                                    node.style.gradient.type = 'None';
+                                } else {
+                                    this.nodeProperties.getGradient(node);
+                                }
                                 break;
                         }
                         if (!node.children) {
