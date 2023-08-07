@@ -61,18 +61,13 @@ export class DropDownDataSources {
         this.drawConnectorsList = [
             { iconCss: 'sf-icon-straight_line', text: 'Straight' },
             { iconCss: 'sf-icon-orthogonal_line', text: 'Orthogonal' },
-            { iconCss: 'sf-icon-beizer', text: 'Bezier' }
+            { iconCss: 'sf-icon-bezier', text: 'Bezier' }
         ];
         this.orderCommandsList = [
             { iconCss: 'sf-icon-Sendback', text: 'Send To Back' },
             { iconCss: 'sf-icon-BringFront', text: 'Bring To Front' },
             { iconCss: 'sf-icon-SendBackward', text: 'Send Backward' },
             { iconCss: 'sf-icon-BringForward', text: 'Bring Forward' },
-        ];
-        this.mindmapLevels = [
-            { text: 'Root', value: 'Level0' }, { text: 'Level1', value: 'Level1' },
-            { text: 'Level2', value: 'Level2' }, { text: 'Level3', value: 'Level3' },
-            { text: 'Level4', value: 'Level4' }, { text: 'Level5', value: 'Level5' },
         ];
         this.zoomMenuItems = [
             { text: 'Zoom In' },{ text: 'Zoom Out' },{ text: 'Zoom to Fit' },{ text: 'Zoom to 50%' },

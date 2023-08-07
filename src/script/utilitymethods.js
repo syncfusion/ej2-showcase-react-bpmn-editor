@@ -12,6 +12,7 @@
          this.borderColorCode = ['#8BC1B7', '#E2C180', '#ACCBAA', '#D1AFDF', '#90C8C2', '#BBBFD6'];
          
      }
+     //To update node properties for the selected Item
      bindNodeProperties(node, selectedItem) {
          selectedItem.preventPropertyChange = true;
          selectedItem.nodeProperties.offsetX.value = (Math.round(node.offsetX * 100) / 100);
@@ -52,7 +53,7 @@
          }
          selectedItem.preventPropertyChange = false;
      }
-     
+     //To update Text properties for the selected Item
      bindTextProperties(text, selectedItem) {
          selectedItem.preventPropertyChange = true;
          selectedItem.textProperties.fontColor.value = this.getHexColor(text.color);
@@ -72,6 +73,7 @@
          this.updateTextAlign(text.textAlign);
          selectedItem.preventPropertyChange = false;
      }
+     //To update Text align value of the TextProperties
      updateTextAlign(textAlign) {
          let toolbarTextSubAlignment = document.getElementById('toolbarTextSubAlignment');
          if (toolbarTextSubAlignment) {
@@ -85,6 +87,7 @@
              toolbarTextSubAlignment.items[index].cssClass = toolbarTextSubAlignment.items[index].cssClass + ' tb-item-selected';
          }
      }
+      //To update position alignment value of the TextProperties
      updateHorVertAlign(horizontalAlignment, verticalAlignment) {
          let toolbarHorVerAlignment = document.getElementById('toolbarTextAlignment');
          if (toolbarHorVerAlignment) {
@@ -100,6 +103,7 @@
              toolbarHorVerAlignment.items[index].cssClass = toolbarHorVerAlignment.items[index].cssClass + ' tb-item-selected';
          }
      }
+    //To update connector properties for the selected Item
      bindConnectorProperties(connector, selectedItem) {
          selectedItem.preventPropertyChange = true;
          selectedItem.connectorProperties.lineColor.value = this.getHexColor(connector.style.strokeColor);
@@ -122,18 +126,19 @@
          selectedItem.connectorProperties.sourceSize.value = connector.sourceDecorator.width;
          selectedItem.preventPropertyChange = false;
      }
+     //Returns the RGB color string to its corresponding hexadecimal color representation value.
      getHexColor(colorStr) {
-         const colors = [];
-         // let a: HTMLDivElement = document.createElement('div');
-         // a.style.color = colorStr;
-         // let colors: number[] = window.getComputedStyle(document.body.appendChild(a)).color.match(/\d+/g).map(
-         //     (a: string): number => {
-         //         return parseInt(a, 10);
-         //     }
-         // );
-         // document.body.removeChild(a);
+         let a = document.createElement('div');
+         a.style.color = colorStr;
+         let colors = window.getComputedStyle(document.body.appendChild(a)).color.match(/\d+/g).map(
+             (a) => {
+                 return parseInt(a, 10);
+             }
+         );
+         document.body.removeChild(a);
          return (colors.length >= 3) ? '#' + (((1 << 24) + (colors[0] << 16) + (colors[1] << 8) + colors[2]).toString(16).substr(1)) : '';
      }
+     //returns the offset text annotation value based on position
      getOffset(position) {
          switch (position.toLowerCase()) {
              case 'topleft':
@@ -156,6 +161,7 @@
                  return { x: 1, y: 1 };
          }
      }
+     //return the positon of the annotation text based on offset values
      getPosition(offset) {
          if (offset.x === 0 && offset.y === 0) {
              return 'TopLeft';
@@ -185,6 +191,7 @@
              return 'Center';
          }
      }
+     // To hide Property panel
      hideElements(elementType, diagram) {
          const diagramContainer = document.getElementsByClassName('diagrambuilder-container')[0];
          if (diagramContainer.classList.contains(elementType)) {
@@ -203,6 +210,7 @@
              diagram.updateViewPort();
          }
      }
+     //To show Property panel based on selected Items
      objectTypeChange(objectType) {
          document.getElementById('diagramPropertyContainer').style.display = 'none';
          document.getElementById('nodePropertyContainer').style.display = 'none';
@@ -221,83 +229,14 @@
                  break;
          }
      }
-    
-    
-     readTextFile(file, selectedItem) {
-         document.getElementsByClassName('sb-content-overlay')[0].style.display = '';
-         const ajax = new Ajax(file, 'GET', true);
-         ajax.send().then();
-         // let value = '../assets/dbstyle/flowchart_Images/CreditCardFlow.json'
-         // let context: any = this;
-         ajax.onSuccess = (data) => {
-             selectedItem.preventSelectionChange = true;
-             selectedItem.isTemplateLoad = true;
-             this.page.loadPage(data);
-             this.page.Settings();
-             selectedItem.isTemplateLoad = false;
-            
-             selectedItem.preventSelectionChange = false;
-             document.getElementsByClassName('sb-content-overlay')[0].style.display = 'none';
-         };
-         ajax.onFailure = (data) => {
-             document.getElementsByClassName('sb-content-overlay')[0].style.display = 'none';
-         };
-         ajax.onError = (evt) => {
-             document.getElementsByClassName('sb-content-overlay')[0].style.display = 'none';
-             return {};
-         };
-     }
-     
-    
-     enableToolbarItems(selectedItems) {
-         const toolbarContainer = document.getElementsByClassName('db-toolbar-container')[0];
-         let toolbarClassName = 'db-toolbar-container';
-         if (toolbarContainer.classList.contains('db-undo')) {
-             toolbarClassName += ' db-undo';
-         }
-         if (toolbarContainer.classList.contains('db-redo')) {
-             toolbarClassName += ' db-redo';
-         }
-         toolbarContainer.className = toolbarClassName;
-         if (selectedItems.length === 1) {
-             toolbarContainer.className = toolbarContainer.className + ' db-select';
-             if (selectedItems[0] instanceof Node) {
-                 if (selectedItems[0].children) {
-                     if (selectedItems[0].children.length > 2) {
-                         toolbarContainer.className = toolbarContainer.className + ' db-select db-double db-multiple db-node db-group';
-                     }
-                     else {
-                         toolbarContainer.className = toolbarContainer.className + ' db-select db-double db-node db-group';
-                     }
-                 }
-                 else {
-                     toolbarContainer.className = toolbarContainer.className + ' db-select db-node';
-                 }
-             }
-         }
-         else if (selectedItems.length === 2) {
-             toolbarContainer.className = toolbarContainer.className + ' db-select db-double';
-         }
-         else if (selectedItems.length > 2) {
-             toolbarContainer.className = toolbarContainer.className + ' db-select db-double db-multiple';
-         }
-         if (selectedItems.length > 1) {
-             // let isNodeExist: boolean = false;
-             for (const item of selectedItems) {
-                 if (item instanceof Node) {
-                     toolbarContainer.className = toolbarContainer.className + ' db-select db-node';
-                     break;
-                 }
-             }
-         }
-     }
+
+     //to enable Menu bar Items
      enableMenuItems(itemText, selectedItem) {
          if (selectedItem && selectedItem.selectedDiagram) {
              let selectedItems = selectedItem.selectedDiagram.selectedItems.nodes;
              selectedItems = selectedItems.concat(selectedItem.selectedDiagram.selectedItems.connectors);
              if (itemText) {
-                 const commandType = itemText.replace(/[' ']/g, '');
-                
+                //  const commandType = itemText.replace(/[' ']/g, '');
                  if (selectedItem.pasteData.length === 0 && itemText === 'Paste') {
                      return true;
                  }
@@ -308,8 +247,8 @@
                      return true;
                  }
                  if (selectedItem.diagramType !== 'GeneralDiagram') {
-                     if (itemText === 'Themes' || itemText === 'Paste' || itemText === 'Show Rulers' || itemText === 'Show Guides'
-                         || itemText === 'Show Grid' || itemText === 'Snap To Grid' || itemText === 'Show Stencil') {
+                     if ( itemText === 'Paste' || itemText === 'Show Rulers' || itemText === 'Show Guides'
+                         || itemText === 'Show Grid' || itemText === 'Snap To Grid') {
                          return true;
                      }
                  }
@@ -317,36 +256,7 @@
          }
          return false;
      }
-     enableArrangeMenuItems(selectedItem) {
-         // const contextInstance: any = document.getElementById('arrangeContextMenu');
-         // const contextMenu: ContextMenu = contextInstance.ej2_instances[0] as ContextMenu;
-         const contextMenu = this.arrangeContextMenu;
-         let selectedItems = selectedItem.selectedDiagram.selectedItems.nodes;
-         selectedItems = selectedItems.concat(selectedItem.selectedDiagram.selectedItems.connectors);
-         for (const menuItem of contextMenu.items) {
-             contextMenu.enableItems([menuItem.text], false);
-         }
-         if (selectedItem.diagramType === 'GeneralDiagram') {
-             if (selectedItems.length > 1) {
-                 contextMenu.enableItems(['Align Objects', 'Distribute Objects', 'Match Size', 'Lock', 'Unlock', 'Group'], true);
-             }
-             else if (selectedItems.length === 1) {
-                 contextMenu.enableItems(['Send To Back', 'Bring To Front', 'Send Backward', 'Bring Forward']);
-                 const object = selectedItems[0];
-                 if (object instanceof Node) {
-                     if (object.children && object.children.length > 0) {
-                         contextMenu.enableItems(['Ungroup']);
-                     }
-                     if (object.constraints & NodeConstraints.Drag) {
-                         contextMenu.enableItems(['Lock'], true);
-                     }
-                     else {
-                         contextMenu.enableItems(['Unlock'], true);
-                     }
-                 }
-             }
-         }
-     }
+      //to get the Paper size of the selected Items
      getPaperSize(paperName) {
          const paperSize = new PaperSize();
          // eslint-disable-next-line
@@ -382,6 +292,7 @@
          }
          return paperSize;
      }
+     //To remove the sub child of the selected node
      removeChild(selectedItem) {
          const diagram = selectedItem.selectedDiagram;
          if (diagram.selectedItems.nodes.length > 0) {
@@ -394,13 +305,7 @@
          }
          selectedItem.isModified = true;
      }
-     
-     hideMenuItems() {
-         const btnWindow = document.getElementById('btnWindowMenu');
-         btnWindow.ej2_instances[0].items[1].iconCss = '';
-         const btnView = document.getElementById('btnViewMenu');
-         btnView.ej2_instances[0].items[7].iconCss = '';
-     }
+     //To update the selection of the option in the context menu
      updateContextMenuSelection(boolean, args, diagram) {
          if (diagram.selectedItems.nodes.length > 0) {
              var bpmnNode = diagram.selectedItems.nodes[0];
@@ -550,6 +455,7 @@
          }
 
      };
+     //To add tick icon to the context menu
      addTick(args, index, checked, i) {
          if (checked) {
              if ((args.items[index]).items[i].iconCss.indexOf('sf-icon-check-tick') === -1) {
@@ -562,6 +468,7 @@
              }
          }
      };
+     //To toggle the checkmark icon for a specific item in the context menu 
      singleItemTick(args, index, boolean) {
          if (boolean) {
              if (args.items[index].iconCss.indexOf('sf-icon-check-tick') === -1) {
@@ -574,6 +481,7 @@
              }
          }
      };
+     //Returns the name of the Diagram
      fileName(){
         return document.getElementById('diagramName').innerHTML;
     }

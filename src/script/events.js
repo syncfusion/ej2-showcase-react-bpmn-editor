@@ -7,6 +7,7 @@ export class DiagramClientSideEvents {
         this.selectedItem = selectedItem;
         this.page = page;
     }
+    //Method for Selection Change event
     selectionChange(args) {
         
         if (args.state === 'Changed') {
@@ -62,6 +63,8 @@ export class DiagramClientSideEvents {
 
         }
     }
+
+    //To enable the Toolbar items
     enableToolbarItems(selectedItems) {
         const toolbarContainer = document.getElementsByClassName('db-toolbar-container')[0];
         let toolbarClassName = 'db-toolbar-container';
@@ -105,6 +108,7 @@ export class DiagramClientSideEvents {
         }
     }
     
+    //Triggers while dragging the elements in diagram
     nodePositionChange(args) {
         this.selectedItem.preventPropertyChange = true;
         this.selectedItem.nodeProperties.offsetX.value = (Math.round(args.newValue.offsetX * 100) / 100);
@@ -114,6 +118,7 @@ export class DiagramClientSideEvents {
             this.selectedItem.preventPropertyChange = false;
         }
     }
+     //Triggers when a node is resized
     nodeSizeChange(args) {
         this.selectedItem.preventPropertyChange = true;
         this.selectedItem.nodeProperties.width.value = (Math.round(args.newValue.width * 100) / 100);
@@ -123,9 +128,11 @@ export class DiagramClientSideEvents {
             this.selectedItem.preventPropertyChange = false;
         }
     }
+    //Triggers when the diagram is zoomed or panned
     scrollChange(args) {
         this.selectedItem.scrollSettings.currentZoom = (args.newValue.CurrentZoom * 100).toFixed() + '%';
     }
+    //Triggers when the diagram elements are rotated
     nodeRotationChange(args) {
         this.selectedItem.preventPropertyChange = true;
         this.selectedItem.nodeProperties.rotateAngle.value = (Math.round(args.newValue.rotateAngle * 100) / 100);
@@ -134,13 +141,14 @@ export class DiagramClientSideEvents {
             this.selectedItem.isModified = true;
         }
     }
-    
+    //Triggers when a symbol is dragged into diagram from symbol palette
     dragEnter(args) {
         const obj = args.element;
         const ratio = 100 / obj.width;
         obj.width = 100;
         obj.height *= ratio;
     }
+    //To enable or disable undo/redo options in toolbar
     historyChange(args) {
         var diagram = document.getElementById("diagram").ej2_instances[0];
         var toolbarContainer = document.getElementsByClassName('db-toolbar-container')[0];
@@ -153,6 +161,7 @@ export class DiagramClientSideEvents {
             toolbarContainer.classList.add('db-redo');
         }
     }
+    // To update the property panels and Tool bar for multiple selected items in the diagram.
     multipleSelectionSettings(selectedItems) {
         this.selectedItem.utilityMethods.objectTypeChange('None');
         let showConnectorPanel = false;
@@ -205,6 +214,7 @@ export class DiagramClientSideEvents {
             }
         }
     }
+    // To update the property panels and Tool bar for single selected items in the diagram.
     singleSelectionSettings(selectedObject) {
         let object = null;
         if (selectedObject instanceof Node) {
@@ -250,6 +260,7 @@ export class DiagramClientSideEvents {
             }
         }
     }
+    //To customize and control the items displayed in the context menu based on the selected diagram elements.
     contextMenuOpen(args){
         let diagram = this.selectedItem.selectedDiagram;
         // this.selectedItem.utilityMethods.updateContextMenuSelection(false, args, diagram);
@@ -435,6 +446,7 @@ export class DiagramClientSideEvents {
         args.hiddenItems = hiddenId;
         diagram.dataBind();
     };
+    //Performs the action based on the selected context menu option
     contextMenuClick(args){
         let diagram = this.selectedItem.selectedDiagram;
         if (diagram.selectedItems.nodes.length > 0) {
@@ -568,19 +580,26 @@ export class DiagramClientSideEvents {
         diagram.dataBind();
       
     }
-    
+    //Triggers when a node/connector is added/removed to/from the diagram.
+    collectionChange(args){
+        if (args.state === 'Changed') {
+            this.selectedItem.isModified = true;
+        }
+    }
 }
 export class DiagramPropertyBinding {
     constructor(selectedItem, page) {
         this.selectedItem = selectedItem;
         this.page = page;
     }
+    //To update Page breaks in the diagram
     pageBreaksChange(args) {
         if (args.event) {
             this.selectedItem.pageSettings.pageBreaks = args.checked;
             this.selectedItem.selectedDiagram.pageSettings.showPageBreaks = args.checked;
         }
     }
+    //To update the Page  based on Dimension and Orientation of the diagram
     paperListChange(args) {
         if (args.element) {
             const diagram = this.selectedItem.selectedDiagram;
@@ -617,6 +636,7 @@ export class DiagramPropertyBinding {
             }
         }
     }
+    //To update the Height and Width of the Diagram
     pageDimensionChange(args) {
         if (args.event) {
             let pageWidth = Number(this.selectedItem.pageSettings.pageWidth);
@@ -649,6 +669,7 @@ export class DiagramPropertyBinding {
             }
         }
     }
+    //To update the Orientation of the Diagram
     pageOrientationChange(args) {
         if (args) {
             const target = args.currentTarget;
@@ -673,6 +694,7 @@ export class DiagramPropertyBinding {
             this.selectedItem.pageSettings.pageHeight = diagram.pageSettings.height;
         }
     }
+    //To update the Page Background color
     pageBackgroundChange1(args) {
         if (args.currentValue) {
             // const target: HTMLInputElement = args.targetHTMLInputElement; 
@@ -683,22 +705,27 @@ export class DiagramPropertyBinding {
             diagram.dataBind();
         }
     }
+    //To update position in the text Properties
     textPositionChange(args) {
         if (args.value !== null) {
             this.textPropertyChange('textPosition', args.value);
         }
     }
+    //To update style of the Text
     toolbarTextStyleChange(args) {
         this.textPropertyChange(args.item.tooltipText, false);
     }
+    //To align Paragraph Texts
     toolbarTextSubAlignChange(args) {
         const propertyName = args.item.tooltipText.replace(/[' ']/g, '');
         this.textPropertyChange(propertyName, propertyName);
     }
+    //To align Position of the Text
     toolbarTextAlignChange(args) {
         const propertyName = args.item.tooltipText.replace('Align ', '');
         this.textPropertyChange(propertyName, propertyName);
     }
+    //To update the Text Positoin Properties of the annotation in Node/Connector
     textPropertyChange(propertyName, propertyValue) {
         if (!this.selectedItem.preventPropertyChange) {
             const diagram = this.selectedItem.selectedDiagram;
@@ -753,6 +780,7 @@ export class DiagramPropertyBinding {
             }
         }
     }
+    //To update the Text Style and Alignment Properties of the annotation in Node/Connector
     updateTextProperties(propertyName, propertyValue, annotation) {
         // eslint-disable-next-line
         switch (propertyName) {
@@ -777,6 +805,7 @@ export class DiagramPropertyBinding {
                 break;
         }
     }
+    //To update Toolbar selection state
     updateToolbarState(toolbarName, isSelected, index) {
         let toolbarTextStyle = document.getElementById(toolbarName);
         if (toolbarTextStyle) {

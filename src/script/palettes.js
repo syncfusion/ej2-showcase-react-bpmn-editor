@@ -18,6 +18,7 @@
      getSymbolInfo(symbol) {
         return {description: {  overflow: 'visible', fontSize: 12, margin: { top: 10, left: 0, right: 0, bottom: 0 } } };
      }
+     //To set Node default values in Symbol palette
      setPaletteNodeDefaults(node) {
          node.width = 35;
          node.height = 55;
@@ -27,13 +28,15 @@
              { offset: { x: 1, y: 0.5 }, style: { fill: 'white' }, visibility: PortVisibility.Connect | PortVisibility.Hover, constraints: PortConstraints.Draw },
              { offset: { x: 0.5, y: 1 }, style: { fill: 'white' }, visibility: PortVisibility.Connect | PortVisibility.Hover, constraints: PortConstraints.Draw }
          ];
-         node.style.strokeColor = '#3A3A3A';
+        //  node.style.strokeColor = '#3A3A3A';
      }
+     //To set connector default values in Symbol palette
      setPaletteConnectorDefaults(connector) {
         connector.width = 30;
         connector.height = 50;
         connector.style.strokeColor = '#3A3A3A';
     }
+    // To get BPMN Shapes
     getBPMNShapes()
      {
          const symbols = [
