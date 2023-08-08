@@ -1128,7 +1128,7 @@ input[type="color"]::-moz-color-swatch {
 .db-text-input .e-numeric input.e-numerictextbox.e-input {
     border: none;
     margin-top: 5px;
-    margin-left: 3px;
+    margin-left: 1px;
 }
 
 .db-text-input .e-numeric input.e-numerictextbox.e-input:hover,

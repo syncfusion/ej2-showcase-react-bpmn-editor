@@ -6,7 +6,7 @@ import { DiagramClientSideEvents } from "./script/events";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
 import { ToolbarComponent, ItemsDirective, ItemDirective, ContextMenuComponent, ContextMenuSettingsModel } from '@syncfusion/ej2-react-navigations';
 import * as React from 'react';
-import { NumericTextBoxComponent, ColorPickerComponent, SliderComponent } from "@syncfusion/ej2-react-inputs";
+import { NumericTextBoxComponent, ColorPickerComponent, SliderComponent, TextBoxComponent } from "@syncfusion/ej2-react-inputs";
 import { Uploader } from '@syncfusion/ej2-react-inputs';
 import { RadioButtonComponent, ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
 import { DropDownListComponent, MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
@@ -1166,7 +1166,7 @@ class App extends React.Component {
           File Name
         </div>
         <div className="row db-dialog-child-prop-row">
-          <input type="text" id="exportfileName" value={this.UtilityMethods.fileName} />
+          <input type="text" id="exportfileName" />
         </div>
       </div>
       <div className="row db-dialog-prop-row">
