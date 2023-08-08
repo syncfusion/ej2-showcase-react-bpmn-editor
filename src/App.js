@@ -1006,7 +1006,7 @@ class App extends React.Component {
                         <ItemDirective prefixIcon="sf-icon-align-text-rignt tb-icons" tooltipText="Align Left" cssClass="tb-item-middle" />
                         <ItemDirective prefixIcon="sf-icon-align-text-top tb-icons" tooltipText="Align Bottom" cssClass="tb-item-middle" />
                         <ItemDirective prefixIcon="sf-icon-align-text-vertical-center tb-icons" tooltipText="Align Middle" cssClass="tb-item-middle" />
-                        <ItemDirective prefixIcon="sf-icon-align-text-top tb-icons" tooltipText="Align Top" cssClass="tb-item-end" />
+                        <ItemDirective prefixIcon="sf-icon-align-text-bottom tb-icons" tooltipText="Align Top" cssClass="tb-item-end" />
                       </ItemsDirective>
                     </ToolbarComponent>
                   </div>
