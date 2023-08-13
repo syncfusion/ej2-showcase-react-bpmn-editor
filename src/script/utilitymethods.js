@@ -481,6 +481,13 @@
              }
          }
      };
+     viewSelectionChange(diagram)
+     {
+        var items = (document.getElementById('btnViewMenu')).ej2_instances[0].items;
+        items[4].iconCss = diagram.pageSettings.showPageBreaks ? 'sf-icon-check-tick':'';
+        var showPageBreaks = document.getElementById('showPageBreaks').ej2_instances[0];
+        showPageBreaks.checked = diagram.pageSettings.showPageBreaks  ? true:false;
+     }
      //Returns the name of the Diagram
      fileName(){
         return document.getElementById('diagramName').innerHTML;

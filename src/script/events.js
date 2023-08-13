@@ -160,6 +160,7 @@ export class DiagramClientSideEvents {
         if (diagram.historyManager.redoStack.length > 0) {
             toolbarContainer.classList.add('db-redo');
         }
+        this.selectedItem.utilityMethods.viewSelectionChange(diagram);
     }
     // To update the property panels and Tool bar for multiple selected items in the diagram.
     multipleSelectionSettings(selectedItems) {

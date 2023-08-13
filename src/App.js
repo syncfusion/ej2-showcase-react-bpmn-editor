@@ -619,11 +619,11 @@ class App extends React.Component {
                     <ButtonComponent id="hide-properties" style={{ float: 'right', marginTop: "-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                   </div>
                   <div className="row db-prop-row">
-                    <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}></div>
+                    <div className="row db-prop-header-text" style={{ paddingTop: '10px',paddingBottom:"5px" }}>Format</div>
                     <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
                   </div>
                   <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}>Orientation</div>
-                  <div className="row db-prop-row" id="pageOrientation" style={{ paddingTop: '10px' }}>
+                  <div className="row db-prop-row" id="pageOrientation" >
                     <div className="col-xs-6 db-prop-col-style" style={{ marginRight: "0px", paddingTop: '10px' }}>
                       <ButtonComponent id="pagePortrait" isPrimary='true' isToggle="true" name='pageSettings' style={{ fontSize: '12px' }} iconCss="sf-icon-portrait" cssClass="e-flat e-primary" onClick={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Portrait" />
                     </div>
