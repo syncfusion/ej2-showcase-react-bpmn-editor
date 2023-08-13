@@ -137,7 +137,7 @@ input, button, select, textarea {
 
 .sidebar {
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     width: 212;
     left: 0px;
     height: calc(100% - 112px);
@@ -622,7 +622,7 @@ input, button, select, textarea {
 }
 
 #toolbarEditor .e-toolbar-items .e-toolbar-item.e-separator {
-    margin: 0px 0px 8px;
+    margin: 0px 0px 7px;
     /* width: calc((100% - 988px)/8); */
     background-color: #b5b5b5;
 }
@@ -631,10 +631,12 @@ input, button, select, textarea {
     border-right: 0px;
 }
 
+#toolbarNodeInsert {
+    width: 34px !important;
+}
 
 .db-property-editor-container .e-toolbar .e-toolbar-items .e-toolbar-item:not(.e-separator) {
     width: calc(100% / 3);
-    height: 45px;
 }
 
 .db-property-editor-container #toolbarTextAlignment .e-toolbar-items .e-toolbar-item:not(.e-separator) {
@@ -648,12 +650,9 @@ input, button, select, textarea {
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn,
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-dropdown-btn.e-btn {
     height: 100%;
-    /* margin: 0px 0px 6px; */
-    margin: -2px 0px 6px 0px;
-    /* margin: -7px 0px 5px 0px; */
+    margin: 0px 0px 6px;
     /* background: #ffffff;*/
     background: transparent;
-    margin: -2px 0px 6px 0px;
 }
 
 .e-toolbar .e-toolbar-items .e-toolbar-item .e-tbar-btn.e-btn {
@@ -855,9 +854,9 @@ input, button, select, textarea {
     color: #bababa;
 }
 
-/* .diagrambuilder-container.custom-diagram #toolbarEditor .db-theme-svg {
+.diagrambuilder-container.custom-diagram #toolbarEditor .db-theme-svg {
     background-image: url('Theme - Disable.svg');
-} */
+}
 
 /* Toolbar Disable - End */
 
@@ -1066,7 +1065,11 @@ input[type="color"]::-moz-color-swatch {
     border: none;
 }
 
-/* .db-color-container .e-btn,  */
+.db-color-container .e-btn
+{
+    padding: 2px 2px;
+}
+
 .db-text-container .e-btn {
     width: 100%;
     height: 100%;
@@ -1085,7 +1088,7 @@ input[type="color"]::-moz-color-swatch {
     width: 30px;
 }
 
-/* .db-color-container .e-btn .e-btn-icon, */
+.db-color-container .e-btn .e-btn-icon,
 .db-text-container .e-btn .e-btn-icon {
     font-size: 14px;
     margin-top: 0px;
@@ -1396,9 +1399,9 @@ input[type="color"]::-moz-color-swatch {
     border: none;
     background-position: center;
     margin-left: 5px;
-} */
+}
 
-/* .db-info-parent {
+.db-info-parent {
     float: left;
     background-image: url('./bpmn_images/Note.svg');
     background-color: white;
@@ -1664,9 +1667,6 @@ input.db-layer-edit {
 .e-colorpicker-wrapper {
     width: 100%;
     height: 100%;
-}
-.e-colorpicker-wrapper .e-split-btn-wrapper .e-split-colorpicker.e-split-btn .e-selected-color {	
-    margin-top:-3px;	
 }
 
 .e-split-btn-wrapper {
