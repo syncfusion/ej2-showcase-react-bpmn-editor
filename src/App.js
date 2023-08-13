@@ -766,7 +766,7 @@ class App extends React.Component {
                         <div className="col-xs-6 db-col-left">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent ref={fillColor => (this.fillColor = fillColor)} showButtons='false' type="color" mode="Palette" value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} id="nodeFillColor" />
+                              <ColorPickerComponent ref={fillColor => (this.fillColor = fillColor)} showButtons='' type="color" mode="Palette" value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} id="nodeFillColor" />
                             </div>
                           </div>
                         </div>
@@ -781,7 +781,7 @@ class App extends React.Component {
                         <div className="col-xs-4 db-col-right">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent type="color" mode="Palette" showButtons='false' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} change={gradientColorChange} />
+                              <ColorPickerComponent type="color" mode="Palette" showButtons='' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} change={gradientColorChange} />
                             </div>
                           </div>
                         </div>
@@ -810,7 +810,7 @@ class App extends React.Component {
                         <div className="col-xs-2 db-col-center">
                           <div className="db-color-container" style={{ width: "55px", height: "26px", marginLeft: "0px" }}>
                             <div className="db-color-input">
-                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='false' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
+                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
                             </div>
                           </div>
                         </div>
@@ -857,7 +857,7 @@ class App extends React.Component {
                     <div className="col-xs-4 db-col-left">
                       <div className="db-color-container" style={{ width: '77px', marginLeft: "18px" }}>
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={lineColor => this.lineColor = lineColor} showButtons="false" mode="Palette" type="color" id="lineColor" value={this.selectedItem.connectorProperties.lineColor} change={lineColorChange} />
+                          <ColorPickerComponent ref={lineColor => this.lineColor = lineColor} showButtons="" mode="Palette" type="color" id="lineColor" value={this.selectedItem.connectorProperties.lineColor} change={lineColorChange} />
                         </div>
                       </div>
                     </div>
@@ -872,7 +872,7 @@ class App extends React.Component {
                   </div>
                   <div className="row">
                     <div className="col-xs-6 db-col-left">
-                      <DropDownListComponent ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.borderStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
+                      <DropDownListComponent ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.lineStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
                     </div>
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
@@ -942,7 +942,7 @@ class App extends React.Component {
                       <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} value={this.selectedItem.connectorProperties.opacity} min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
-                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} type="text" readOnly={true} className="db-readonly-input" />
+                      <input id='connectorOpacitySliderText' type="text" readOnly={true} className="db-readonly-input" />
                     </div>
                   </div>
                 </div>
@@ -973,7 +973,7 @@ class App extends React.Component {
                     <div className="col-xs-4 db-col-right" id="textColorDiv" style={{ width: '75px', }}>
                       <div className="db-color-container">
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} showButtons='false' mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
+                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} showButtons='' mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
                         </div>
                       </div>
                     </div>
