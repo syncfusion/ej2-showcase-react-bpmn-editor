@@ -69,7 +69,7 @@ export let strokeWidthChange;
 export let fontOpacityChange;
 export let btnHyperLink;
 export let hyperlinkInsert;
-
+export let toolbarCreated;
 
 
 class App extends React.Component {
@@ -430,6 +430,7 @@ class App extends React.Component {
     beforeOpen = this.arrangeMenuBeforeOpen.bind(this);
     beforeClose = this.arrangeMenuBeforeClose.bind(this);
     menuclick = this.menuClick.bind(this);
+    toolbarCreated=this.toolbarCreated.bind(this);
     tooledit = this.toolbarEditorClick.bind(this);
     propertyPanel = this.propertyPanel.bind(this)
     zoomTemplate = this.zoomTemplate.bind(this);
@@ -527,19 +528,18 @@ class App extends React.Component {
           </div>
           <div className='db-toolbar-editor' >
             <div className='db-toolbar-container'>
-              <ToolbarComponent ref={toolbar => (this.toolbarEditor) = toolbar} id='toolbarEditor' overflowMode='Scrollable' clicked={tooledit}>
+              <ToolbarComponent ref={toolbar => (this.toolbarEditor) = toolbar} id='toolbarEditor' overflowMode='Scrollable' clicked={tooledit} created={toolbarCreated}>
                 <ItemsDirective>
 
                   <ItemDirective prefixIcon='sf-icon-undo tb-icons' tooltipText='Undo' cssClass='tb-item-start tb-item-undo' />
                   <ItemDirective prefixIcon="sf-icon-redo tb-icons" tooltipText="Redo" cssClass="tb-item-end tb-item-redo" />
                   <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' visible='false' />
+                  <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' />
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
                   <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-drawtools-dropdown-btn tb-custom-diagram-disable" />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
                   <ItemDirective type="Separator" />
                   <ItemDirective prefixIcon='sf-icon-group tb-icons' tooltipText='Group' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon="sf-icon-ungroup tb-icons" tooltipText="UnGroup" cssClass="tb-item-end" align='Center' />
                   <ItemDirective type="Separator" align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_left' tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_center' tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
@@ -817,7 +817,7 @@ class App extends React.Component {
                         <div className="col-xs-4 db-col-center" style={{ width: "70px", marginLeft: "25px" }}>
                           <div className="db-text-container" style={{ width: "70px" }}>
                             <div className="db-text-input">
-                              <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} style={{ width: "70px" }} id="nodeStrokeWidth" min={0} step={0.5} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
+                              <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} style={{ width: "70px" }} id="nodeStrokeWidth" min={0} step={0.5} format={"n0"} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
                             </div>
                           </div>
                         </div>
@@ -872,12 +872,12 @@ class App extends React.Component {
                   </div>
                   <div className="row">
                     <div className="col-xs-6 db-col-left">
-                      <DropDownListComponent ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.lineStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
+                      <DropDownListComponent popupWidth={'160px'} ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.lineStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
                     </div>
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} min={0.5} step={0.5} ref={lineWidth => this.lineWidth = lineWidth} value={this.selectedItem.connectorProperties.lineWidth} change={lineWidthChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} min={0.5} step={0.5} format={"n0"} ref={lineWidth => this.lineWidth = lineWidth} value={this.selectedItem.connectorProperties.lineWidth} change={lineWidthChange} />
                         </div>
                       </div>
                     </div>
@@ -897,7 +897,7 @@ class App extends React.Component {
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} ref={sourceSize => this.sourceSize = sourceSize} min={1} step={1} value={this.selectedItem.connectorProperties.sourceSize} change={sourceSizeChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} format={"n0"} ref={sourceSize => this.sourceSize = sourceSize} min={1} step={1} value={this.selectedItem.connectorProperties.sourceSize} change={sourceSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -917,7 +917,7 @@ class App extends React.Component {
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} ref={targetSize => this.targetSize = targetSize} min={1} step={1} value={this.selectedItem.connectorProperties.targetSize} change={targetSizeChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} format={"n0"} ref={targetSize => this.targetSize = targetSize} min={1} step={1} value={this.selectedItem.connectorProperties.targetSize} change={targetSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -929,7 +929,7 @@ class App extends React.Component {
                     <div className="col-xs-6 db-col-right" id="lineJumpSizeDiv" style={{ display: "none" }}>
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} ref={bridgeSize => this.bridgeSize = bridgeSize} min={1} step={1} value={this.selectedItem.connectorProperties.lineJumpSize} change={bridgeSizeChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} format={"n0"} ref={bridgeSize => this.bridgeSize = bridgeSize} min={1} step={1} value={this.selectedItem.connectorProperties.lineJumpSize} change={bridgeSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -961,7 +961,7 @@ class App extends React.Component {
                     <div className="col-xs-4 db-col-right">
                       <div className="db-text-container">
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: '75px' }} min={1} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
+                          <NumericTextBoxComponent style={{ width: '75px' }} min={1} format={"n0"} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -1415,9 +1415,13 @@ class App extends React.Component {
         break;
       case 'Group':
         diagram.group();
+        args.item.prefixIcon = 'sf-icon-ungroup';
+        args.item.tooltipText = 'UnGroup';
         break;
       case 'UnGroup':
         diagram.unGroup();
+        args.item.prefixIcon = 'sf-icon-group';
+        args.item.tooltipText = 'Group';
         break;
       case 'AlignLeft':
         diagram.align('Left');
@@ -1472,14 +1476,14 @@ class App extends React.Component {
   };
   //To remove the selected icon css on toolbar option selection change
   removeSelectedToolbarItem() {
-    var toolbarObj = document.getElementById("toolbarEditor").ej2_instances[0];
-    for (var i = 0; i < toolbarObj.items.length; i++) {
-      var item = toolbarObj.items[i];
+    var toolbarEditor = document.getElementById("toolbarEditor").ej2_instances[0];
+    for (var i = 0; i < toolbarEditor.items.length; i++) {
+      var item = toolbarEditor.items[i];
       if (item.cssClass.indexOf('tb-item-selected') !== -1) {
         item.cssClass = item.cssClass.replace(' tb-item-selected', '');
       }
     }
-    toolbarObj.dataBind();
+    toolbarEditor.dataBind();
     // document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
 
   };
@@ -1559,7 +1563,7 @@ class App extends React.Component {
   //function to enable draw connector tool
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
-    let toolbarObj = document.getElementById('toolbarEditor').ej2_instances[0];
+    let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
     diagram.drawingObject = { type: args.item.text }
     diagram.clearSelection();
     diagram.tool = DiagramTools.ContinuousDraw;
@@ -1568,7 +1572,7 @@ class App extends React.Component {
     diagram.dataBind();
     // var d=document.getElementById('btnDrawConnector').ej2_instances[0]
     // this.connectorbutton.classList.add("tb-item-selected")
-    toolbarObj.items[5].cssClass += ' tb-item-selected';
+    toolbarEditor.items[5].cssClass += ' tb-item-selected';
     setTimeout(() => {
       document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
     }, 10);
@@ -2127,6 +2131,13 @@ class App extends React.Component {
   nodeStrokeColorChange(args) {
     this.selectedItem.nodeProperties.strokeColor.value = args.currentValue.hex;
     this.selectedItem.nodePropertyChange({ propertyName: 'strokeColor', propertyValue: args });
+  }
+  toolbarCreated(){
+    this.selectedItem.toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
+    let c = document.getElementById('conTypeBtn');
+    if(this.selectedItem.toolbarEditor.items[5].cssClass.indexOf(' tb-item-selected')!==-1){
+       c.classList.add('tb-item-selected');
+    }
   }
 }
 

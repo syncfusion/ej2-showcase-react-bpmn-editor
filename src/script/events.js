@@ -22,15 +22,17 @@ export class DiagramClientSideEvents {
                 nodeContainer.classList.remove('connector');
                 if (selectedItems.length > 1) {
                     multiSelect = true;
-                    for(var i =7;i<=27;i++){
+                    for(var i =7;i<=26;i++){
                         toolbarEditor.items[i].visible = true;
                     }
                     this.multipleSelectionSettings(selectedItems);
+                    toolbarEditor.items[8].tooltipText = 'Group';
+                    toolbarEditor.items[8].prefixIcon = 'sf-icon-group';
                 }
                 else if (selectedItems.length === 1) {
                     multiSelect = false;
-                    for(var i=7;i<=27;i++){
-                        if(i<=18)
+                    for(var i=7;i<=26;i++){
+                        if(i<=17)
                         {
                             toolbarEditor.items[i].visible = false;
                         }
@@ -41,13 +43,15 @@ export class DiagramClientSideEvents {
                     }
                     if(selectedItems[0].children && selectedItems[0].children.length>0)
                     {
-                        toolbarEditor.items[9].visible = true;
+                        toolbarEditor.items[8].tooltipText = 'UnGroup';
+                        toolbarEditor.items[8].prefixIcon = 'sf-icon-ungroup';
+                        toolbarEditor.items[8].visible = true;
                     }
                     this.singleSelectionSettings(selectedItems[0]);
                 }
                 else {
                     this.selectedItem.utilityMethods.objectTypeChange('diagram');//diagram
-                    for(var i =7;i<=27;i++){
+                    for(var i =7;i<=26;i++){
                         toolbarEditor.items[i].visible = false;
                     } 
                 }
