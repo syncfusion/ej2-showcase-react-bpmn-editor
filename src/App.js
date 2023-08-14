@@ -538,25 +538,25 @@ class App extends React.Component {
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
                   <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-drawtools-dropdown-btn tb-custom-diagram-disable" />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
-                  <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-group tb-icons' tooltipText='Group' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective type="Separator" align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_left' tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_center' tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_right' tooltipText='AlignRight' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_top' tooltipText='AlignTop' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_middle' tooltipText='AlignMiddle' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_bottom' tooltipText='AlignBottom' cssClass='tb-item-end' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_vertical' tooltipText='Distribute Vertically' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal' tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective type="Separator" align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-send-to-back' tooltipText='Send To Back' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-bring-to-front' tooltipText='Bring To Front' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-send-backward' tooltipText='Send Backward' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-bring-forward' tooltipText='Bring Forward' cssClass='tb-item-end' align='Center' />
-                  <ItemDirective type="Separator" align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-lock' tooltipText='Lock' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-delete' tooltipText='Delete' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective type="Separator"visible={false} />
+                  <ItemDirective prefixIcon='sf-icon-group tb-icons' visible={false} tooltipText='Group' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective type="Separator" visible={false} align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_left' visible={false}  tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_center' visible={false} tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_right' visible={false} tooltipText='AlignRight' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_top' visible={false} tooltipText='AlignTop' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_middle' visible={false} tooltipText='AlignMiddle' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_bottom' visible={false} tooltipText='AlignBottom' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_vertical' visible={false} tooltipText='Distribute Vertically' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal'  visible={false} tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective type="Separator" visible={false} align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-send-to-back' visible={false} tooltipText='Send To Back' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-bring-to-front' visible={false} tooltipText='Bring To Front' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-send-backward' visible={false} tooltipText='Send Backward' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-bring-forward' visible={false} tooltipText='Bring Forward' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective type="Separator" visible={false} align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-lock' visible={false} tooltipText='Lock' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-delete'visible={false} tooltipText='Delete' cssClass='tb-item-end' align='Center' />
                   <ItemDirective type="Separator" />
                   <ItemDirective cssClass="tb-item-end tb-zoom-dropdown-btn" template={zoomTemplate} align='Right' />
 
@@ -620,7 +620,7 @@ class App extends React.Component {
                   </div>
                   <div className="row db-prop-row">
                     <div className="row db-prop-header-text" style={{ paddingTop: '10px',paddingBottom:"5px" }}>Format</div>
-                    <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
+                    <DropDownListComponent id='pageformat' ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
                   </div>
                   <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}>Orientation</div>
                   <div className="row db-prop-row" id="pageOrientation" >
@@ -1804,11 +1804,15 @@ class App extends React.Component {
         args.item.parentObj.items[1].iconCss = '';
         args.item.iconCss = 'sf-icon-check-tick';
         diagram.pageSettings.orientation = 'Landscape';
+        document.getElementById('pageLandscape').classList.add('e-active');
+        document.getElementById('pagePortrait').classList.remove('e-active');
         break;
       case 'Portrait':
         args.item.parentObj.items[0].iconCss = '';
         args.item.iconCss = 'sf-icon-check-tick';
         diagram.pageSettings.orientation = 'Portrait';
+        document.getElementById('pagePortrait').classList.add('e-active');
+        document.getElementById('pageLandscape').classList.remove('e-active');
         break;
       case 'Letter (8.5 in x 11 in)':
       case 'Legal (8.5 in x 14 in)':
@@ -1817,67 +1821,15 @@ class App extends React.Component {
       case 'A5 (148 mm x 210 mm)':
       case 'A6 (105 mm x 148 mm)':
       case 'Tabloid (279 mm x 432 mm)':
-        this.paperListChange(args, diagram)
+        this.diagramPropertyBinding.paperListChange(args, diagram)
+        this.diagramPropertyBinding.updateSelection(args.item);
         this.selectedItem.pageSettings.paperSize = args.item.value;
-        this.updateSelection(args.item);
+        var pageformat=document.getElementById('pageformat').ej2_instances[0];
+        pageformat.element.value=args.item.text;
         break;
     }
     diagram.dataBind();
   }
-  //To update the Paper Slection change
-  paperListChange(args, diagram) {
-    var value = args.item.value;
-    var paperSize = this.UtilityMethods.getPaperSize(value);
-    var pageWidth = paperSize.pageWidth;
-    var pageHeight = paperSize.pageHeight;
-    if (pageWidth && pageHeight) {
-      if (diagram.pageSettings.orientation === 'Portrait') {
-        if (pageWidth > pageHeight) {
-          var temp = pageWidth;
-          pageWidth = pageHeight;
-          pageHeight = temp;
-        }
-      }
-      else {
-        if (pageHeight > pageWidth) {
-          var temp = pageHeight;
-          pageHeight = pageWidth;
-          pageWidth = temp;
-        }
-      }
-      diagram.pageSettings.width = pageWidth;
-      diagram.pageSettings.height = pageHeight;
-    }
-    else {
-      diagram.pageSettings.width = 1460;
-      diagram.pageSettings.height = 600;
-    }
-    let designContextMenu = document.getElementById('designContextMenu').ej2_instances[0];
-    this.updatePaperSelection(designContextMenu.items[1], args.item.value);
-    diagram.dataBind();
-  };
-  //To update the selected paper size icon based on the current value in a list of items.
-  updatePaperSelection(items, value) {
-    for (var i = 0; i < items.items.length; i++) {
-      if (value === items.items[i].value) {
-        items.items[i].iconCss = 'sf-icon-check-tick';
-      }
-      else {
-        items.items[i].iconCss = '';
-      }
-    }
-  };
-  // update the selection icon based on check and uncheck values of the Menubar Items.
-  updateSelection(item) {
-    for (var i = 0; i < item.parentObj.items.length; i++) {
-      if (item.text === item.parentObj.items[i].text) {
-        item.parentObj.items[i].iconCss = 'sf-icon-check-tick';
-      }
-      else {
-        item.parentObj.items[i].iconCss = '';
-      }
-    }
-  };
  
 
   //Function To save the diagram

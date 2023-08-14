@@ -610,8 +610,8 @@ export class DiagramPropertyBinding {
             const diagram = this.selectedItem.selectedDiagram;
             document.getElementById('pageDimension').style.display = 'none';
             document.getElementById('pageOrientation').style.display = '';
-            this.selectedItem.pageSettings.paperSize = args.value;
-            const paperSize = this.selectedItem.utilityMethods.getPaperSize(this.selectedItem.pageSettings.paperSize);
+            var value = args.value || args.item.value;
+            const paperSize = this.selectedItem.utilityMethods.getPaperSize(value);
             let pageWidth = paperSize.pageWidth;
             let pageHeight = paperSize.pageHeight;
             if (pageWidth && pageHeight) {
@@ -631,16 +631,41 @@ export class DiagramPropertyBinding {
                 }
                 diagram.pageSettings.width = pageWidth;
                 diagram.pageSettings.height = pageHeight;
-                this.selectedItem.pageSettings.pageWidth = pageWidth;
-                this.selectedItem.pageSettings.pageHeight = pageHeight;
                 diagram.dataBind();
             }
             else {
                 document.getElementById('pageOrientation').style.display = 'none';
                 document.getElementById('pageDimension').style.display = '';
+                diagram.pageSettings.width = 1460;
+                diagram.pageSettings.height = 600;
             }
+            let designContextMenu = document.getElementById('designContextMenu').ej2_instances[0];
+            this.updatePaperSelection(designContextMenu.items[1], args.value);
+            diagram.dataBind();
         }
     }
+    //To update the selected paper size icon based on the current value in a list of items.
+    updatePaperSelection(items, value) {
+        for (var i = 0; i < items.items.length; i++) {
+            if (value === items.items[i].value) {
+                items.items[i].iconCss = 'sf-icon-check-tick';
+            }
+            else {
+                items.items[i].iconCss = '';
+            }
+        }
+    };
+    // update the selection icon based on check and uncheck values of the Menubar Items.
+    updateSelection(item) {
+        for (var i = 0; i < item.parentObj.items.length; i++) {
+            if (item.text === item.parentObj.items[i].text) {
+                item.parentObj.items[i].iconCss = 'sf-icon-check-tick';
+            }
+            else {
+                item.parentObj.items[i].iconCss = '';
+            }
+        }
+    };
     //To update the Height and Width of the Diagram
     pageDimensionChange(args) {
         if (args.event) {
@@ -678,6 +703,8 @@ export class DiagramPropertyBinding {
     pageOrientationChange(args) {
         if (args) {
             const target = args.currentTarget;
+            var designContextMenu = document.getElementById('designContextMenu').ej2_instances[0];
+            var items = designContextMenu.items;
             const diagram = this.selectedItem.selectedDiagram;
             // eslint-disable-next-line
             switch (target.id) {
@@ -685,11 +712,15 @@ export class DiagramPropertyBinding {
                     this.selectedItem.pageSettings.isPortrait = true;
                     this.selectedItem.pageSettings.isLandscape = false;
                     diagram.pageSettings.orientation = 'Portrait';
+                    items[0].items[0].iconCss = '';
+                    items[0].items[1].iconCss = 'sf-icon-check-tick';
                     document.getElementById('pageLandscape').classList.remove('e-active');
                     break;
                 case 'pageLandscape':
                     this.selectedItem.pageSettings.isPortrait = false;
                     this.selectedItem.pageSettings.isLandscape = true;
+                    items[0].items[0].iconCss = 'sf-icon-check-tick';
+                    items[0].items[1].iconCss = '';
                     diagram.pageSettings.orientation = 'Landscape';
                     document.getElementById('pagePortrait').classList.remove('e-active');
                     break;
