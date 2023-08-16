@@ -116,7 +116,7 @@
          selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity + '%';
          selectedItem.connectorProperties.lineJumpSize.value = connector.bridgeSpace;
          selectedItem.connectorProperties.lineJump.value = connector.constraints ? true : false;
-         if (selectedItem.connectorProperties.lineJump.value) {
+         if (selectedItem.connectorProperties.lineJump.checked) {
              document.getElementById('lineJumpSizeDiv').style.display = '';
          }
          else {

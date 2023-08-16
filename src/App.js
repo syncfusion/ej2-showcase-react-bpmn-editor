@@ -685,7 +685,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetX => (this.nodeOffsetX = nodeOffsetX)} id="nodeOffsetX" format="n0"
-                              value={this.selectedItem.nodeProperties.offsetX}
+                              // value={this.selectedItem.nodeProperties.offsetX}
                               change={offsetXChange} />
                           </div>
                         </div>
@@ -923,7 +923,7 @@ class App extends React.Component {
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-6 db-col-left" style={{ marginTop: "5px" }}>
+                    <div className="col-xs-6 db-col-left">
                       <CheckBoxComponent ref={bridge => this.bridge = bridge} id='lineJump' label="Bridging" checked={this.selectedItem.connectorProperties.lineJump} change={bridgeChange} />
                     </div>
                     <div className="col-xs-6 db-col-right" id="lineJumpSizeDiv" style={{ display: "none" }}>
