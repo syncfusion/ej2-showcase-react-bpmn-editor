@@ -268,7 +268,7 @@ export class DiagramClientSideEvents {
     //To customize and control the items displayed in the context menu based on the selected diagram elements.
     contextMenuOpen(args){
         let diagram = this.selectedItem.selectedDiagram;
-        // this.selectedItem.utilityMethods.updateContextMenuSelection(false, args, diagram);
+        this.selectedItem.utilityMethods.updateContextMenuSelection(false, args, diagram);
         let hiddenId = [];
         if (args.element.className !== 'e-menu-parent e-ul ') {
             hiddenId = ['Copy', 'Paste', 'Cut', 'SelectAll', 'Delete', 'Adhoc', 'Loop', 'taskCompensation', 'Activity-Type', 'Boundry', 'DataObject',
@@ -447,7 +447,7 @@ export class DiagramClientSideEvents {
             }
 
         }
-        // this.selectedItem.utilityMethods.updateContextMenuSelection(true, args, diagram);
+        this.selectedItem.utilityMethods.updateContextMenuSelection(true, args, diagram);
         args.hiddenItems = hiddenId;
         diagram.dataBind();
     };
