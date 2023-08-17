@@ -27,6 +27,8 @@
          selectedItem.nodeProperties.opacity.value = node.style.opacity * 100;
          selectedItem.nodeProperties.opacityText = selectedItem.nodeProperties.opacity.value + '%';
          selectedItem.nodeProperties.aspectRatio = node.constraints & NodeConstraints.AspectRatio ? true : false;
+         let   aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
+         node.constraints & NodeConstraints.AspectRatio ? aspectRatioBtn.iconCss = 'sf-icon-lock': aspectRatioBtn.iconCss = 'sf-icon-unlock';
          selectedItem.nodeProperties.gradient = node.style.gradient.type !== 'None' ? true : false;
          const gradientElement = document.getElementById('gradientStyle');
          if (selectedItem.nodeProperties.gradient) {
