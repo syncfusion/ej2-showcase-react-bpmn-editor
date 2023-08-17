@@ -26,7 +26,7 @@
          selectedItem.nodeProperties.fillColor.value = this.getHexColor(node.style.fill);
          selectedItem.nodeProperties.opacity.value = node.style.opacity * 100;
          selectedItem.nodeProperties.opacityText = selectedItem.nodeProperties.opacity.value + '%';
-        //  selectedItem.nodeProperties.aspectRatio.checked = node.constraints & NodeConstraints.AspectRatio ? true : false;
+         selectedItem.nodeProperties.aspectRatio = node.constraints & NodeConstraints.AspectRatio ? true : false;
          selectedItem.nodeProperties.gradient = node.style.gradient.type !== 'None' ? true : false;
          const gradientElement = document.getElementById('gradientStyle');
          if (selectedItem.nodeProperties.gradient) {
@@ -233,24 +233,30 @@
      //to enable Menu bar Items
      enableMenuItems(itemText, selectedItem) {
          if (selectedItem && selectedItem.selectedDiagram) {
+            var diagram = selectedItem.selectedDiagram;
              let selectedItems = selectedItem.selectedDiagram.selectedItems.nodes;
              selectedItems = selectedItems.concat(selectedItem.selectedDiagram.selectedItems.connectors);
              if (itemText) {
-                //  const commandType = itemText.replace(/[' ']/g, '');
-                 if (selectedItem.pasteData.length === 0 && itemText === 'Paste') {
-                     return true;
-                 }
+                var commandType = itemText.replace(/[' ']/g, '');
+                if (selectedItems.length === 0) {
+                    switch (commandType.toLowerCase()) {
+                        case 'cut':
+                            return true;
+                        case 'copy':
+                            return true;
+                        case 'delete':
+                            return true;
+                    }
+                }
+                if (!(diagram.commandHandler.clipboardData.pasteIndex !== undefined
+                    && diagram.commandHandler.clipboardData.clipObject !==undefined) && itemText === 'Paste') {
+                    return true;
+                }
                  if (itemText === 'Undo' && selectedItem.selectedDiagram.historyManager.undoStack.length === 0) {
                      return true;
                  }
                  if (itemText === 'Redo' && selectedItem.selectedDiagram.historyManager.redoStack.length === 0) {
                      return true;
-                 }
-                 if (selectedItem.diagramType !== 'GeneralDiagram') {
-                     if ( itemText === 'Paste' || itemText === 'Show Rulers' || itemText === 'Show Guides'
-                         || itemText === 'Show Grid' || itemText === 'Snap To Grid') {
-                         return true;
-                     }
                  }
              }
          }
@@ -489,8 +495,8 @@
         showPageBreaks.checked = diagram.pageSettings.showPageBreaks  ? true:false;
      }
      //Returns the name of the Diagram
-     fileName(){
-        return document.getElementById('diagramName').innerHTML;
-    }
+     fileName() {
+         return document.getElementById('diagramName').innerHTML;
+     }
      
  }

@@ -568,6 +568,9 @@ input, button, select, textarea {
     line-height: 24px;
     font-size: 12px;
 }
+.designMenu .e-contextmenu.e-menu-parent{
+    width: auto!important;
+}
 
 .e-contextmenu-wrapper ul .e-menu-item.e-focused,
 .e-dropdown-popup ul .e-item:hover {

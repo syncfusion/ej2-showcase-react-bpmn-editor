@@ -145,12 +145,83 @@ export class DiagramClientSideEvents {
             this.selectedItem.isModified = true;
         }
     }
+    userHandleClick = function(args)
+    {
+        var diagram = document.getElementById("diagram").ej2_instances[0];
+        switch(args.element.name)
+        {
+            case 'Delete':
+                diagram.remove();
+                break;
+            case 'Clone':
+               diagram.paste(diagram.selectedItems.selectedObjects);
+               break;
+            case 'Draw':
+                if(diagram.drawingObject !== undefined){
+                diagram.drawingObject.shape = {};
+                diagram.drawingObject.type = diagram.drawingObject.type?diagram.drawingObject.type:'Orthogonal';
+                diagram.drawingObject.sourceID = this.drawingNode.id;
+                diagram.dataBind();
+                }
+                else{
+                    diagram.drawingObject = {type:'Orthogonal', sourceID: this.drawingNode.id,shape:{type:'Bpmn',sequence:'Normal'}};
+                }
+                break;
+        }
+    }
     //Triggers when a symbol is dragged into diagram from symbol palette
     dragEnter(args) {
         const obj = args.element;
         const ratio = 100 / obj.width;
         obj.width = 100;
         obj.height *= ratio;
+        if(args.element.type === 'Straight')
+            {
+                if(args.element.sourceDecorator && args.element.style.strokeDashArray === '4 4'){
+                    args.element.shape = {
+                        type: 'Bpmn',
+                        flow: 'Message',
+                        message: 'Default'
+                            }
+                }  
+            }
+            else if(args.element.shape.shape === 'Activity')
+            {
+                if(args.element.shape.activity.activity === 'Task')
+                {
+                    args.element.width = 96; args.element.height = 72;
+                }
+                else if(args.element.shape.activity.activity === 'SubProcess')
+                {
+                    if(args.element.shape.activity.subProcess.collapsed)
+                    {
+                    args.element.width = 96; args.element.height = 72;
+                    }
+                    else{
+                    args.element.width = 576; args.element.height = 384;
+                    }
+                }
+            }
+            else if(args.element.shape.shape === 'Event')
+            {
+                args.element.width = 50; args.element.height = 50;
+            }
+            else if(args.element.shape.shape === 'Gateway')
+            {
+                args.element.width = 60; args.element.height = 60;
+            }
+            else if(args.element.shape.shape === 'Message')
+            {
+                args.element.width = 72; args.element.height = 48;
+            }
+            else if(args.element.shape.shape === 'DataObject')
+            {
+                args.element.width = 48; args.element.height = 63;
+            }
+            else if(args.element.shape.shape === 'DataSource')
+            {
+                args.element.width = 96; args.element.height = 72;
+            }
     }
     //To enable or disable undo/redo options in toolbar
     historyChange(args) {
@@ -164,8 +235,10 @@ export class DiagramClientSideEvents {
         if (diagram.historyManager.redoStack.length > 0) {
             toolbarContainer.classList.add('db-redo');
         }
-        this.selectedItem.utilityMethods.viewSelectionChange(diagram);
-    }
+        if (this.selectedItem) {
+            this.selectedItem.utilityMethods.viewSelectionChange(diagram);
+        }
+        }      
     // To update the property panels and Tool bar for multiple selected items in the diagram.
     multipleSelectionSettings(selectedItems) {
         this.selectedItem.utilityMethods.objectTypeChange('None');
@@ -271,57 +344,66 @@ export class DiagramClientSideEvents {
         this.selectedItem.utilityMethods.updateContextMenuSelection(false, args, diagram);
         let hiddenId = [];
         if (args.element.className !== 'e-menu-parent e-ul ') {
-            hiddenId = ['Copy', 'Paste', 'Cut', 'SelectAll', 'Delete', 'Adhoc', 'Loop', 'taskCompensation', 'Activity-Type', 'Boundry', 'DataObject',
-                'collection', 'DeftCall', 'TriggerResult', 'EventType', 'TaskType', 'GateWay', 'TextAnnotation','Association','Sequence','MessageFlow','Condition type','Direction','MessageType'];
+            hiddenId = ['Adhoc', 'Loop', 'taskCompensation', 'Activity-Type', 'Boundary', 'DataObject',
+                'collection', 'DeftCall', 'TriggerResult', 'EventType', 'TaskType', 'GateWay','Copy','Paste','Cut','SelectAll','Delete',
+            'Association','Sequence','MessageFlow','Condition type','Direction','MessageType','TextAnnotation'];
         }
         for (var i = 0; i < args.items.length; i++) {
-            if (args.items[i].text === 'Paste') {
-                if (diagram.commandHandler.clipboardData.pasteIndex !== undefined
-                    && diagram.commandHandler.clipboardData.clipObject !== undefined) {
-                    hiddenId.splice(hiddenId.indexOf(args.items[i].id), 1);
-                }
+            if(args.items[i].text === 'Paste')
+            {
+                if(diagram.commandHandler.clipboardData.pasteIndex !== undefined
+                    && diagram.commandHandler.clipboardData.clipObject !==undefined){
+                        hiddenId.splice(hiddenId.indexOf(args.items[i].id), 1);
+                        
+                    }
             }
-            if (args.items[i].text === 'Select All') {
-                if ((diagram.nodes.length || diagram.connectors.length)) {
+            if(args.items[i].text === 'Select All')
+            {
+                if((diagram.nodes.length || diagram.connectors.length))
+                {
                     hiddenId.splice(hiddenId.indexOf(args.items[i].id), 1);
                 }
             }
             var canAllow = false;
-            if (diagram.selectedItems.nodes.length && (diagram.selectedItems.nodes[0].shape) !== 'TextAnnotation') {
-                if (diagram.selectedItems.nodes[0].children === undefined) {
+            if(diagram.selectedItems.nodes.length && diagram.selectedItems.nodes[0].shape.shape !== 'TextAnnotation'){
+                if(diagram.selectedItems.nodes[0].children === undefined ){
                     canAllow = true;
                 }
-                else {
+                else{
                     var item = args.items[i];
-                    if (item.text === 'Cut' || item.text === 'Copy' || item.text === 'Delete') {
-                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                    }
+                    if(item.text === 'Cut' || item.text === 'Copy' || item.text === 'Delete')
+                        {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        } 
                 }
             }
-            if (diagram.selectedItems.connectors.length && !(diagram.selectedItems.connectors[0].targetID.includes('newAnnotation'))) {
+            if( diagram.selectedItems.connectors.length && !(diagram.selectedItems.connectors[0].targetID.includes('newAnnotation'))){
                 canAllow = true;
             }
-            let selectedObjects = diagram.selectedItems.nodes.concat(diagram.selectedItems.connectors);
+            var selectedObjects = diagram.selectedItems.nodes.concat(diagram.selectedItems.connectors);
             if ((diagram.selectedItems.nodes.length || diagram.selectedItems.connectors.length) && canAllow && selectedObjects.length === 1) {
-                var item = args.items[i];
-                    if (item.text === 'Cut' || item.text === 'Copy' || item.text === 'Delete') {
-                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                    }
-                    if (diagram.selectedItems.nodes.length < 1 && diagram.selectedItems.connectors.length) {
-                        if ((diagram.selectedItems.connectors[0].shape).type === 'Bpmn') {
-                            if (item.text === 'Association' && ((diagram.selectedItems.connectors[0].shape)).flow === 'Association') {
+                
+                    var item = args.items[i];
+                    if(diagram.selectedItems.nodes.length< 1 && diagram.selectedItems.connectors.length)
+                    {
+                        if(diagram.selectedItems.connectors[0].shape && diagram.selectedItems.connectors[0].shape.type === 'Bpmn')
+                        {
+                            if(item.text === 'Association' && diagram.selectedItems.connectors[0].shape.flow === 'Association')
+                            {
                                 hiddenId.splice(hiddenId.indexOf('Sequence'), 1);
                                 hiddenId.splice(hiddenId.indexOf('MessageFlow'), 1);
                                 hiddenId.splice(hiddenId.indexOf('Association'), 1);
                                 hiddenId.splice(hiddenId.indexOf('Direction'), 1);
                             }
-                            else if (item.text === 'Sequence' && ((diagram.selectedItems.connectors[0].shape)).flow === 'Sequence') {
+                            else if(item.text === 'Sequence' && diagram.selectedItems.connectors[0].shape.flow === 'Sequence')
+                            {
                                 hiddenId.splice(hiddenId.indexOf('Association'), 1);
                                 hiddenId.splice(hiddenId.indexOf('MessageFlow'), 1);
                                 hiddenId.splice(hiddenId.indexOf('Sequence'), 1);
                                 hiddenId.splice(hiddenId.indexOf('Condition type'), 1);
                             }
-                            else if (item.text === 'Message Flow' && ((diagram.selectedItems.connectors[0].shape)).flow === 'Message') {
+                            else if(item.text === 'Message Flow' && diagram.selectedItems.connectors[0].shape.flow === 'Message')
+                            {
                                 hiddenId.splice(hiddenId.indexOf('Association'), 1);
                                 hiddenId.splice(hiddenId.indexOf('Sequence'), 1);
                                 hiddenId.splice(hiddenId.indexOf('MessageFlow'), 1);
@@ -329,123 +411,90 @@ export class DiagramClientSideEvents {
                             }
                         }
                     }
-                    if (diagram.selectedItems.nodes.length) {
-                            let bpmnShape = diagram.selectedItems.nodes[0].shape;
-                            if (bpmnShape.type !== 'Text') {
-                                if (bpmnShape.shape !== 'DataObject' && bpmnShape.shape !== 'Gateway') {
-                                    if (item.text === 'Ad-Hoc') {
-                                        if (bpmnShape.activity.activity === 'SubProcess') {
-                                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                        }
-                                    }
-                                    if (item.text === 'Loop' || item.text === 'Compensation' || item.text === 'Activity-Type') {
-                                        if (bpmnShape.shape === 'Activity') {
-                                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                        }
-                                    }
-                                    if (item.text === 'Boundry') {
-                                        if (bpmnShape.activity.activity === 'SubProcess') {
-                                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                        }
-                                    }
-                                }
-                                if (item.text === 'Add Text Annotation') {
-                                    if (diagram.selectedItems.nodes.length && (diagram.selectedItems.nodes[0].shape).shape !== 'Message' && (diagram.selectedItems.nodes[0].shape).shape !== 'DataSource') {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'Data Object') {
-                                    if (bpmnShape.shape === 'DataObject') {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'Collection') {
-                                    if (bpmnShape.shape === 'DataObject') {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'Call') {
-                                    if (bpmnShape.shape === 'Activity' && bpmnShape.activity.activity === 'Task') {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'Trigger Result') {
-                                    if ((bpmnShape.shape === 'Event')) {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'Event Type') {
-                                    if ((bpmnShape.shape === 'Event')) {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'Task Type') {
-                                    if ((bpmnShape.shape === 'Activity')
-                                        && (bpmnShape.activity.activity === 'Task')) {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (item.text === 'GateWay') {
-                                    if ((bpmnShape.shape === 'Gateway')) {
-                                        hiddenId.splice(hiddenId.indexOf(item.id), 1);
-                                    }
-                                }
-                                if (args.parentItem && args.parentItem.id === 'TriggerResult' && bpmnShape.shape === 'Event') {
-
-                                    if (item.text !== 'None' && (item.text === bpmnShape.event.event || item.text === bpmnShape.event.trigger)) {
-                                        hiddenId.push(item.id);
-                                    }
-                                    if (bpmnShape.event.event === 'Start') {
-                                        if (item.text === 'Cancel' || item.text === 'Terminate' || item.text === 'Link') {
-                                            hiddenId.push(item.id);
-                                        }
-                                    }
-                                    if (bpmnShape.event.event === 'NonInterruptingStart' || item.text === 'Link') {
-                                        if (item.text === 'Cancel' || item.text === 'Terminate' || item.text === 'Compensation' ||
-                                            item.text === 'Error' || item.text === 'None') {
-                                            hiddenId.push(item.id);
-                                        }
-                                    }
-                                    if (bpmnShape.event.event === 'Intermediate') {
-                                        if (item.text === 'Terminate') {
-                                            hiddenId.push(item.id);
-                                        }
-                                    }
-                                    if (bpmnShape.event.event === 'NonInterruptingIntermediate') {
-                                        if (item.text === 'Cancel' || item.text === 'Terminate' || item.text === 'Compensation' ||
-                                            item.text === 'Error' || item.text === 'None' || item.text === 'Link') {
-                                            hiddenId.push(item.id);
-                                        }
-                                    }
-                                    if (bpmnShape.event.event === 'ThrowingIntermediate') {
-                                        if (item.text === 'Cancel' || item.text === 'Terminate' || item.text === 'Timer' || item.text === 'Error' ||
-                                            item.text === 'None' || item.text === 'Pareller' || item.text === 'Conditional') {
-                                            hiddenId.push(item.id);
-                                        }
-                                    }
-                                    if (bpmnShape.event.event === 'End') {
-                                        if (item.text === 'Parallel' || item.text === 'Timer' || item.text === 'Conditional' || item.text === 'Link') {
-                                            hiddenId.push(item.id);
-                                        }
-                                    }
-                                }
-                                if (args.parentItem && args.parentItem.id === 'EventType' && bpmnShape.shape === 'Event') {
-                                    if (item.text === bpmnShape.event.event) {
-                                        hiddenId.push(item.id);
-                                    }
-                                }
+                    
+                    if(item.text === 'Cut' || item.text === 'Copy' || item.text === 'Delete')
+                        {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }    
+    
+                    if(diagram.selectedItems.nodes.length){
+                    var bpmnShape = diagram.selectedItems.nodes[0].shape;
+                    if(bpmnShape.type !== 'Text'){
+                    if (bpmnShape.shape !== 'DataObject' && bpmnShape.shape !== 'Gateway') {
+                        if (item.text === 'Ad-Hoc') {
+                            if (bpmnShape.activity.activity === 'SubProcess') {
+                                hiddenId.splice(hiddenId.indexOf(item.id), 1);
                             }
+                        }
+                        if (item.text === 'Loop' || item.text === 'Compensation') {
+                            if (bpmnShape.shape === 'Activity') {
+                                hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                            }
+                        }
+                        if (item.text === 'Activity-Type') {
+                            if (bpmnShape.shape === 'Activity' && (bpmnShape.activity.activity === 'Task' || (bpmnShape.activity.activity === 'SubProcess' && bpmnShape.activity.subProcess.collapsed))) {
+                                hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                            }
+                        }
+                        if (item.text === 'Boundary') {
+                            if ((bpmnShape.activity.activity === 'SubProcess')) {
+                                hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                            }
+                        }
                     }
-                
-            }
-            else if (selectedObjects.length > 1) {
-                let item = args.items[i];
-                if (item.text === 'Cut' || item.text === 'Copy' || item.text === 'Delete') {
-                    if (hiddenId.indexOf(item.id) > -1)
+                    if(item.text === 'Add Text Annotation'){
+                        if(diagram.selectedItems.nodes.length && diagram.selectedItems.nodes[0].shape.shape !== 'Message' && diagram.selectedItems.nodes[0].shape.shape !== 'DataSource'){
                         hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'Data Object') {
+                        if ((bpmnShape.shape === 'DataObject')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'Collection') {
+                        if ((bpmnShape.shape === 'DataObject')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'Task Call') {
+                        if ((bpmnShape.shape === 'Activity') &&
+                            (bpmnShape.activity.activity === 'Task')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'Trigger Result') {
+                        if ((bpmnShape.shape === 'Event')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'Event Type') {
+                        if ((bpmnShape.shape === 'Event')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'Task Type') {
+                        if ((bpmnShape.shape === 'Activity') &&
+                            (bpmnShape.activity.activity === 'Task')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
+                    if (item.text === 'GateWay') {
+                        if ((bpmnShape.shape === 'Gateway')) {
+                            hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                        }
+                    }
                 }
             }
-
+            }
+            else if(selectedObjects.length>1){
+                let item = args.items[i];
+                if(item.text === 'Cut' || item.text === 'Copy' || item.text === 'Delete')
+                {
+                    if(hiddenId.indexOf(item.id)>-1)
+                    hiddenId.splice(hiddenId.indexOf(item.id), 1);
+                }
+            }
         }
         this.selectedItem.utilityMethods.updateContextMenuSelection(true, args, diagram);
         args.hiddenItems = hiddenId;
