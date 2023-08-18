@@ -177,8 +177,17 @@ export class DropDownDataSources {
     }
     getToolsMenuItems() {
         const menuItems = [
-            { text: 'Selection Tool',iconCss: 'sf-icon-pointer' },
+            { text: 'Selection Tool', iconCss: 'sf-icon-pointer' },
             { text: 'Pan Tool', iconCss: 'sf-icon-pan tb-icons' },
+            { separator: true },
+            {
+                text: 'Connector Tool', iconCss: 'sf-icon-orthogonal_line',
+                items: [
+                    { text: 'Straight', iconCss: 'sf-icon-straight_line' },
+                    { text: 'Orthogonal', iconCss: 'sf-icon-orthogonal_line' },
+                    { text: 'Bezier', iconCss: 'sf-icon-bezier' },
+                ]
+            }
         ];
         return menuItems;
     }

@@ -1,5 +1,5 @@
 import { createElement, closest, formatUnit } from "@syncfusion/ej2-base";
-import { DiagramComponent,SymbolPaletteComponent, DiagramAction, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
+import { DiagramComponent, SymbolPaletteComponent, DiagramAction, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
 import { Diagram, SnapConstraints, ControlPointsVisibility, BezierSmoothness } from "@syncfusion/ej2-react-diagrams";
 import { DropDownButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
 import { DiagramClientSideEvents } from "./script/events";
@@ -16,7 +16,7 @@ import { DiagramPropertyBinding } from './script/events';
 import { SelectorViewModel } from "./script/selector";
 import { UtilityMethods } from "./script/utilitymethods";
 Diagram.Inject(UndoRedo, DiagramContextMenu, Snapping, DataBinding);
-Diagram.Inject(PrintAndExport, BpmnDiagrams,ConnectorBridging, LayoutAnimation);
+Diagram.Inject(PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation);
 SymbolPalette.Inject(BpmnDiagrams);
 
 
@@ -77,6 +77,7 @@ class App extends React.Component {
     super(props);
     this.animationSettings = { effect: 'None' };
     this.dropdownListFields = { text: 'text', value: 'value' };
+    this.drawingNode="";
     this.pageSettings = {
       background: { color: '#FFFFFF' }, width: 600, height: 1460, margin: { left: 5, top: 5 },
       orientation: 'Landscape', showPageBreaks: false,
@@ -265,138 +266,138 @@ class App extends React.Component {
       show: true,
       items: [
         {
-            text: 'Copy', id: 'Copy', target: '.e-diagramcontent', iconCss: 'sf-icon-copy'
+          text: 'Copy', id: 'Copy', target: '.e-diagramcontent', iconCss: 'sf-icon-copy'
         },
         {
-            text: 'Cut', id: 'Cut', target: '.e-diagramcontent', iconCss: 'sf-icon-cut'
+          text: 'Cut', id: 'Cut', target: '.e-diagramcontent', iconCss: 'sf-icon-cut'
         },
         {
-            text: 'Paste', id: 'Paste', target: '.e-diagramcontent', iconCss: 'sf-icon-paste'
+          text: 'Paste', id: 'Paste', target: '.e-diagramcontent', iconCss: 'sf-icon-paste'
         },
         {
-            text: 'Delete', id: 'Delete', target: '.e-diagramcontent', iconCss: 'sf-icon-delete'
+          text: 'Delete', id: 'Delete', target: '.e-diagramcontent', iconCss: 'sf-icon-delete'
         },
         {
-            text: 'Select All', id: 'SelectAll', target: '.e-diagramcontent', iconCss: 'e-menu-icon'
+          text: 'Select All', id: 'SelectAll', target: '.e-diagramcontent', iconCss: 'e-menu-icon'
         },
         {
-            text: 'Association', id: 'Association',iconCss:'e-bpmn-icons' 
+          text: 'Association', id: 'Association', iconCss: 'e-bpmn-icons'
         },
         {
-            text: 'Sequence', id: 'Sequence',iconCss:'e-bpmn-icons' 
+          text: 'Sequence', id: 'Sequence', iconCss: 'e-bpmn-icons'
         },
         {
-            text: 'Message Flow', id: 'MessageFlow',iconCss:'e-bpmn-icons' 
+          text: 'Message Flow', id: 'MessageFlow', iconCss: 'e-bpmn-icons'
         },
         {
-            text: 'Condition type', id: 'Condition type', items: [
-                    {text: 'Default', id: 'None',iconCss:'e-bpmn-icons'}, {text: 'Conditional', id: 'Conditional Flow',iconCss:'e-bpmn-icons'},
-                    {text: 'Normal', id: 'Normal Flow',iconCss:'e-bpmn-icons'},
-            ]
+          text: 'Condition type', id: 'Condition type', items: [
+            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' }, { text: 'Conditional', id: 'Conditional Flow', iconCss: 'e-bpmn-icons' },
+            { text: 'Normal', id: 'Normal Flow', iconCss: 'e-bpmn-icons' },
+          ]
         },
         {
-            text: 'Direction', id: 'Direction', items: [
-                    {text: 'Default', id: 'None',iconCss:'e-bpmn-icons'}, {text: 'Directional', id: 'Directional',iconCss:'e-bpmn-icons'},
-                    {text: 'Bi-Directional', id: 'BiDirectional',iconCss:'e-bpmn-icons'},
-            ]
+          text: 'Direction', id: 'Direction', items: [
+            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' }, { text: 'Directional', id: 'Directional', iconCss: 'e-bpmn-icons' },
+            { text: 'Bi-Directional', id: 'BiDirectional', iconCss: 'e-bpmn-icons' },
+          ]
         },
         {
-            text: 'Ad-Hoc', id: 'Adhoc',
-            iconCss: 'e-adhocs e-bpmn-icons e-adhoc',
+          text: 'Ad-Hoc', id: 'Adhoc',
+          iconCss: 'e-adhocs e-bpmn-icons e-adhoc',
         }, {
-            text: 'Loop', id: 'Loop',
-            items: [{ text: 'None', iconCss: 'e-loop e-bpmn-icons e-None', id: 'LoopNone' },
-            { text: 'Standard', iconCss: 'e-loop e-bpmn-icons e-Loop', id: 'Standard' },
-            { text: 'Parallel Multi-Instance', iconCss: 'e-loop e-bpmn-icons e-ParallelMI', id: 'ParallelMultiInstance' },
-            { text: 'Sequence Multi-Instance', iconCss: 'e-loop e-bpmn-icons e-SequentialMI', id: 'SequenceMultiInstance' }]
+          text: 'Loop', id: 'Loop',
+          items: [{ text: 'None', iconCss: 'e-loop e-bpmn-icons e-None', id: 'LoopNone' },
+          { text: 'Standard', iconCss: 'e-loop e-bpmn-icons e-Loop', id: 'Standard' },
+          { text: 'Parallel Multi-Instance', iconCss: 'e-loop e-bpmn-icons e-ParallelMI', id: 'ParallelMultiInstance' },
+          { text: 'Sequence Multi-Instance', iconCss: 'e-loop e-bpmn-icons e-SequentialMI', id: 'SequenceMultiInstance' }]
         }, {
-            text: 'Compensation', id: 'taskCompensation',
-            iconCss: 'e-compensation e-bpmn-icons e-Compensation',
+          text: 'Compensation', id: 'taskCompensation',
+          iconCss: 'e-compensation e-bpmn-icons e-Compensation',
         }, {
-            text: 'Activity-Type', id: 'Activity-Type',
-            items: [{ iconCss: 'e-bpmn-icons e-Task', text: 'Task', id: 'Task' }
-                ,{ text: 'Collapsed sub-process', iconCss: 'e-bpmn-icons e-SubProcess', id: 'SubProcess' },
-            ]
+          text: 'Activity-Type', id: 'Activity-Type',
+          items: [{ iconCss: 'e-bpmn-icons e-Task', text: 'Task', id: 'Task' }
+            , { text: 'Collapsed sub-process', iconCss: 'e-bpmn-icons e-SubProcess', id: 'SubProcess' },
+          ]
         }, {
-            text: 'Boundary', id: 'Boundary',
-            items: [{ text: 'Default', iconCss: 'e-boundry e-bpmn-icons e-Default', id: 'Default' },
-            { text: 'Call', iconCss: 'e-boundry e-bpmn-icons e-Call', id: 'BoundryCall' },
-            { text: 'Event', iconCss: 'e-boundry e-bpmn-icons e-Event', id: 'BoundryEvent' },]
+          text: 'Boundary', id: 'Boundary',
+          items: [{ text: 'Default', iconCss: 'e-boundry e-bpmn-icons e-Default', id: 'Default' },
+          { text: 'Call', iconCss: 'e-boundry e-bpmn-icons e-Call', id: 'BoundryCall' },
+          { text: 'Event', iconCss: 'e-boundry e-bpmn-icons e-Event', id: 'BoundryEvent' },]
         }, {
-            text: 'Data Object', id: 'DataObject',
-            items: [{ text: 'None', iconCss: 'e-data e-bpmn-icons e-None', id: 'DataObjectNone' },
-            { text: 'Input', iconCss: 'e-data e-bpmn-icons e-DataInput', id: 'Input' },
-            { text: 'Output', iconCss: 'e-data e-bpmn-icons e-DataOutput', id: 'Output' }]
+          text: 'Data Object', id: 'DataObject',
+          items: [{ text: 'None', iconCss: 'e-data e-bpmn-icons e-None', id: 'DataObjectNone' },
+          { text: 'Input', iconCss: 'e-data e-bpmn-icons e-DataInput', id: 'Input' },
+          { text: 'Output', iconCss: 'e-data e-bpmn-icons e-DataOutput', id: 'Output' }]
         }, {
-            text: 'Collection', id: 'collection',
-            iconCss: 'e-collection e-bpmn-icons e-ParallelMI',
+          text: 'Collection', id: 'collection',
+          iconCss: 'e-collection e-bpmn-icons e-ParallelMI',
         }, {
-            text: 'Task Call', id: 'DeftCall', 
-            iconCss: 'e-call e-bpmn-icons e-CallActivity', 
+          text: 'Task Call', id: 'DeftCall',
+          iconCss: 'e-call e-bpmn-icons e-CallActivity',
         }, {
-            text: 'Trigger Result', id: 'TriggerResult',
-            items: [{ text: 'None', id: 'TriggerNone', iconCss: 'e-trigger e-bpmn-icons e-None' },
-            { text: 'Message', id: 'Message', iconCss: 'e-trigger e-bpmn-icons e-InMessage' },
-            { text: 'Multiple', id: 'Multiple', iconCss: 'e-trigger e-bpmn-icons e-InMultiple' },
-            { text: 'Parallel', id: 'Parallel', iconCss: 'e-trigger e-bpmn-icons e-InParallelMultiple' },
-            { text: 'Signal', id: 'Signal', iconCss: 'e-trigger e-bpmn-icons e-InSignal' },
-            { text: 'Timer', id: 'Timer', iconCss: 'e-trigger e-bpmn-icons e-InTimer' },
-            { text: 'Cancel', id: 'Cancel', iconCss: 'e-trigger e-bpmn-icons e-CancelEnd' },
-            { text: 'Escalation', id: 'Escalation', iconCss: 'e-trigger e-bpmn-icons e-InEscalation' },
-            { text: 'Error', id: 'Error', iconCss: 'e-trigger e-bpmn-icons e-InError' },
-            { text: 'Compensation', id: 'triggerCompensation', iconCss: 'e-trigger e-bpmn-icons e-InCompensation' },
-            { text: 'Terminate', id: 'Terminate', iconCss: 'e-trigger e-bpmn-icons e-TerminateEnd' },
-            { text: 'Conditional', id: 'Conditional', iconCss: 'e-trigger e-bpmn-icons e-InConditional' },
-            { text: 'Link', id: 'Link', iconCss: 'e-trigger e-bpmn-icons e-ThrowLinkin' }
-            ]
+          text: 'Trigger Result', id: 'TriggerResult',
+          items: [{ text: 'None', id: 'TriggerNone', iconCss: 'e-trigger e-bpmn-icons e-None' },
+          { text: 'Message', id: 'Message', iconCss: 'e-trigger e-bpmn-icons e-InMessage' },
+          { text: 'Multiple', id: 'Multiple', iconCss: 'e-trigger e-bpmn-icons e-InMultiple' },
+          { text: 'Parallel', id: 'Parallel', iconCss: 'e-trigger e-bpmn-icons e-InParallelMultiple' },
+          { text: 'Signal', id: 'Signal', iconCss: 'e-trigger e-bpmn-icons e-InSignal' },
+          { text: 'Timer', id: 'Timer', iconCss: 'e-trigger e-bpmn-icons e-InTimer' },
+          { text: 'Cancel', id: 'Cancel', iconCss: 'e-trigger e-bpmn-icons e-CancelEnd' },
+          { text: 'Escalation', id: 'Escalation', iconCss: 'e-trigger e-bpmn-icons e-InEscalation' },
+          { text: 'Error', id: 'Error', iconCss: 'e-trigger e-bpmn-icons e-InError' },
+          { text: 'Compensation', id: 'triggerCompensation', iconCss: 'e-trigger e-bpmn-icons e-InCompensation' },
+          { text: 'Terminate', id: 'Terminate', iconCss: 'e-trigger e-bpmn-icons e-TerminateEnd' },
+          { text: 'Conditional', id: 'Conditional', iconCss: 'e-trigger e-bpmn-icons e-InConditional' },
+          { text: 'Link', id: 'Link', iconCss: 'e-trigger e-bpmn-icons e-ThrowLinkin' }
+          ]
         },
         {
-            text: 'Event Type', id: 'EventType',
-            items: [{ text: 'Start', id: 'Start', iconCss: 'e-event e-bpmn-icons e-NoneStart', },
-            { text: 'Intermediate', id: 'Intermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
-            { text: 'Non-Interrupting Start', id: 'NonInterruptingStart', iconCss: 'e-event e-bpmn-icons e-Noninterruptingstart' },
-            { text: 'Throwing Intermediate', id: 'ThrowingIntermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
-            {
-                text: 'Non-Interrupting Intermediate', id: 'NonInterruptingIntermediate',
-                iconCss: 'e-event e-bpmn-icons e-NoninterruptingIntermediate'
-            },
-            { text: 'End', id: 'End', iconCss: 'e-event e-bpmn-icons e-NoneEnd' }]
+          text: 'Event Type', id: 'EventType',
+          items: [{ text: 'Start', id: 'Start', iconCss: 'e-event e-bpmn-icons e-NoneStart', },
+          { text: 'Intermediate', id: 'Intermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
+          { text: 'Non-Interrupting Start', id: 'NonInterruptingStart', iconCss: 'e-event e-bpmn-icons e-Noninterruptingstart' },
+          { text: 'Throwing Intermediate', id: 'ThrowingIntermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
+          {
+            text: 'Non-Interrupting Intermediate', id: 'NonInterruptingIntermediate',
+            iconCss: 'e-event e-bpmn-icons e-NoninterruptingIntermediate'
+          },
+          { text: 'End', id: 'End', iconCss: 'e-event e-bpmn-icons e-NoneEnd' }]
         }, {
-            text: 'Task Type', id: 'TaskType',
-            items: [
-                { text: 'None', id: 'TaskNone', iconCss: 'e-task e-bpmn-icons e-None' },
-                { text: 'Service', id: 'Service', iconCss: 'e-task e-bpmn-icons e-ServiceTask' },
-                { text: 'Business Rule', id: 'BusinessRule', iconCss: 'e-task e-bpmn-icons e-BusinessRule' },
-                { text: 'Instantiating Receive', id: 'InstantiatingReceive', iconCss: 'e-task e-bpmn-icons e-InstantiatingReceive' },
-                { text: 'Manual', id: 'Manual', iconCss: 'e-task e-bpmn-icons e-ManualCall' },
-                { text: 'Receive', id: 'Receive', iconCss: 'e-task e-bpmn-icons e-InMessage' },
-                { text: 'Script', id: 'Script', iconCss: 'e-task e-bpmn-icons e-ScriptCall' },
-                { text: 'Send', id: 'Send', iconCss: 'e-task e-bpmn-icons e-InMessage' },
-                { text: 'User', id: 'User', iconCss: 'e-task e-bpmn-icons e-UserCall' },
-            ]
+          text: 'Task Type', id: 'TaskType',
+          items: [
+            { text: 'None', id: 'TaskNone', iconCss: 'e-task e-bpmn-icons e-None' },
+            { text: 'Service', id: 'Service', iconCss: 'e-task e-bpmn-icons e-ServiceTask' },
+            { text: 'Business Rule', id: 'BusinessRule', iconCss: 'e-task e-bpmn-icons e-BusinessRule' },
+            { text: 'Instantiating Receive', id: 'InstantiatingReceive', iconCss: 'e-task e-bpmn-icons e-InstantiatingReceive' },
+            { text: 'Manual', id: 'Manual', iconCss: 'e-task e-bpmn-icons e-ManualCall' },
+            { text: 'Receive', id: 'Receive', iconCss: 'e-task e-bpmn-icons e-InMessage' },
+            { text: 'Script', id: 'Script', iconCss: 'e-task e-bpmn-icons e-ScriptCall' },
+            { text: 'Send', id: 'Send', iconCss: 'e-task e-bpmn-icons e-InMessage' },
+            { text: 'User', id: 'User', iconCss: 'e-task e-bpmn-icons e-UserCall' },
+          ]
         }, {
-            text: 'GateWay', id: 'GateWay',
-            iconCss: 'e-bpmn-icons e-Gateway', items: [
-                { text: 'None', id: 'GatewayNone', iconCss: 'e-gate e-bpmn-icons e-None sf-icon-check-tick' },
-                { text: 'Exclusive', iconCss: 'e-gate e-bpmn-icons e-ExclusiveGatewayWithMarker', id: 'Exclusive' },
-                { text: 'Inclusive', iconCss: 'e-gate e-bpmn-icons e-InclusiveGateway', id: 'Inclusive' },
-                { text: 'Parallel', iconCss: 'e-gate e-bpmn-icons e-ParallelGateway', id: 'GatewayParallel' },
-                { text: 'Complex', iconCss: 'e-gate e-bpmn-icons e-ComplexGateway', id: 'Complex' },
-                { text: 'Event Based', iconCss: 'e-gate e-bpmn-icons e-EventBasedGateway', id: 'EventBased' },
-                { text: 'Exclusive Event Based', iconCss: 'e-gate e-bpmn-icons e-ExclusiveEventBased', id: 'ExclusiveEventBased' },
-                { text: 'Parallel Event Based', iconCss: 'e-gate e-bpmn-icons e-ParallelEventBasedGatewaytostart', id: 'ParallelEventBased' }
-            ]
+          text: 'GateWay', id: 'GateWay',
+          iconCss: 'e-bpmn-icons e-Gateway', items: [
+            { text: 'None', id: 'GatewayNone', iconCss: 'e-gate e-bpmn-icons e-None sf-icon-check-tick' },
+            { text: 'Exclusive', iconCss: 'e-gate e-bpmn-icons e-ExclusiveGatewayWithMarker', id: 'Exclusive' },
+            { text: 'Inclusive', iconCss: 'e-gate e-bpmn-icons e-InclusiveGateway', id: 'Inclusive' },
+            { text: 'Parallel', iconCss: 'e-gate e-bpmn-icons e-ParallelGateway', id: 'GatewayParallel' },
+            { text: 'Complex', iconCss: 'e-gate e-bpmn-icons e-ComplexGateway', id: 'Complex' },
+            { text: 'Event Based', iconCss: 'e-gate e-bpmn-icons e-EventBasedGateway', id: 'EventBased' },
+            { text: 'Exclusive Event Based', iconCss: 'e-gate e-bpmn-icons e-ExclusiveEventBased', id: 'ExclusiveEventBased' },
+            { text: 'Parallel Event Based', iconCss: 'e-gate e-bpmn-icons e-ParallelEventBasedGatewaytostart', id: 'ParallelEventBased' }
+          ]
         },
         {
-            text: 'Message Type', id: 'MessageType', items: [
-                    {text: 'Default', id: 'None',iconCss:'e-bpmn-icons'}, {text: 'Initiating Message', id: 'InitiatingMessage',iconCss:'e-bpmn-icons'},
-                    {text: 'Non-Initiating Message', id: 'NonInitiatingMessage',iconCss:'e-bpmn-icons'},
-            ]
+          text: 'Message Type', id: 'MessageType', items: [
+            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' }, { text: 'Initiating Message', id: 'InitiatingMessage', iconCss: 'e-bpmn-icons' },
+            { text: 'Non-Initiating Message', id: 'NonInitiatingMessage', iconCss: 'e-bpmn-icons' },
+          ]
         },
         {
-            text:'Add Text Annotation',id:'TextAnnotation',iconCss:'e-bpmn-icons e-TextAnnotation'
+          text: 'Add Text Annotation', id: 'TextAnnotation', iconCss: 'e-bpmn-icons e-TextAnnotation'
         }
-    ],
+      ],
       showCustomMenuOnly: true
     }
     this.scrollSettings = { canAutoScroll: true, scrollLimit: 'Infinity', minZoom: 0.25, maxZoom: 30 };
@@ -533,17 +534,17 @@ class App extends React.Component {
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
                   <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-drawtools-dropdown-btn tb-custom-diagram-disable" />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
-                  <ItemDirective type="Separator"visible={false} />
+                  <ItemDirective type="Separator" visible={false} />
                   <ItemDirective prefixIcon='sf-icon-group tb-icons' visible={false} tooltipText='Group' cssClass='tb-item-start' align='Center' />
                   <ItemDirective type="Separator" visible={false} align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_left' visible={false}  tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_left' visible={false} tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_center' visible={false} tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_right' visible={false} tooltipText='AlignRight' cssClass='tb-item-middle' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_top' visible={false} tooltipText='AlignTop' cssClass='tb-item-middle' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_middle' visible={false} tooltipText='AlignMiddle' cssClass='tb-item-middle' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-align_bottom' visible={false} tooltipText='AlignBottom' cssClass='tb-item-end' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-distribute_vertical' visible={false} tooltipText='Distribute Vertically' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal'  visible={false} tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal' visible={false} tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
                   <ItemDirective type="Separator" visible={false} align='Center' />
                   <ItemDirective prefixIcon='sf-icon-send-to-back' visible={false} tooltipText='Send To Back' cssClass='tb-item-start' align='Center' />
                   <ItemDirective prefixIcon='sf-icon-bring-to-front' visible={false} tooltipText='Bring To Front' cssClass='tb-item-middle' align='Center' />
@@ -551,7 +552,7 @@ class App extends React.Component {
                   <ItemDirective prefixIcon='sf-icon-bring-forward' visible={false} tooltipText='Bring Forward' cssClass='tb-item-end' align='Center' />
                   <ItemDirective type="Separator" visible={false} align='Center' />
                   <ItemDirective prefixIcon='sf-icon-lock' visible={false} tooltipText='Lock' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-delete'visible={false} tooltipText='Delete' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-delete' visible={false} tooltipText='Delete' cssClass='tb-item-end' align='Center' />
                   <ItemDirective type="Separator" />
                   <ItemDirective cssClass="tb-item-end tb-zoom-dropdown-btn" template={zoomTemplate} align='Right' />
 
@@ -580,29 +581,31 @@ class App extends React.Component {
           <div className='main-content' role='main'>
             <div className="db-diagram-container">
               <div id="diagramContainerDiv" className='db-current-diagram-container'>
-                <DiagramComponent ref={diagram => (this.diagram = diagram)} id="diagram" 
-                width={"100%"} 
-                height={"100%"}
-                  scrollSettings={this.scrollSettings} 
-                  selectedItems={this.selectedItems} 
+                <DiagramComponent ref={diagram => (this.diagram = diagram)} id="diagram"
+                  width={"100%"}
+                  height={"100%"}
+                  scrollSettings={this.scrollSettings}
+                  selectedItems={this.selectedItems}
                   rulerSettings={this.rulerSettings}
-                  pageSettings={this.pageSettings} 
-                  nodes={this.nodes} 
+                  pageSettings={this.pageSettings}
+                  nodes={this.nodes}
                   connectors={this.connectors}
                   backgroundColor="transparent"
-                  selectionChange={this.diagramEvents.selectionChange.bind(this.diagramEvents)} 
+                  selectionChange={this.diagramEvents.selectionChange.bind(this.diagramEvents)}
                   positionChange={this.diagramEvents.nodePositionChange.bind(this.diagramEvents)}
-                  historyChange={this.diagramEvents.historyChange.bind(this.diagramEvents)} 
+                  historyChange={this.diagramEvents.historyChange.bind(this.diagramEvents)}
                   created={this.created.bind(this)}
                   sizeChange={this.diagramEvents.nodeSizeChange.bind(this.diagramEvents)}
                   rotateChange={this.diagramEvents.nodeRotationChange.bind(this.diagramEvents)}
-                  scrollChange={this.scrollChange.bind(this)} 
-                  getConnectorDefaults={this.getConnectorDefaults.bind(this)} 
+                  scrollChange={this.scrollChange.bind(this)}
+                  getNodeDefaults={this.getNodeDefaults.bind(this)}
+                  getConnectorDefaults={this.getConnectorDefaults.bind(this)}
                   contextMenuSettings={this.contextMenu}
                   collectionChange={this.diagramEvents.collectionChange.bind(this.diagramEvents)}
-                  contextMenuClick={this.diagramEvents.contextMenuClick.bind(this)} 
-                  contextMenuOpen={this.diagramEvents.contextMenuOpen.bind(this)} 
+                  contextMenuClick={this.diagramEvents.contextMenuClick.bind(this)}
+                  contextMenuOpen={this.diagramEvents.contextMenuOpen.bind(this)}
                   dragEnter={this.diagramEvents.dragEnter.bind(this)}
+                  onUserHandleMouseDown={this.diagramEvents.userHandleClick.bind(this)}
                 />
               </div>
 
@@ -615,7 +618,7 @@ class App extends React.Component {
                     <ButtonComponent id="hide-properties" style={{ float: 'right', marginTop: "-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                   </div>
                   <div className="row db-prop-row">
-                    <div className="row db-prop-header-text" style={{ paddingTop: '10px',paddingBottom:"5px" }}>Format</div>
+                    <div className="row db-prop-header-text" style={{ paddingTop: '10px', paddingBottom: "5px" }}>Format</div>
                     <DropDownListComponent id='pageformat' ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
                   </div>
                   <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}>Orientation</div>
@@ -724,9 +727,9 @@ class App extends React.Component {
                           </div>
                         </div>
                       </div>
-                      <div className="col-xs-2 db-col-left" style={{width: "20px", paddingLeft: "7px"}}>
-                        <ButtonComponent style={{height: '26px',width: '26px', backgroundColor: '#ffff'}} onClick={aspectRatioClick}
-                        id='aspectRatioBtn' iconCss="sf-icon-unlock" isToggle={true} cssClass="e-flat"
+                      <div className="col-xs-2 db-col-left" style={{ width: "20px", paddingLeft: "7px" }}>
+                        <ButtonComponent style={{ height: '26px', width: '26px', backgroundColor: '#ffff' }} onClick={aspectRatioClick}
+                          id='aspectRatioBtn' iconCss="sf-icon-unlock" isToggle={true} cssClass="e-flat"
                         ></ButtonComponent>
                       </div>
                     </div>
@@ -752,7 +755,7 @@ class App extends React.Component {
                     <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }} />
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
-                        <ButtonComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} style={{fontSize:'10px'}} id='insertHyperlink' content="Insert Link" onClick={hyperlinkInsert} cssClass="e-outline" isPrimary="true" />
+                        <ButtonComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} style={{ fontSize: '10px' }} id='insertHyperlink' content="Insert Link" onClick={hyperlinkInsert} cssClass="e-outline" isPrimary="true" />
 
                       </div>
                     </div>
@@ -1657,6 +1660,13 @@ class App extends React.Component {
       btnZoomIncrement.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
     }
   }
+  // Function to define default properties for a nodes in the diagram.
+  getNodeDefaults(obj) {
+    obj.userHandles = [];
+    obj.ports = this.getNodePorts(obj);
+    return obj;
+  }
+
   // Function to define default properties for a connector in the diagram.
   getConnectorDefaults(connector) {
     // connector.type = 'Orthogonal';
@@ -1666,6 +1676,16 @@ class App extends React.Component {
       , smoothness: BezierSmoothness.SymmetricDistance
     }
   };
+  //function to define ports for node
+  getNodePorts(obj) {
+    var ports = [
+      { id: 'left', shape: 'Circle', offset: { x: 0, y: 0.5 } },
+      { id: 'bottom', shape: 'Circle', offset: { x: 0.5, y: 1 } },
+      { id: 'right', shape: 'Circle', offset: { x: 1, y: 0.5 } },
+      { id: 'top', shape: 'Circle', offset: { x: 0.5, y: 0 } }
+    ];
+    return ports;
+  }
   // Function to Arrange Menu ITems before Opening the context Menu bar Items,
   arrangeMenuBeforeOpen(args) {
     for (var i = 0; i < args.element.children.length; i++) {
@@ -1770,6 +1790,33 @@ class App extends React.Component {
         diagram.tool = DiagramTools.ZoomPan;
         this.removeSelectedToolbarItem();
         break;
+      case 'Orthogonal':
+        diagram.clearSelection();
+        diagram.drawingObject.sourceID = '';
+        diagram.tool = DiagramTools.ContinuousDraw;
+        diagram.selectedItems.userHandles = [];
+        diagram.drawingObject.type = 'Orthogonal';
+        diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
+        this.removeSelectedToolbarItem();
+        break;
+      case 'Straight':
+        diagram.clearSelection();
+        diagram.drawingObject.sourceID = '';
+        diagram.tool = DiagramTools.ContinuousDraw;
+        diagram.selectedItems.userHandles = [];
+        diagram.drawingObject.type = 'Straight';
+        diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
+        this.removeSelectedToolbarItem();
+        break;
+      case 'Bezier':
+        diagram.clearSelection();
+        diagram.drawingObject.sourceID = '';
+        diagram.tool = DiagramTools.ContinuousDraw;
+        diagram.selectedItems.userHandles = [];
+        diagram.drawingObject.type = 'Bezier';
+        diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
+        this.removeSelectedToolbarItem();
+        break;
       case 'Show Lines':
         diagram.snapSettings.constraints = diagram.snapSettings.constraints ^ SnapConstraints.ShowLines;
         args.item.iconCss = args.item.iconCss ? '' : 'sf-icon-check-tick';
@@ -1825,13 +1872,13 @@ class App extends React.Component {
         this.diagramPropertyBinding.paperListChange(args, diagram)
         this.diagramPropertyBinding.updateSelection(args.item);
         this.selectedItem.pageSettings.paperSize = args.item.value;
-        var pageformat=document.getElementById('pageformat').ej2_instances[0];
-        pageformat.element.value=args.item.text;
+        var pageformat = document.getElementById('pageformat').ej2_instances[0];
+        pageformat.element.value = args.item.text;
         break;
     }
     diagram.dataBind();
   }
- 
+
 
   //Function To save the diagram
   download(data) {
@@ -2005,12 +2052,12 @@ class App extends React.Component {
     this.selectedItem.connectorProperties.lineStyle.value = args.value;
     this.selectedItem.connectorPropertyChange({ propertyName: 'lineStyle', propertyValue: args });
   }
-   //To change the stroke width of the connector
+  //To change the stroke width of the connector
   ConnectorLineWidthChnage(args) {
     this.selectedItem.connectorProperties.lineWidth.value = args.value;
     this.selectedItem.connectorPropertyChange({ propertyName: 'lineWidth', propertyValue: args });
   }
-   //To change the sourceDecorator shape of the selected connector
+  //To change the sourceDecorator shape of the selected connector
   connectorSourceType(args) {
     this.selectedItem.connectorProperties.sourceType.value = args.value;
     this.selectedItem.connectorPropertyChange({ propertyName: 'sourceType', propertyValue: args });
@@ -2055,22 +2102,22 @@ class App extends React.Component {
     this.selectedItem.textProperties.fontFamily.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'fontFamily', propertyValue: args });
   }
-   //To change the annotation font size of the selected node/connector
+  //To change the annotation font size of the selected node/connector
   nodeFontSizeChange(args) {
     this.selectedItem.textProperties.fontSize.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'fontSize', propertyValue: args });
   }
-   //To change the annotation font color of the selected node/connector
+  //To change the annotation font color of the selected node/connector
   nodeFontColor(args) {
     this.selectedItem.textProperties.fontColor.value = args.currentValue.hex;
     this.selectedItem.textPropertyChange({ propertyName: 'fontColor', propertyValue: args });
   }
-   //To change the annotation font opacity level of the selected node/connector
+  //To change the annotation font opacity level of the selected node/connector
   fontOpacityChangeEvent(args) {
     this.selectedItem.textProperties.opacity.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'opacity', propertyValue: args });
   }
-   //To change the stroke line width of the connector of selected Item
+  //To change the stroke line width of the connector of selected Item
   nodeStrokeWidthChange(args) {
     this.selectedItem.nodeProperties.strokeWidth.value = args.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'strokeWidth', propertyValue: args });
@@ -2087,20 +2134,20 @@ class App extends React.Component {
   }
   //set the aspect ratio constraints to the node
   aspectRatioClick(args) {
-    let diagram=this.selectedItem.selectedDiagram;
+    let diagram = this.selectedItem.selectedDiagram;
     let node = diagram.selectedItems.nodes[0];
-     var isAspect = true;
-     let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
-     if (document.getElementById('aspectRatioBtn').classList.contains('e-active')) {
-         isAspect = true;
-         aspectRatioBtn.iconCss = 'sf-icon-lock'
-     }
-     else {
-         isAspect = false;
-         aspectRatioBtn.iconCss = 'sf-icon-unlock';
-     }
-     this.selectedItem.nodePropertyChange({ propertyName: 'aspectRatio', propertyValue: isAspect });
- };
+    var isAspect = true;
+    let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
+    if (document.getElementById('aspectRatioBtn').classList.contains('e-active')) {
+      isAspect = true;
+      aspectRatioBtn.iconCss = 'sf-icon-lock'
+    }
+    else {
+      isAspect = false;
+      aspectRatioBtn.iconCss = 'sf-icon-unlock';
+    }
+    this.selectedItem.nodePropertyChange({ propertyName: 'aspectRatio', propertyValue: isAspect });
+  };
 }
 
 export default App;
