@@ -119,7 +119,6 @@ input, button, select, textarea {
     height: 100%;
     padding: 0px;
     box-shadow: 0 0 0 0;
-    background-color: transparent;
 }
 
 .db-toolbar-hide-btn .e-btn .e-btn-icon {
@@ -571,7 +570,9 @@ input, button, select, textarea {
 .designMenu .e-contextmenu.e-menu-parent{
     width: auto!important;
 }
-
+.toolMenu .e-contextmenu.e-menu-parent{
+    width: auto!important;
+}
 .e-contextmenu-wrapper ul .e-menu-item.e-focused,
 .e-dropdown-popup ul .e-item:hover {
     background-color: #E4F0FE;
@@ -2315,4 +2316,5 @@ input.e-input::selection,
     height: 28px;
     margin-right: 5px;
     margin-bottom: 7px !important;
+    
   }

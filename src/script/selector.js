@@ -770,7 +770,7 @@ export class SelectorViewModel {
                 document.getElementById('nodeOpacitySliderText').value = (this.nodeProperties.opacity.value) + '%';
                 break;
             case 'gradient':
-                if (value && !value.checked) {
+                if (value && value.value === 'Solid') {
                     node.style.gradient.type = 'None';
                 }
                 else {
@@ -782,5 +782,19 @@ export class SelectorViewModel {
                 this.nodeProperties.getGradient(node);
                 break;
         }
+    }
+    backgroundTypeSelect(args){
+        const gradientElement = document.getElementById('gradientStyle');
+        if(args.itemData.text === 'Gradient'){
+              gradientElement.className = 'row db-prop-row db-gradient-style-show';
+        }
+        else{
+            // this.selectedItem.nodeProperties.gradient = false;
+            gradientElement.className = 'row db-prop-row db-gradient-style-hide';
+        }
+    };
+    gradientDirectionChange(args){
+        this.selectedItem.nodeProperties.gradientDirection = args.item.value;
+        // this.nodeProperties.getGradient(this.selectedItem.diagram.selectedItems.nodes[0]);
     }
 }

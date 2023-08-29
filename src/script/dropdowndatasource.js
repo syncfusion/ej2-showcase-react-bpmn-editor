@@ -57,9 +57,13 @@ export class DropDownDataSources {
             { text: 'Bezier', value: 'Bezier' }
         ];
         this.gradientDirections = [
-            { text: 'BottomToTop', value: 'BottomToTop' }, { text: 'TopToBottom', value: 'TopToBottom' },
-            { text: 'RightToLeft', value: 'RightToLeft' }, { text: 'LeftToRight', value: 'LeftToRight' }
+            { text: 'Bottom To Top', value: 'South' }, { text: 'Top To Bottom', value: 'North' },
+            { text: 'Left To Right', value: 'East' },{ text: 'Right To Left', value: 'West' }
         ];
+        this.backgroundTypes=[
+            {text:'Solid', value:'Solid'},
+            {text:'Gradient',value:'Gradient'}
+        ]
         this.drawShapesList = [
             { iconCss: 'sf-icon-Square', text: 'Rectangle' },
             { iconCss: 'sf-icon-Ellipse', text: 'Ellipse' },

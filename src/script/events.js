@@ -47,6 +47,7 @@ export class DiagramClientSideEvents {
                 }
                 else if (selectedItems.length === 1) {
                     multiSelect = false;
+                    this.singleSelectionSettings(selectedItems[0]);
                     for(var i=7;i<=26;i++){
                         if(i<=17)
                         {
@@ -63,7 +64,7 @@ export class DiagramClientSideEvents {
                         toolbarEditor.items[8].prefixIcon = 'sf-icon-ungroup';
                         toolbarEditor.items[8].visible = true;
                     }
-                    this.singleSelectionSettings(selectedItems[0]);
+                    
                 }
                 else {
                     this.selectedItem.utilityMethods.objectTypeChange('diagram');//diagram

@@ -28,6 +28,7 @@ export let loadDiagram;
 export let beforeOpen;
 export let designContextMenuOpen;
 export let editContextMenuOpen;
+export let toolContextMenuOpen;
 export let beforeClose;
 export let menuclick;
 export let tooledit;
@@ -79,8 +80,8 @@ class App extends React.Component {
     this.dropdownListFields = { text: 'text', value: 'value' };
     this.drawingNode="";
     this.pageSettings = {
-      background: { color: '#FFFFFF' }, width: 600, height: 1460, margin: { left: 5, top: 5 },
-      orientation: 'Landscape', showPageBreaks: false,
+      background: { color: '#FFFFFF' }, width: 600, height: 1500, margin: { left: 5, top: 5 },
+      orientation: 'Landscape', showPageBreaks: false,multiplePage : false
     };
     this.nodes = [
       {
@@ -400,10 +401,11 @@ class App extends React.Component {
       ],
       showCustomMenuOnly: true
     }
+    this.drawingObject = { type: 'Orthogonal', shape: { type: 'Bpmn', sequence:'Normal'}};
     this.scrollSettings = { canAutoScroll: true, scrollLimit: 'Infinity', minZoom: 0.25, maxZoom: 30 };
     this.rulerSettings = {
-      showRulers: true, dynamicGrid: true, horizontalRuler: { interval: 10, segmentWidth: 100, thickness: 25, },
-      verticalRuler: { interval: 10, segmentWidth: 100, thickness: 25 }
+      showRulers: true, dynamicGrid: true, horizontalRuler: { interval: 10, segmentWidth: 100, thickness: 25,markerColor:'#0078d4' },
+      verticalRuler: { interval: 10, segmentWidth: 100, thickness: 25,markerColor:'#0078d4' }
     }
     this.selectedItem = new SelectorViewModel();
     this.dropDownDataSources = new DropDownDataSources();
@@ -424,6 +426,7 @@ class App extends React.Component {
     beforItem = this.beforeItemRender.bind(this);
     designContextMenuOpen = this.designContextMenuOpen.bind(this);
     editContextMenuOpen = this.editContextMenuOpen.bind(this);
+    toolContextMenuOpen = this.toolContextMenuOpen.bind(this);
     beforeOpen = this.arrangeMenuBeforeOpen.bind(this);
     beforeClose = this.arrangeMenuBeforeClose.bind(this);
     menuclick = this.menuClick.bind(this);
@@ -483,6 +486,7 @@ class App extends React.Component {
       <input type="file" id="fileupload" name="UploadFiles"></input>
       <ContextMenuComponent id='designContextMenu' ref={arrangeContextMenu => (this.arrangeContextMenu) = arrangeContextMenu} animationSettings={this.animationSettings} items={this.dropDownDataSources.designMenuItems} onOpen={designContextMenuOpen} cssClass="designMenu" beforeItemRender={beforItem} select={menuclick} beforeClose={() => this.arrangeMenuBeforeClose} />
       <ContextMenuComponent id='editContextMenu' ref={editContextMenu => (this.editContextMenu) = editContextMenu} animationSettings={this.animationSettings} onOpen={editContextMenuOpen} beforeItemRender={beforItem} select={menuclick} items={this.dropDownDataSources.editMenuItems} cssClass="editMenu" beforeClose={() => this.arrangeMenuBeforeClose} />
+      <ContextMenuComponent id='toolsContextMenu' ref={toolContextMenu => (this.toolContextMenu) = toolContextMenu} animationSettings={this.animationSettings} onOpen={toolContextMenuOpen} beforeItemRender={beforItem} select={menuclick} items={this.dropDownDataSources.toolsMenuItems} cssClass="toolMenu" beforeClose={() => this.arrangeMenuBeforeClose} />
       <div className='diagrambuilder-container' >
         <div className='header navbar'>
           <div className="db-header-container">
@@ -512,7 +516,7 @@ class App extends React.Component {
                   beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
               </div>
               <div className="db-menu-style">
-                <DropDownButtonComponent id="btnToolsMenu" cssClass={"db-dropdown-menu"} content="Tools" items={this.dropDownDataSources.toolsMenuItems} select={menuclick}
+                <DropDownButtonComponent id="btnToolsMenu" cssClass={"db-dropdown-menu"} content="Tools" target='.e-contextmenu-wrapper.toolMenu' items={this.dropDownDataSources.toolsMenuItems} select={menuclick}
                   beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
               </div>
               <div className="db-menu-style">
@@ -532,7 +536,7 @@ class App extends React.Component {
                   <ItemDirective type="Separator" />
                   <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' />
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
-                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-drawtools-dropdown-btn tb-custom-diagram-disable" />
+                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool}  />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
                   <ItemDirective type="Separator" visible={false} />
                   <ItemDirective prefixIcon='sf-icon-group tb-icons' visible={false} tooltipText='Group' cssClass='tb-item-start' align='Center' />
@@ -584,6 +588,7 @@ class App extends React.Component {
                 <DiagramComponent ref={diagram => (this.diagram = diagram)} id="diagram"
                   width={"100%"}
                   height={"100%"}
+                  drawingObject={this.drawingObject}
                   scrollSettings={this.scrollSettings}
                   selectedItems={this.selectedItems}
                   rulerSettings={this.rulerSettings}
@@ -767,25 +772,27 @@ class App extends React.Component {
                         Background Type
                       </div>
                       <div className="row db-prop-row">
-                        <div className="col-xs-6 db-col-left">
-                          <div className="db-color-container">
-                            <div className="db-color-input">
-                              <ColorPickerComponent ref={fillColor => (this.fillColor = fillColor)} showButtons='' type="color" mode="Palette" value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} id="nodeFillColor" />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-xs-4 db-col-left">
-                          <CheckBoxComponent ref={gradient => (this.gradient = gradient)} id='gradient' label="Gradient" checked={this.selectedItem.nodeProperties.gradient} change={gradientChange} />
+                        <div className="col-xs-12 db-col-left">
+                          <DropDownListComponent id="backgroundTypeDropdown" ref={backgroundType => this.backgroundType = backgroundType} value={"Solid"} dataSource={this.dropDownDataSources.backgroundTypes} fields={this.dropdownListFields} popupHeight={"200px"} 
+                          select={this.selectedItem.backgroundTypeSelect} />
                         </div>
                       </div>
                       <div id='gradientStyle' className="row db-prop-row db-gradient-style-hide">
-                        <div className="col-xs-6 db-col-center">
-                          <DropDownListComponent ref={gradientDirection => this.gradientDirection = gradientDirection} value={this.selectedItem.nodeProperties.gradientDirection} dataSource={this.dropDownDataSources.gradientDirections} fields={this.dropdownListFields} popupHeight={"200px"} change={gradientDirectionChange} />
+                        <div className="col-xs-5 db-col-left">
+                          <div className="db-color-container">
+                            <div className="db-color-input">
+                              <ColorPickerComponent type="color" mode="Palette" showButtons='' ref={fillColor => this.fillColor = fillColor} value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-xs-3 db-col-center">
+                          <DropDownButtonComponent id="gradientDirection" iconCss='sf-icon-gradient-alignment' ref={gradientDirection => this.gradientDirection = gradientDirection} dataSource={this.dropDownDataSources.gradientDirections} 
+                          fields={this.dropdownListFields} style={{ height:'26px', width:"48px" }} select={gradientDirectionChange} />
                         </div>
                         <div className="col-xs-4 db-col-right">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent type="color" mode="Palette" showButtons='' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} change={gradientColorChange} />
+                              <ColorPickerComponent type="color" mode="Palette" showButtons='' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} id="nodeGradientColor" change={gradientColorChange} />
                             </div>
                           </div>
                         </div>
@@ -831,7 +838,9 @@ class App extends React.Component {
                           <span className="db-prop-text-style">Opacity</span>
                         </div>
                         <div className="col-xs-8 db-col-left" style={{ width: "130px", paddingRight: "10px" }}>
-                          <SliderComponent ref={opacity => this.opacity = opacity} value={this.selectedItem.nodeProperties.opacity} min={0} max={100} step={10} type='MinRange' change={opacityChange} />
+                          <SliderComponent ref={opacity => this.opacity = opacity} 
+                          // value={this.selectedItem.nodeProperties.opacity} 
+                          min={0} max={100} step={10} type='MinRange' change={opacityChange} />
                         </div>
                         <div className="col-xs-2 db-col-right">
                           <input id='nodeOpacitySliderText' type="text" value={this.selectedItem.nodeProperties.opacityText} readOnly={true} className="db-readonly-input" />
@@ -1138,7 +1147,7 @@ class App extends React.Component {
       }
     }
   }
-  // To define the behavior and options of the context menu
+  // To define the behavior and options of the context menu for Design Memu tab
   designContextMenuOpen(args) {
     if (args.element.classList.contains('e-menu-parent')) {
       const popup = document.querySelector('#btnDesignMenu-popup');
@@ -1146,13 +1155,21 @@ class App extends React.Component {
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
     }
   }
-  //To customize the context menu behavior and options for specific nodes, connectors or the diagram.
+  //To customize the context menu behavior and options for specific nodes, connectors or the diagram for Edit Men tab
   editContextMenuOpen(args) {
     if (args.element.classList.contains('e-menu-parent')) {
       var popup = document.querySelector('#btnEditMenu-popup');
       args.element.style.left = formatUnit(parseInt(args.element.style.left, 10) - parseInt(popup.style.left, 10));
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
     }
+  }
+  toolContextMenuOpen(args)
+  {
+    if (args.element.classList.contains('e-menu-parent')) {
+      var popup = document.querySelector('#btnToolsMenu-popup');
+      args.element.style.left = formatUnit(parseInt(args.element.style.left, 10) - parseInt(popup.style.left, 10));
+      args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
+  }
   }
   //To set the connector line stroke style template
   lineItemTemplate(data) {
@@ -1478,6 +1495,7 @@ class App extends React.Component {
     }
     diagram.dataBind();
   };
+
   //To remove the selected icon css on toolbar option selection change
   removeSelectedToolbarItem() {
     var toolbarEditor = document.getElementById("toolbarEditor").ej2_instances[0];
@@ -1487,10 +1505,10 @@ class App extends React.Component {
         item.cssClass = item.cssClass.replace(' tb-item-selected', '');
       }
     }
-    toolbarEditor.dataBind();
+    // toolbarEditor.dataBind();
     // document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
-
   };
+
   // Function to render the DropDown template for the zoom toolbar
   zoomTemplate() {
     return (<div id="template_toolbar">
@@ -1568,20 +1586,19 @@ class App extends React.Component {
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
     let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
-    diagram.drawingObject = { type: args.item.text }
     diagram.clearSelection();
+    diagram.drawingObject.sourceID = '';
+    diagram.drawingObject = { type: args.item.text };
+    diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
     diagram.tool = DiagramTools.ContinuousDraw;
-    this.removeSelectedToolbarItem();
     diagram.selectedItems.userHandles = [];
     diagram.dataBind();
-    // var d=document.getElementById('btnDrawConnector').ej2_instances[0]
-    // this.connectorbutton.classList.add("tb-item-selected")
-    toolbarEditor.items[5].cssClass += ' tb-item-selected';
+    this.removeSelectedToolbarItem();
+    // toolbarEditor.items[5].cssClass += ' tb-item-selected';
     setTimeout(() => {
-      document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
-    }, 10);
-
-    // args.item.cssClass += ' tb-item-selected';
+      let con = document.getElementById('btnDrawConnector');
+      con.classList.add('tb-item-selected');
+    }, 100);
   }
 
   // Function to add keyboard shortcut key for a specific action 
@@ -1651,6 +1668,11 @@ class App extends React.Component {
   created() {
     var diagram = this.selectedItem.selectedDiagram;
     diagram.fitToPage({ mode: 'Width' });
+    var btnZoomIncrement = document.getElementById("btnZoomIncrement").ej2_instances[0];
+    btnZoomIncrement.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
+    // var btnhide=(document.getElementById('hideProperty'));
+    // btnhide.ej2_instances[0].isPrimary = true;
+    // document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
   }
   // Function to handle changes in the scroll state and update the zoom content when scrolling in the diagram.
   scrollChange(args) {
@@ -1675,6 +1697,10 @@ class App extends React.Component {
       controlPointsVisibility: ControlPointsVisibility.Source | ControlPointsVisibility.Target
       , smoothness: BezierSmoothness.SymmetricDistance
     }
+    if (connector.annotations.length > 0) {
+      connector.annotations[0].style.fill = 'White'
+    }
+    return connector;
   };
   //function to define ports for node
   getNodePorts(obj) {
@@ -1712,6 +1738,7 @@ class App extends React.Component {
     if (buttonElement) {
       buttonElement.classList.remove('e-btn-hover');
     }
+    let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
     const diagram = this.selectedItem.selectedDiagram;
     const commandType = args.item.text;
     switch (commandType) {
@@ -1792,30 +1819,15 @@ class App extends React.Component {
         break;
       case 'Orthogonal':
         diagram.clearSelection();
-        diagram.drawingObject.sourceID = '';
-        diagram.tool = DiagramTools.ContinuousDraw;
-        diagram.selectedItems.userHandles = [];
-        diagram.drawingObject.type = 'Orthogonal';
-        diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
-        this.removeSelectedToolbarItem();
+        this.connectorToolChange(args);
         break;
       case 'Straight':
         diagram.clearSelection();
-        diagram.drawingObject.sourceID = '';
-        diagram.tool = DiagramTools.ContinuousDraw;
-        diagram.selectedItems.userHandles = [];
-        diagram.drawingObject.type = 'Straight';
-        diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
-        this.removeSelectedToolbarItem();
+        this.connectorToolChange(args);
         break;
       case 'Bezier':
         diagram.clearSelection();
-        diagram.drawingObject.sourceID = '';
-        diagram.tool = DiagramTools.ContinuousDraw;
-        diagram.selectedItems.userHandles = [];
-        diagram.drawingObject.type = 'Bezier';
-        diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
-        this.removeSelectedToolbarItem();
+        this.connectorToolChange(args);
         break;
       case 'Show Lines':
         diagram.snapSettings.constraints = diagram.snapSettings.constraints ^ SnapConstraints.ShowLines;
@@ -1876,6 +1888,21 @@ class App extends React.Component {
         pageformat.element.value = args.item.text;
         break;
     }
+    if (commandType === 'Pan Tool') {
+      if (toolbarEditor.items[3].cssClass.indexOf('tb-item-selected') === -1) {
+        toolbarEditor.items[3].cssClass += ' tb-item-selected';
+      }
+    }
+    else if (commandType === 'Selection Tool') {
+      if (toolbarEditor.items[4].cssClass.indexOf('tb-item-selected') === -1) {
+        toolbarEditor.items[4].cssClass += ' tb-item-selected';
+      }
+    }
+    // else if (commandType === 'Orthogonal' || commandType === 'Straight' || commandType === 'Bezier') {
+    //   // toolbarEditor.items[5].cssClass += ' tb-item-selected';
+    //   // toolbarEditor.dataBind();
+    //   // document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
+    // }
     diagram.dataBind();
   }
 
@@ -2014,17 +2041,11 @@ class App extends React.Component {
   // Function to changes to Gradient color of a node from solid fill color
   nodeGradientChange(args) {
     this.selectedItem.nodeProperties.gradient = args.value;
-    const gradientElement = document.getElementById('gradientStyle');
-    if (args.checked) {
-      gradientElement.className = 'row db-prop-row db-gradient-style-show';
-    }
-    else {
-      gradientElement.className = 'row db-prop-row db-gradient-style-hide';
-    }
     this.selectedItem.nodePropertyChange({ propertyName: 'gradient', propertyValue: args });
   }
   // To set gradient color direction in a node from the gradient dropdown menu.
   gradientDropDownChange(args) {
+    this.selectedItem.nodeProperties.gradientDirection = args.item.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'gradientDirection', propertyValue: args });
   }
   // Function to handle changes in the gradient color of a node when it is interactively adjusted.

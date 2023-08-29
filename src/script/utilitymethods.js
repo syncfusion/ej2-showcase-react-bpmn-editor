@@ -31,6 +31,8 @@
          node.constraints & NodeConstraints.AspectRatio ? aspectRatioBtn.iconCss = 'sf-icon-lock': aspectRatioBtn.iconCss = 'sf-icon-unlock';
          selectedItem.nodeProperties.gradient = node.style.gradient.type !== 'None' ? true : false;
          const gradientElement = document.getElementById('gradientStyle');
+         var backgroundType = document.getElementById('backgroundTypeDropdown');
+         backgroundType.ej2_instances[0].index = 0;
          if (selectedItem.nodeProperties.gradient) {
              gradientElement.className = 'row db-prop-row db-gradient-style-show';
              selectedItem.nodeProperties.gradientColor.value = node.style.gradient.stops[1].color;
@@ -493,6 +495,7 @@
      {
         var items = (document.getElementById('btnViewMenu')).ej2_instances[0].items;
         items[4].iconCss = diagram.pageSettings.showPageBreaks ? 'sf-icon-check-tick':'';
+        items[5].iconCss = diagram.pageSettings.multiplePage ? 'sf-icon-check-tick':'';
         var showPageBreaks = document.getElementById('showPageBreaks').ej2_instances[0];
         showPageBreaks.checked = diagram.pageSettings.showPageBreaks  ? true:false;
      }
