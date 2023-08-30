@@ -477,7 +477,7 @@ class App extends React.Component {
     document.onmouseover = this.menumouseover.bind(this);
     this.diagramEvents.ddlTextPosition = this.ddlTextPosition;
     const context = this;
-    setTimeout(() => { context.loadPage(); }, 2000);
+    setTimeout(() => { context.loadPage(); }, 20);
   }
   render() {
     return (<div>
@@ -699,7 +699,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetY => (this.nodeOffsetY = nodeOffsetY)} id="nodeOffsetY" format="n0"
-                              value={this.selectedItem.nodeProperties.offsetY}
+                              // value={this.selectedItem.nodeProperties.offsetY}
                               change={offsetYchange} />
                           </div>
                         </div>
@@ -713,7 +713,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={width => (this.width = width)} id="nodeWidth" min={1} format="n0"
-                              value={this.selectedItem.nodeProperties.width}
+                              // value={this.selectedItem.nodeProperties.width}
                               change={nodeWidthChange} />
                           </div>
                         </div>
@@ -725,15 +725,14 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={height => (this.height = height)} id="nodeHeight" min={1} format="n0"
-                              value={this.selectedItem.nodeProperties.height}
+                              // value={this.selectedItem.nodeProperties.height}
                               change={nodeHeightChange} />
                           </div>
                         </div>
                       </div>
                       <div className="col-xs-2 db-col-left" style={{ width: "20px", paddingLeft: "7px" }}>
-                        <ButtonComponent style={{ height: '26px', width: '26px', backgroundColor: '#ffff' }} onClick={aspectRatioClick}
-                          id='aspectRatioBtn' iconCss="sf-icon-unlock" isToggle={true} cssClass="e-flat"
-                        ></ButtonComponent>
+                        <ButtonComponent style={{ height: '26px', width: '26px', backgroundColor: '#ffff' }} ref={aspectRatio => (this.aspectRatio = aspectRatio)} onClick={aspectRatioClick}
+                          id='aspectRatioBtn' iconCss="sf-icon-unlock" isToggle={true} cssClass="e-flat"/>
                       </div>
                     </div>
                     <div className="row db-prop-row">
@@ -749,7 +748,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent ref={rotate => (this.rotate = rotate)} id="nodeRotateAngle" format="n0"
-                              value={this.selectedItem.nodeProperties.rotateAngle}
+                              // value={this.selectedItem.nodeProperties.rotateAngle}
                               change={rotationChange} />
                           </div>
                         </div>
@@ -950,10 +949,12 @@ class App extends React.Component {
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
                     <div className="col-xs-8 db-col-left" style={{ paddingRight: "15px", paddingLeft: '15px' }}>
-                      <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} value={this.selectedItem.connectorProperties.opacity} min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
+                      <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} 
+                      // value={this.selectedItem.connectorProperties.opacity} 
+                      min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
-                      <input id='connectorOpacitySliderText' type="text" readOnly={true} className="db-readonly-input" />
+                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} readOnly={true}  type="text" className="db-readonly-input" />
                     </div>
                   </div>
                 </div>
@@ -979,7 +980,7 @@ class App extends React.Component {
                   </div>
                   <div className="row db-prop-row">
                     <div className="col-xs-8 db-col-left" id="textPositionDiv" style={{ width: '140px' }}>
-                      <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={4} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
+                      <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={3} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
                     </div>
                     <div className="col-xs-4 db-col-right" id="textColorDiv" style={{ width: '75px', }}>
                       <div className="db-color-container">
@@ -1100,6 +1101,7 @@ class App extends React.Component {
     this.selectedItem.nodeProperties.offsetY = this.nodeOffsetY;
     this.selectedItem.nodeProperties.width = this.width;
     this.selectedItem.nodeProperties.height = this.height;
+    // this.selectedItem.nodeProperties.aspectRatio = this.aspectRatio;
     this.selectedItem.nodeProperties.rotateAngle = this.rotate;
     this.selectedItem.nodeProperties.fillColor = this.fillColor;
     this.selectedItem.nodeProperties.gradientDirection = this.gradientDirection;
