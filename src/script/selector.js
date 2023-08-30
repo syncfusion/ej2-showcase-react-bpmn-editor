@@ -14,7 +14,7 @@ export class NodeProperties {
         this.mStrokeColor = '#000000';
         this.mStrokeStyle = 'None';
         this.mStrokeWidth = 1;
-        this.mOpacity = 0;
+        this.mOpacity = 100;
         this.mAspectRatio = false;
         this.mGradient = false;
         this.mGradientDirection = 'BottomToTop';
@@ -175,13 +175,13 @@ export class NodeProperties {
         let x2 = 0;
         let y1 = 0;
         let y2 = 0;
-        if (direction === 'LeftToRight') {
+        if (direction === 'Left To Right') {
             x1 = 100;
         }
-        else if (direction === 'BottomToTop') {
+        else if (direction === 'Bottom To Top') {
             y2 = 100;
         }
-        else if (direction === 'RightToLeft') {
+        else if (direction === 'Right To Left') {
             x2 = 100;
         }
         else {
@@ -793,8 +793,4 @@ export class SelectorViewModel {
             gradientElement.className = 'row db-prop-row db-gradient-style-hide';
         }
     };
-    gradientDirectionChange(args){
-        this.selectedItem.nodeProperties.gradientDirection = args.item.value;
-        // this.nodeProperties.getGradient(this.selectedItem.diagram.selectedItems.nodes[0]);
-    }
 }

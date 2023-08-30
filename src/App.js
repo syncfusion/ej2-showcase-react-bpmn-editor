@@ -46,7 +46,6 @@ export let nodeWidthChange;
 export let nodeHeightChange;
 export let rotationChange;
 export let nodeFillColor;
-export let gradientChange;
 export let gradientDirectionChange;
 export let gradientColorChange;
 export let opacityChange;
@@ -78,10 +77,10 @@ class App extends React.Component {
     super(props);
     this.animationSettings = { effect: 'None' };
     this.dropdownListFields = { text: 'text', value: 'value' };
-    this.drawingNode="";
+    this.drawingNode = "";
     this.pageSettings = {
       background: { color: '#FFFFFF' }, width: 600, height: 1500, margin: { left: 5, top: 5 },
-      orientation: 'Landscape', showPageBreaks: false,multiplePage : false
+      orientation: 'Landscape', showPageBreaks: false, multiplePage: false
     };
     this.nodes = [
       {
@@ -401,11 +400,11 @@ class App extends React.Component {
       ],
       showCustomMenuOnly: true
     }
-    this.drawingObject = { type: 'Orthogonal', shape: { type: 'Bpmn', sequence:'Normal'}};
+    this.drawingObject = { type: 'Orthogonal', shape: { type: 'Bpmn', sequence: 'Normal' } };
     this.scrollSettings = { canAutoScroll: true, scrollLimit: 'Infinity', minZoom: 0.25, maxZoom: 30 };
     this.rulerSettings = {
-      showRulers: true, dynamicGrid: true, horizontalRuler: { interval: 10, segmentWidth: 100, thickness: 25,markerColor:'#0078d4' },
-      verticalRuler: { interval: 10, segmentWidth: 100, thickness: 25,markerColor:'#0078d4' }
+      showRulers: true, dynamicGrid: true, horizontalRuler: { interval: 10, segmentWidth: 100, thickness: 25, markerColor: '#0078d4' },
+      verticalRuler: { interval: 10, segmentWidth: 100, thickness: 25, markerColor: '#0078d4' }
     }
     this.selectedItem = new SelectorViewModel();
     this.dropDownDataSources = new DropDownDataSources();
@@ -448,7 +447,6 @@ class App extends React.Component {
     nodeHeightChange = this.nodeHeight.bind(this);
     rotationChange = this.nodeRotationChange.bind(this);
     nodeFillColor = this.nodeFillColorChange.bind(this);
-    gradientChange = this.nodeGradientChange.bind(this);
     gradientDirectionChange = this.gradientDropDownChange.bind(this);
     gradientColorChange = this.nodeGradientColorChange.bind(this);
     opacityChange = this.nodeOpacityChange.bind(this);
@@ -536,7 +534,7 @@ class App extends React.Component {
                   <ItemDirective type="Separator" />
                   <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' />
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
-                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool}  />
+                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} />
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
                   <ItemDirective type="Separator" visible={false} />
                   <ItemDirective prefixIcon='sf-icon-group tb-icons' visible={false} tooltipText='Group' cssClass='tb-item-start' align='Center' />
@@ -773,8 +771,8 @@ class App extends React.Component {
                       </div>
                       <div className="row db-prop-row">
                         <div className="col-xs-12 db-col-left">
-                          <DropDownListComponent id="backgroundTypeDropdown" ref={backgroundType => this.backgroundType = backgroundType} value={"Solid"} dataSource={this.dropDownDataSources.backgroundTypes} fields={this.dropdownListFields} popupHeight={"200px"} 
-                          select={this.selectedItem.backgroundTypeSelect} />
+                          <DropDownListComponent id="backgroundTypeDropdown" ref={backgroundType => this.backgroundType = backgroundType} value={"Solid"} dataSource={this.dropDownDataSources.backgroundTypes} fields={this.dropdownListFields} popupHeight={"200px"}
+                            select={this.selectedItem.backgroundTypeSelect} />
                         </div>
                       </div>
                       <div id='gradientStyle' className="row db-prop-row db-gradient-style-hide">
@@ -786,8 +784,8 @@ class App extends React.Component {
                           </div>
                         </div>
                         <div className="col-xs-3 db-col-center">
-                          <DropDownButtonComponent id="gradientDirection" iconCss='sf-icon-gradient-alignment' ref={gradientDirection => this.gradientDirection = gradientDirection} dataSource={this.dropDownDataSources.gradientDirections} 
-                          fields={this.dropdownListFields} style={{ height:'26px', width:"48px" }} select={gradientDirectionChange} />
+                          <DropDownButtonComponent id="gradientDirection" iconCss='sf-icon-gradient-alignment' ref={gradientDirection => this.gradientDirection = gradientDirection} items={this.dropDownDataSources.gradientDirections}
+                            fields={this.dropdownListFields} style={{ height: '26px', width: "48px" }} select={gradientDirectionChange} />
                         </div>
                         <div className="col-xs-4 db-col-right">
                           <div className="db-color-container">
@@ -838,9 +836,9 @@ class App extends React.Component {
                           <span className="db-prop-text-style">Opacity</span>
                         </div>
                         <div className="col-xs-8 db-col-left" style={{ width: "130px", paddingRight: "10px" }}>
-                          <SliderComponent ref={opacity => this.opacity = opacity} 
-                          // value={this.selectedItem.nodeProperties.opacity} 
-                          min={0} max={100} step={10} type='MinRange' change={opacityChange} />
+                          <SliderComponent ref={opacity => this.opacity = opacity}
+                            // value={this.selectedItem.nodeProperties.opacity} 
+                            min={0} max={100} step={10} type='MinRange' change={opacityChange} />
                         </div>
                         <div className="col-xs-2 db-col-right">
                           <input id='nodeOpacitySliderText' type="text" value={this.selectedItem.nodeProperties.opacityText} readOnly={true} className="db-readonly-input" />
@@ -1163,13 +1161,12 @@ class App extends React.Component {
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
     }
   }
-  toolContextMenuOpen(args)
-  {
+  toolContextMenuOpen(args) {
     if (args.element.classList.contains('e-menu-parent')) {
       var popup = document.querySelector('#btnToolsMenu-popup');
       args.element.style.left = formatUnit(parseInt(args.element.style.left, 10) - parseInt(popup.style.left, 10));
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
-  }
+    }
   }
   //To set the connector line stroke style template
   lineItemTemplate(data) {
@@ -1512,7 +1509,7 @@ class App extends React.Component {
   // Function to render the DropDown template for the zoom toolbar
   zoomTemplate() {
     return (<div id="template_toolbar">
-      <DropDownButtonComponent id="btnZoomIncrement" items={this.dropDownDataSources.zoomMenuItems} content={this.selectedItem.scrollSettings.currentZoom} select={zoomchange} />
+      <DropDownButtonComponent id="btnZoomIncrement" items={this.dropDownDataSources.zoomMenuItems} content={Math.round(this.selectedItem.selectedDiagram.scrollSettings.currentZoom* 100)} select={zoomchange} />
     </div>);
   }
   //Method to change the values of zoom dropdown in toolbar
@@ -2036,17 +2033,14 @@ class App extends React.Component {
   }
   // Function to handle changes in the fill color of a node when it is interactively adjusted.
   nodeFillColorChange(args) {
+    this.selectedItem.nodeProperties.fillColor.value = args.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'fillColor', propertyValue: args.currentValue.hex });
-  }
-  // Function to changes to Gradient color of a node from solid fill color
-  nodeGradientChange(args) {
-    this.selectedItem.nodeProperties.gradient = args.value;
-    this.selectedItem.nodePropertyChange({ propertyName: 'gradient', propertyValue: args });
   }
   // To set gradient color direction in a node from the gradient dropdown menu.
   gradientDropDownChange(args) {
-    this.selectedItem.nodeProperties.gradientDirection = args.item.value;
+    this.selectedItem.nodeProperties.gradientDirection.value = args.item.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'gradientDirection', propertyValue: args });
+    // this.selectedItem.nodeProperties.getGradient(this.selectedItem.diagram.selectedItems.nodes[0]);
   }
   // Function to handle changes in the gradient color of a node when it is interactively adjusted.
   nodeGradientColorChange(args) {
