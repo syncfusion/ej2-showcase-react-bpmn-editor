@@ -534,7 +534,7 @@ class App extends React.Component {
                   <ItemDirective type="Separator" />
                   <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' />
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
-                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} />
+                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool}/>
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
                   <ItemDirective type="Separator" visible={false} />
                   <ItemDirective prefixIcon='sf-icon-group tb-icons' visible={false} tooltipText='Group' cssClass='tb-item-start' align='Center' />
@@ -1491,6 +1491,7 @@ class App extends React.Component {
         this.removeSelectedToolbarItem();
         args.item.cssClass += ' tb-item-selected';
       }
+      document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
     }
     diagram.dataBind();
   };
@@ -1506,6 +1507,10 @@ class App extends React.Component {
     }
     // toolbarEditor.dataBind();
     // document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
+    setTimeout(() => {
+      let con = document.getElementById('btnDrawConnector');
+      con.classList.remove('tb-item-selected');
+    }, 50);
   };
 
   // Function to render the DropDown template for the zoom toolbar
@@ -1573,7 +1578,7 @@ class App extends React.Component {
   // Function to render the DropDown template for the draw connector button
   connectorTool() {
     return (<div id="template_toolbar">
-      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} iconCss='sf-icon-orthogonal_line' />
+      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} iconCss='sf-icon-orthogonal_line' cssClass='tb-item-middle tb-item-selected'/>
     </div>);
   }
   //To hide or show the Property panel on button click
@@ -1584,7 +1589,7 @@ class App extends React.Component {
   //function to enable draw connector tool
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
-    let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
+    
     diagram.clearSelection();
     diagram.drawingObject.sourceID = '';
     diagram.drawingObject = { type: args.item.text };
@@ -1593,8 +1598,9 @@ class App extends React.Component {
     diagram.selectedItems.userHandles = [];
     diagram.dataBind();
     this.removeSelectedToolbarItem();
-    // toolbarEditor.items[5].cssClass += ' tb-item-selected';
     setTimeout(() => {
+      // let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
+      // toolbarEditor.items[5].cssClass += 'tb-item-selected';
       let con = document.getElementById('btnDrawConnector');
       con.classList.add('tb-item-selected');
     }, 100);
@@ -1665,13 +1671,11 @@ class App extends React.Component {
   }
   //Triggers when diagram created event triggered
   created() {
+    document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
     var diagram = this.selectedItem.selectedDiagram;
     diagram.fitToPage({ mode: 'Width' });
     var btnZoomIncrement = document.getElementById("btnZoomIncrement").ej2_instances[0];
     btnZoomIncrement.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
-    // var btnhide=(document.getElementById('hideProperty'));
-    // btnhide.ej2_instances[0].isPrimary = true;
-    // document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
   }
   // Function to handle changes in the scroll state and update the zoom content when scrolling in the diagram.
   scrollChange(args) {
@@ -1897,11 +1901,6 @@ class App extends React.Component {
         toolbarEditor.items[4].cssClass += ' tb-item-selected';
       }
     }
-    // else if (commandType === 'Orthogonal' || commandType === 'Straight' || commandType === 'Bezier') {
-    //   // toolbarEditor.items[5].cssClass += ' tb-item-selected';
-    //   // toolbarEditor.dataBind();
-    //   // document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
-    // }
     diagram.dataBind();
   }
 
