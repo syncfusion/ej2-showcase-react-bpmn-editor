@@ -64,7 +64,7 @@
          selectedItem.textProperties.fontFamily.value = text.fontFamily;
          selectedItem.textProperties.fontSize.value = text.fontSize;
          selectedItem.textProperties.opacity.value = text.opacity * 100;
-         selectedItem.textProperties.opacityText = selectedItem.textProperties.opacity.value + '%';
+         selectedItem.textProperties.opacityText = selectedItem.textProperties.opacity + '%';
          let toolbarTextStyle = document.getElementById('toolbarTextStyle');
          if (toolbarTextStyle) {
              toolbarTextStyle = toolbarTextStyle.ej2_instances[0];

@@ -299,11 +299,11 @@ export class DiagramClientSideEvents {
                 document.getElementById('textColorDiv').className = 'col-xs-6 db-col-right';
                 if (showConTextPanel) {
                     this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getConnectorTextPositions();
-                    // this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
+                    this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
                 }
                 else {
                     this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getNodeTextPositions();
-                    // this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
+                    this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
                 }
                 this.ddlTextPosition.dataBind();
             }
