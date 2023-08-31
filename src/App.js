@@ -1101,7 +1101,7 @@ class App extends React.Component {
     this.selectedItem.nodeProperties.offsetY = this.nodeOffsetY;
     this.selectedItem.nodeProperties.width = this.width;
     this.selectedItem.nodeProperties.height = this.height;
-    // this.selectedItem.nodeProperties.aspectRatio = this.aspectRatio;
+    this.selectedItem.nodeProperties.aspectRatio = this.aspectRatio;
     this.selectedItem.nodeProperties.rotateAngle = this.rotate;
     this.selectedItem.nodeProperties.fillColor = this.fillColor;
     this.selectedItem.nodeProperties.gradientDirection = this.gradientDirection;

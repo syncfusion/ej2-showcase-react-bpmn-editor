@@ -64,7 +64,7 @@
          selectedItem.textProperties.fontFamily.value = text.fontFamily;
          selectedItem.textProperties.fontSize.value = text.fontSize;
          selectedItem.textProperties.opacity.value = text.opacity * 100;
-         selectedItem.textProperties.opacityText = selectedItem.textProperties.opacity + '%';
+         selectedItem.textProperties.opacityText = selectedItem.textProperties.opacity.value + '%';
          let toolbarTextStyle = document.getElementById('toolbarTextStyle');
          if (toolbarTextStyle) {
              toolbarTextStyle = toolbarTextStyle.ej2_instances[0];
@@ -117,7 +117,7 @@
          selectedItem.connectorProperties.sourceType.value = connector.sourceDecorator.shape;
          selectedItem.connectorProperties.targetType.value = connector.targetDecorator.shape;
          selectedItem.connectorProperties.opacity.value = connector.style.opacity * 100;
-         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity + '%';
+         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity.value + '%';
          selectedItem.connectorProperties.lineJumpSize.value = connector.bridgeSpace;
          selectedItem.connectorProperties.lineJump.value = connector.constraints ? true : false;
          if (selectedItem.connectorProperties.lineJump.checked) {
