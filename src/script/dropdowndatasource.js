@@ -23,6 +23,13 @@ export class DropDownDataSources {
             { text: '5,3', value: '5,3', className: 'ddl-svg-style ddl_linestyle_five_three' },
             { text: '4,4,1', value: '4,4,1', className: 'ddl-svg-style ddl_linestyle_four_four_one' }
         ];
+        this.lineStyles = [
+            { text: 'None', value: 'None', className: 'ddl-svg-style ddl_linestyle_none' },
+            { text: '1,2', value: '1,2', className: 'ddl-svg-style ddl_linestyle_one_two' },
+            { text: '3,3', value: '3,3', className: 'ddl-svg-style ddl_linestyle_three_three' },
+            { text: '5,3', value: '5,3', className: 'ddl-svg-style ddl_linestyle_five_three' },
+            { text: '4,4,1', value: '4,4,1', className: 'ddl-svg-style ddl_linestyle_four_four_one' }
+        ];
         this.fontFamilyList = [
             { text: 'Arial', value: 'Arial' },
             { text: 'Aharoni', value: 'Aharoni' },
@@ -50,9 +57,13 @@ export class DropDownDataSources {
             { text: 'Bezier', value: 'Bezier' }
         ];
         this.gradientDirections = [
-            { text: 'BottomToTop', value: 'BottomToTop' }, { text: 'TopToBottom', value: 'TopToBottom' },
-            { text: 'RightToLeft', value: 'RightToLeft' }, { text: 'LeftToRight', value: 'LeftToRight' }
+            { text: 'Bottom To Top', value: 'Bottom To Top' }, { text: 'Top To Bottom', value: 'Top To Bottom' },
+            { text: 'Left To Right', value: 'Left To Right' },{ text: 'Right To Left', value: 'Right To Left' }
         ];
+        this.backgroundTypes=[
+            {text:'Solid', value:'Solid'},
+            {text:'Gradient',value:'Gradient'}
+        ]
         this.drawShapesList = [
             { iconCss: 'sf-icon-Square', text: 'Rectangle' },
             { iconCss: 'sf-icon-Ellipse', text: 'Ellipse' },
@@ -170,8 +181,17 @@ export class DropDownDataSources {
     }
     getToolsMenuItems() {
         const menuItems = [
-            { text: 'Selection Tool',iconCss: 'sf-icon-pointer' },
+            { text: 'Selection Tool', iconCss: 'sf-icon-pointer' },
             { text: 'Pan Tool', iconCss: 'sf-icon-pan tb-icons' },
+            { separator: true },
+            {
+                text: 'Connector Tool', iconCss: 'sf-icon-orthogonal_line',
+                items: [
+                    { text: 'Straight', iconCss: 'sf-icon-straight_line' },
+                    { text: 'Orthogonal', iconCss: 'sf-icon-orthogonal_line' },
+                    { text: 'Bezier', iconCss: 'sf-icon-bezier' },
+                ]
+            }
         ];
         return menuItems;
     }

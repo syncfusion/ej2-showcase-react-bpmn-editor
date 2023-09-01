@@ -26,9 +26,13 @@
          selectedItem.nodeProperties.fillColor.value = this.getHexColor(node.style.fill);
          selectedItem.nodeProperties.opacity.value = node.style.opacity * 100;
          selectedItem.nodeProperties.opacityText = selectedItem.nodeProperties.opacity.value + '%';
-        //  selectedItem.nodeProperties.aspectRatio.checked = node.constraints & NodeConstraints.AspectRatio ? true : false;
+         selectedItem.nodeProperties.aspectRatio = node.constraints & NodeConstraints.AspectRatio ? true : false;
+         let   aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
+         node.constraints & NodeConstraints.AspectRatio ? aspectRatioBtn.iconCss = 'sf-icon-lock': aspectRatioBtn.iconCss = 'sf-icon-unlock';
          selectedItem.nodeProperties.gradient = node.style.gradient.type !== 'None' ? true : false;
          const gradientElement = document.getElementById('gradientStyle');
+         var backgroundType = document.getElementById('backgroundTypeDropdown');
+         backgroundType.ej2_instances[0].index = 0;
          if (selectedItem.nodeProperties.gradient) {
              gradientElement.className = 'row db-prop-row db-gradient-style-show';
              selectedItem.nodeProperties.gradientColor.value = node.style.gradient.stops[1].color;
@@ -113,10 +117,10 @@
          selectedItem.connectorProperties.sourceType.value = connector.sourceDecorator.shape;
          selectedItem.connectorProperties.targetType.value = connector.targetDecorator.shape;
          selectedItem.connectorProperties.opacity.value = connector.style.opacity * 100;
-         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity + '%';
+         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity.value + '%';
          selectedItem.connectorProperties.lineJumpSize.value = connector.bridgeSpace;
          selectedItem.connectorProperties.lineJump.value = connector.constraints ? true : false;
-         if (selectedItem.connectorProperties.lineJump.value) {
+         if (selectedItem.connectorProperties.lineJump.checked) {
              document.getElementById('lineJumpSizeDiv').style.display = '';
          }
          else {
@@ -233,24 +237,30 @@
      //to enable Menu bar Items
      enableMenuItems(itemText, selectedItem) {
          if (selectedItem && selectedItem.selectedDiagram) {
+            var diagram = selectedItem.selectedDiagram;
              let selectedItems = selectedItem.selectedDiagram.selectedItems.nodes;
              selectedItems = selectedItems.concat(selectedItem.selectedDiagram.selectedItems.connectors);
              if (itemText) {
-                //  const commandType = itemText.replace(/[' ']/g, '');
-                 if (selectedItem.pasteData.length === 0 && itemText === 'Paste') {
-                     return true;
-                 }
+                var commandType = itemText.replace(/[' ']/g, '');
+                if (selectedItems.length === 0) {
+                    switch (commandType.toLowerCase()) {
+                        case 'cut':
+                            return true;
+                        case 'copy':
+                            return true;
+                        case 'delete':
+                            return true;
+                    }
+                }
+                if (!(diagram.commandHandler.clipboardData.pasteIndex !== undefined
+                    && diagram.commandHandler.clipboardData.clipObject !==undefined) && itemText === 'Paste') {
+                    return true;
+                }
                  if (itemText === 'Undo' && selectedItem.selectedDiagram.historyManager.undoStack.length === 0) {
                      return true;
                  }
                  if (itemText === 'Redo' && selectedItem.selectedDiagram.historyManager.redoStack.length === 0) {
                      return true;
-                 }
-                 if (selectedItem.diagramType !== 'GeneralDiagram') {
-                     if ( itemText === 'Paste' || itemText === 'Show Rulers' || itemText === 'Show Guides'
-                         || itemText === 'Show Grid' || itemText === 'Snap To Grid') {
-                         return true;
-                     }
                  }
              }
          }
@@ -481,9 +491,17 @@
              }
          }
      };
+     viewSelectionChange(diagram)
+     {
+        var items = (document.getElementById('btnViewMenu')).ej2_instances[0].items;
+        items[4].iconCss = diagram.pageSettings.showPageBreaks ? 'sf-icon-check-tick':'';
+        items[5].iconCss = diagram.pageSettings.multiplePage ? 'sf-icon-check-tick':'';
+        var showPageBreaks = document.getElementById('showPageBreaks').ej2_instances[0];
+        showPageBreaks.checked = diagram.pageSettings.showPageBreaks  ? true:false;
+     }
      //Returns the name of the Diagram
-     fileName(){
-        return document.getElementById('diagramName').innerHTML;
-    }
+     fileName() {
+         return document.getElementById('diagramName').innerHTML;
+     }
      
  }

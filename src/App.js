@@ -1,5 +1,5 @@
 import { createElement, closest, formatUnit } from "@syncfusion/ej2-base";
-import { DiagramComponent,SymbolPaletteComponent, DiagramAction, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
+import { DiagramComponent, SymbolPaletteComponent, DiagramAction, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
 import { Diagram, SnapConstraints, ControlPointsVisibility, BezierSmoothness } from "@syncfusion/ej2-react-diagrams";
 import { DropDownButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
 import { DiagramClientSideEvents } from "./script/events";
@@ -16,7 +16,7 @@ import { DiagramPropertyBinding } from './script/events';
 import { SelectorViewModel } from "./script/selector";
 import { UtilityMethods } from "./script/utilitymethods";
 Diagram.Inject(UndoRedo, DiagramContextMenu, Snapping, DataBinding);
-Diagram.Inject(PrintAndExport, BpmnDiagrams,ConnectorBridging, LayoutAnimation);
+Diagram.Inject(PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation);
 SymbolPalette.Inject(BpmnDiagrams);
 
 
@@ -28,6 +28,7 @@ export let loadDiagram;
 export let beforeOpen;
 export let designContextMenuOpen;
 export let editContextMenuOpen;
+export let toolContextMenuOpen;
 export let beforeClose;
 export let menuclick;
 export let tooledit;
@@ -45,7 +46,6 @@ export let nodeWidthChange;
 export let nodeHeightChange;
 export let rotationChange;
 export let nodeFillColor;
-export let gradientChange;
 export let gradientDirectionChange;
 export let gradientColorChange;
 export let opacityChange;
@@ -64,6 +64,7 @@ export let fontFamilyChange;
 export let fontSizeChange;
 export let fontColorChange;
 export let strokeColorChange;
+export let aspectRatioClick;
 export let nodeBorderChange;
 export let strokeWidthChange;
 export let fontOpacityChange;
@@ -71,15 +72,15 @@ export let btnHyperLink;
 export let hyperlinkInsert;
 
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.animationSettings = { effect: 'None' };
     this.dropdownListFields = { text: 'text', value: 'value' };
+    this.drawingNode = "";
     this.pageSettings = {
-      background: { color: '#FFFFFF' }, width: 600, height: 1460, margin: { left: 5, top: 5 },
-      orientation: 'Landscape', showPageBreaks: false,
+      background: { color: '#FFFFFF' }, width: 600, height: 1500, margin: { left: 5, top: 5 },
+      orientation: 'Landscape', showPageBreaks: false, multiplePage: false
     };
     this.nodes = [
       {
@@ -280,9 +281,29 @@ class App extends React.Component {
           text: 'Select All', id: 'SelectAll', target: '.e-diagramcontent', iconCss: 'e-menu-icon'
         },
         {
+          text: 'Association', id: 'Association', iconCss: 'e-bpmn-icons'
+        },
+        {
+          text: 'Sequence', id: 'Sequence', iconCss: 'e-bpmn-icons'
+        },
+        {
+          text: 'Message Flow', id: 'MessageFlow', iconCss: 'e-bpmn-icons'
+        },
+        {
+          text: 'Condition type', id: 'Condition type', items: [
+            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' }, { text: 'Conditional', id: 'Conditional Flow', iconCss: 'e-bpmn-icons' },
+            { text: 'Normal', id: 'Normal Flow', iconCss: 'e-bpmn-icons' },
+          ]
+        },
+        {
+          text: 'Direction', id: 'Direction', items: [
+            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' }, { text: 'Directional', id: 'Directional', iconCss: 'e-bpmn-icons' },
+            { text: 'Bi-Directional', id: 'BiDirectional', iconCss: 'e-bpmn-icons' },
+          ]
+        },
+        {
           text: 'Ad-Hoc', id: 'Adhoc',
-          items: [{ text: 'None', iconCss: 'e-adhocs e-bpmn-event e-bpmn-icons e-None', id: 'AdhocNone' },
-          { iconCss: 'e-adhocs e-bpmn-icons e-adhoc', text: 'Ad-Hoc', id: 'AdhocAdhoc' }]
+          iconCss: 'e-adhocs e-bpmn-icons e-adhoc',
         }, {
           text: 'Loop', id: 'Loop',
           items: [{ text: 'None', iconCss: 'e-loop e-bpmn-icons e-None', id: 'LoopNone' },
@@ -291,17 +312,17 @@ class App extends React.Component {
           { text: 'Sequence Multi-Instance', iconCss: 'e-loop e-bpmn-icons e-SequentialMI', id: 'SequenceMultiInstance' }]
         }, {
           text: 'Compensation', id: 'taskCompensation',
-          items: [{ text: 'None', iconCss: 'e-compensation e-bpmn-icons e-None', id: 'CompensationNone' },
-          { iconCss: 'e-compensation e-bpmn-icons e-Compensation', text: 'Compensation', id: 'CompensationCompensation' }]
+          iconCss: 'e-compensation e-bpmn-icons e-Compensation',
         }, {
           text: 'Activity-Type', id: 'Activity-Type',
-          items: [{ text: 'Collapsed sub-process', iconCss: 'e-bpmn-icons e-SubProcess', id: 'CollapsedSubProcess' },
-          { iconCss: 'e-bpmn-icons e-Task', text: 'Expanded sub-process', id: 'ExpandedSubProcess' }]
+          items: [{ iconCss: 'e-bpmn-icons e-Task', text: 'Task', id: 'Task' }
+            , { text: 'Collapsed sub-process', iconCss: 'e-bpmn-icons e-SubProcess', id: 'SubProcess' },
+          ]
         }, {
-          text: 'Boundry', id: 'Boundry',
+          text: 'Boundary', id: 'Boundary',
           items: [{ text: 'Default', iconCss: 'e-boundry e-bpmn-icons e-Default', id: 'Default' },
           { text: 'Call', iconCss: 'e-boundry e-bpmn-icons e-Call', id: 'BoundryCall' },
-          { text: 'Event', iconCss: 'e-boundry e-bpmn-icons e-Event', id: 'BoundryEvent' }]
+          { text: 'Event', iconCss: 'e-boundry e-bpmn-icons e-Event', id: 'BoundryEvent' },]
         }, {
           text: 'Data Object', id: 'DataObject',
           items: [{ text: 'None', iconCss: 'e-data e-bpmn-icons e-None', id: 'DataObjectNone' },
@@ -309,12 +330,10 @@ class App extends React.Component {
           { text: 'Output', iconCss: 'e-data e-bpmn-icons e-DataOutput', id: 'Output' }]
         }, {
           text: 'Collection', id: 'collection',
-          items: [{ text: 'None', iconCss: 'e-collection e-bpmn-icons e-None', id: 'collectionNone' },
-          { text: 'Collection', iconCss: 'e-collection e-bpmn-icons e-ParallelMI', id: 'Collectioncollection' }]
+          iconCss: 'e-collection e-bpmn-icons e-ParallelMI',
         }, {
-          text: 'Call', id: 'DeftCall',
-          items: [{ text: 'None', iconCss: 'e-call e-bpmn-icons e-None', id: 'CallNone' },
-          { text: 'Call', iconCss: 'e-call e-bpmn-icons e-CallActivity', id: 'CallCall' }]
+          text: 'Task Call', id: 'DeftCall',
+          iconCss: 'e-call e-bpmn-icons e-CallActivity',
         }, {
           text: 'Trigger Result', id: 'TriggerResult',
           items: [{ text: 'None', id: 'TriggerNone', iconCss: 'e-trigger e-bpmn-icons e-None' },
@@ -336,10 +355,10 @@ class App extends React.Component {
           text: 'Event Type', id: 'EventType',
           items: [{ text: 'Start', id: 'Start', iconCss: 'e-event e-bpmn-icons e-NoneStart', },
           { text: 'Intermediate', id: 'Intermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
-          { text: 'NonInterruptingStart', id: 'NonInterruptingStart', iconCss: 'e-event e-bpmn-icons e-Noninterruptingstart' },
-          { text: 'ThrowingIntermediate', id: 'ThrowingIntermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
+          { text: 'Non-Interrupting Start', id: 'NonInterruptingStart', iconCss: 'e-event e-bpmn-icons e-Noninterruptingstart' },
+          { text: 'Throwing Intermediate', id: 'ThrowingIntermediate', iconCss: 'e-event e-bpmn-icons e-InterruptingNone' },
           {
-            text: 'NonInterruptingIntermediate', id: 'NonInterruptingIntermediate',
+            text: 'Non-Interrupting Intermediate', id: 'NonInterruptingIntermediate',
             iconCss: 'e-event e-bpmn-icons e-NoninterruptingIntermediate'
           },
           { text: 'End', id: 'End', iconCss: 'e-event e-bpmn-icons e-NoneEnd' }]
@@ -348,8 +367,8 @@ class App extends React.Component {
           items: [
             { text: 'None', id: 'TaskNone', iconCss: 'e-task e-bpmn-icons e-None' },
             { text: 'Service', id: 'Service', iconCss: 'e-task e-bpmn-icons e-ServiceTask' },
-            { text: 'BusinessRule', id: 'BusinessRule', iconCss: 'e-task e-bpmn-icons e-BusinessRule' },
-            { text: 'InstantiatingReceive', id: 'InstantiatingReceive', iconCss: 'e-task e-bpmn-icons e-InstantiatingReceive' },
+            { text: 'Business Rule', id: 'BusinessRule', iconCss: 'e-task e-bpmn-icons e-BusinessRule' },
+            { text: 'Instantiating Receive', id: 'InstantiatingReceive', iconCss: 'e-task e-bpmn-icons e-InstantiatingReceive' },
             { text: 'Manual', id: 'Manual', iconCss: 'e-task e-bpmn-icons e-ManualCall' },
             { text: 'Receive', id: 'Receive', iconCss: 'e-task e-bpmn-icons e-InMessage' },
             { text: 'Script', id: 'Script', iconCss: 'e-task e-bpmn-icons e-ScriptCall' },
@@ -359,39 +378,14 @@ class App extends React.Component {
         }, {
           text: 'GateWay', id: 'GateWay',
           iconCss: 'e-bpmn-icons e-Gateway', items: [
-            { text: 'None', id: 'GatewayNone', iconCss: 'e-gate e-bpmn-icons e-None' },
+            { text: 'None', id: 'GatewayNone', iconCss: 'e-gate e-bpmn-icons e-None sf-icon-check-tick' },
             { text: 'Exclusive', iconCss: 'e-gate e-bpmn-icons e-ExclusiveGatewayWithMarker', id: 'Exclusive' },
             { text: 'Inclusive', iconCss: 'e-gate e-bpmn-icons e-InclusiveGateway', id: 'Inclusive' },
             { text: 'Parallel', iconCss: 'e-gate e-bpmn-icons e-ParallelGateway', id: 'GatewayParallel' },
             { text: 'Complex', iconCss: 'e-gate e-bpmn-icons e-ComplexGateway', id: 'Complex' },
-            { text: 'EventBased', iconCss: 'e-gate e-bpmn-icons e-EventBasedGateway', id: 'EventBased' },
-            { text: 'ExclusiveEventBased', iconCss: 'e-gate e-bpmn-icons e-ExclusiveEventBased', id: 'ExclusiveEventBased' },
-            { text: 'ParallelEventBased', iconCss: 'e-gate e-bpmn-icons e-ParallelEventBasedGatewaytostart', id: 'ParallelEventBased' }
-          ]
-        },
-        {
-          text: 'Add Text Annotation', id: 'TextAnnotation', iconCss: 'e-bpmn-icons e-TextAnnotation'
-        },
-        {
-          text: 'Association', id: 'Association', iconCss: 'e-bpmn-icons'
-        },
-        {
-          text: 'Sequence', id: 'Sequence', iconCss: 'e-bpmn-icons'
-        },
-        {
-          text: 'Message Flow', id: 'MessageFlow', iconCss: 'e-bpmn-icons'
-        },
-        {
-          text: 'Condition type', id: 'Condition type', items: [
-            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' }, { text: 'Conditional', id: 'Conditional Flow', iconCss: 'e-bpmn-icons' },
-            { text: 'Normal', id: 'Normal Flow', iconCss: 'e-bpmn-icons' },
-          ]
-        },
-        {
-          text: 'Direction', id: 'Direction', items: [
-            { text: 'Default', id: 'None', iconCss: 'e-bpmn-icons' },
-            { text: 'Directional', id: 'Directional', iconCss: 'e-bpmn-icons' },
-            { text: 'Bi-Directional', id: 'BiDirectional', iconCss: 'e-bpmn-icons' },
+            { text: 'Event Based', iconCss: 'e-gate e-bpmn-icons e-EventBasedGateway', id: 'EventBased' },
+            { text: 'Exclusive Event Based', iconCss: 'e-gate e-bpmn-icons e-ExclusiveEventBased', id: 'ExclusiveEventBased' },
+            { text: 'Parallel Event Based', iconCss: 'e-gate e-bpmn-icons e-ParallelEventBasedGatewaytostart', id: 'ParallelEventBased' }
           ]
         },
         {
@@ -400,13 +394,17 @@ class App extends React.Component {
             { text: 'Non-Initiating Message', id: 'NonInitiatingMessage', iconCss: 'e-bpmn-icons' },
           ]
         },
+        {
+          text: 'Add Text Annotation', id: 'TextAnnotation', iconCss: 'e-bpmn-icons e-TextAnnotation'
+        }
       ],
       showCustomMenuOnly: true
     }
+    this.drawingObject = { type: 'Orthogonal', shape: { type: 'Bpmn', sequence: 'Normal' } };
     this.scrollSettings = { canAutoScroll: true, scrollLimit: 'Infinity', minZoom: 0.25, maxZoom: 30 };
     this.rulerSettings = {
-      showRulers: true, dynamicGrid: true, horizontalRuler: { interval: 10, segmentWidth: 100, thickness: 25, },
-      verticalRuler: { interval: 10, segmentWidth: 100, thickness: 25 }
+      showRulers: true, dynamicGrid: true, horizontalRuler: { interval: 10, segmentWidth: 100, thickness: 25, markerColor: '#0078d4' },
+      verticalRuler: { interval: 10, segmentWidth: 100, thickness: 25, markerColor: '#0078d4' }
     }
     this.selectedItem = new SelectorViewModel();
     this.dropDownDataSources = new DropDownDataSources();
@@ -427,6 +425,7 @@ class App extends React.Component {
     beforItem = this.beforeItemRender.bind(this);
     designContextMenuOpen = this.designContextMenuOpen.bind(this);
     editContextMenuOpen = this.editContextMenuOpen.bind(this);
+    toolContextMenuOpen = this.toolContextMenuOpen.bind(this);
     beforeOpen = this.arrangeMenuBeforeOpen.bind(this);
     beforeClose = this.arrangeMenuBeforeClose.bind(this);
     menuclick = this.menuClick.bind(this);
@@ -448,7 +447,6 @@ class App extends React.Component {
     nodeHeightChange = this.nodeHeight.bind(this);
     rotationChange = this.nodeRotationChange.bind(this);
     nodeFillColor = this.nodeFillColorChange.bind(this);
-    gradientChange = this.nodeGradientChange.bind(this);
     gradientDirectionChange = this.gradientDropDownChange.bind(this);
     gradientColorChange = this.nodeGradientColorChange.bind(this);
     opacityChange = this.nodeOpacityChange.bind(this);
@@ -470,7 +468,7 @@ class App extends React.Component {
     bridgeChange = this.connectorBridgeChange.bind(this);
     bridgeSizeChange = this.connectorBridgeSize.bind(this);
     connectorOpacityChange = this.ConnectorOpacityChange.bind(this);
-   
+    aspectRatioClick = this.aspectRatioClick.bind(this);
 
   }
   componentDidMount() {
@@ -479,13 +477,14 @@ class App extends React.Component {
     document.onmouseover = this.menumouseover.bind(this);
     this.diagramEvents.ddlTextPosition = this.ddlTextPosition;
     const context = this;
-    setTimeout(() => { context.loadPage(); }, 2000);
+    setTimeout(() => { context.loadPage(); }, 20);
   }
   render() {
     return (<div>
       <input type="file" id="fileupload" name="UploadFiles"></input>
       <ContextMenuComponent id='designContextMenu' ref={arrangeContextMenu => (this.arrangeContextMenu) = arrangeContextMenu} animationSettings={this.animationSettings} items={this.dropDownDataSources.designMenuItems} onOpen={designContextMenuOpen} cssClass="designMenu" beforeItemRender={beforItem} select={menuclick} beforeClose={() => this.arrangeMenuBeforeClose} />
       <ContextMenuComponent id='editContextMenu' ref={editContextMenu => (this.editContextMenu) = editContextMenu} animationSettings={this.animationSettings} onOpen={editContextMenuOpen} beforeItemRender={beforItem} select={menuclick} items={this.dropDownDataSources.editMenuItems} cssClass="editMenu" beforeClose={() => this.arrangeMenuBeforeClose} />
+      <ContextMenuComponent id='toolsContextMenu' ref={toolContextMenu => (this.toolContextMenu) = toolContextMenu} animationSettings={this.animationSettings} onOpen={toolContextMenuOpen} beforeItemRender={beforItem} select={menuclick} items={this.dropDownDataSources.toolsMenuItems} cssClass="toolMenu" beforeClose={() => this.arrangeMenuBeforeClose} />
       <div className='diagrambuilder-container' >
         <div className='header navbar'>
           <div className="db-header-container">
@@ -515,7 +514,7 @@ class App extends React.Component {
                   beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
               </div>
               <div className="db-menu-style">
-                <DropDownButtonComponent id="btnToolsMenu" cssClass={"db-dropdown-menu"} content="Tools" items={this.dropDownDataSources.toolsMenuItems} select={menuclick}
+                <DropDownButtonComponent id="btnToolsMenu" cssClass={"db-dropdown-menu"} content="Tools" target='.e-contextmenu-wrapper.toolMenu' items={this.dropDownDataSources.toolsMenuItems} select={menuclick}
                   beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
               </div>
               <div className="db-menu-style">
@@ -527,36 +526,35 @@ class App extends React.Component {
           </div>
           <div className='db-toolbar-editor' >
             <div className='db-toolbar-container'>
-              <ToolbarComponent ref={toolbar => (this.toolbarEditor) = toolbar} id='toolbarEditor' overflowMode='Scrollable' clicked={tooledit}>
+              <ToolbarComponent ref={toolbar => (this.toolbarEditor) = toolbar} id='toolbarEditor' overflowMode='Scrollable' clicked={tooledit} >
                 <ItemsDirective>
 
                   <ItemDirective prefixIcon='sf-icon-undo tb-icons' tooltipText='Undo' cssClass='tb-item-start tb-item-undo' />
                   <ItemDirective prefixIcon="sf-icon-redo tb-icons" tooltipText="Redo" cssClass="tb-item-end tb-item-redo" />
                   <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' visible='false' />
+                  <ItemDirective prefixIcon='sf-icon-pan' tooltipText='Pan Tool' cssClass='tb-item-start' />
                   <ItemDirective prefixIcon='sf-icon-pointer' tooltipText='Select Tool' cssClass='tb-item-middle tb-item-selected' />
-                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool} cssClass="tb-item-middle tb-drawtools-dropdown-btn tb-custom-diagram-disable" />
+                  <ItemDirective prefixIcon='sf-icon-orthogonal_line' tooltipText='Connector Tool' template={connectorTool}/>
                   <ItemDirective prefixIcon='sf-icon-text tb-icons' tooltipText='Text Tool' cssClass='tb-item-end' />
-                  <ItemDirective type="Separator" />
-                  <ItemDirective prefixIcon='sf-icon-group tb-icons' tooltipText='Group' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon="sf-icon-ungroup tb-icons" tooltipText="UnGroup" cssClass="tb-item-end" align='Center' />
-                  <ItemDirective type="Separator" align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_left' tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_center' tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_right' tooltipText='AlignRight' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_top' tooltipText='AlignTop' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_middle' tooltipText='AlignMiddle' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-align_bottom' tooltipText='AlignBottom' cssClass='tb-item-end' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_vertical' tooltipText='Distribute Vertically' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal' tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective type="Separator" align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-send-to-back' tooltipText='Send To Back' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-bring-to-front' tooltipText='Bring To Front' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-send-backward' tooltipText='Send Backward' cssClass='tb-item-middle' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-bring-forward' tooltipText='Bring Forward' cssClass='tb-item-end' align='Center' />
-                  <ItemDirective type="Separator" align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-lock' tooltipText='Lock' cssClass='tb-item-start' align='Center' />
-                  <ItemDirective prefixIcon='sf-icon-delete' tooltipText='Delete' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective type="Separator" visible={false} />
+                  <ItemDirective prefixIcon='sf-icon-group tb-icons' visible={false} tooltipText='Group' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective type="Separator" visible={false} align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_left' visible={false} tooltipText='AlignLeft' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_center' visible={false} tooltipText='AlignCenter' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_right' visible={false} tooltipText='AlignRight' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_top' visible={false} tooltipText='AlignTop' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_middle' visible={false} tooltipText='AlignMiddle' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-align_bottom' visible={false} tooltipText='AlignBottom' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_vertical' visible={false} tooltipText='Distribute Vertically' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-distribute_horizontal' visible={false} tooltipText='Distribute Horizontally' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective type="Separator" visible={false} align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-send-to-back' visible={false} tooltipText='Send To Back' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-bring-to-front' visible={false} tooltipText='Bring To Front' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-send-backward' visible={false} tooltipText='Send Backward' cssClass='tb-item-middle' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-bring-forward' visible={false} tooltipText='Bring Forward' cssClass='tb-item-end' align='Center' />
+                  <ItemDirective type="Separator" visible={false} align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-lock' visible={false} tooltipText='Lock' cssClass='tb-item-start' align='Center' />
+                  <ItemDirective prefixIcon='sf-icon-delete' visible={false} tooltipText='Delete' cssClass='tb-item-end' align='Center' />
                   <ItemDirective type="Separator" />
                   <ItemDirective cssClass="tb-item-end tb-zoom-dropdown-btn" template={zoomTemplate} align='Right' />
 
@@ -564,7 +562,7 @@ class App extends React.Component {
               </ToolbarComponent>
             </div>
             <div className="db-toolbar-hide-btn">
-              <ButtonComponent id="hideProperty" iconCss='sf-icon-properties tb-icons' onClick={propertyPanel} />
+              <ButtonComponent id="hideProperty" isPrimary="true" iconCss='sf-icon-properties' title="Hide/Show Properties" onClick={propertyPanel} />
             </div>
           </div>
         </div>
@@ -574,6 +572,7 @@ class App extends React.Component {
               <SymbolPaletteComponent ref={symbolpalette => (this.symbolpalette) = symbolpalette} id="symbolpalette" width="100%" height="100%"
                 expandMode={this.palettes.expandMode}
                 palettes={this.palettes.palettes}
+                enableSearch='true'
                 getNodeDefaults={this.palettes.setPaletteNodeDefaults}
                 getConnectorDefaults={this.palettes.setPaletteConnectorDefaults}
                 symbolPreview={this.palettes.symbolPreview} symbolMargin={this.palettes.symbolMargin}
@@ -584,29 +583,32 @@ class App extends React.Component {
           <div className='main-content' role='main'>
             <div className="db-diagram-container">
               <div id="diagramContainerDiv" className='db-current-diagram-container'>
-                <DiagramComponent ref={diagram => (this.diagram = diagram)} id="diagram" 
-                width={"100%"} 
-                height={"100%"}
-                  scrollSettings={this.scrollSettings} 
-                  selectedItems={this.selectedItems} 
+                <DiagramComponent ref={diagram => (this.diagram = diagram)} id="diagram"
+                  width={"100%"}
+                  height={"100%"}
+                  drawingObject={this.drawingObject}
+                  scrollSettings={this.scrollSettings}
+                  selectedItems={this.selectedItems}
                   rulerSettings={this.rulerSettings}
-                  pageSettings={this.pageSettings} 
-                  nodes={this.nodes} 
+                  pageSettings={this.pageSettings}
+                  nodes={this.nodes}
                   connectors={this.connectors}
                   backgroundColor="transparent"
-                  selectionChange={this.diagramEvents.selectionChange.bind(this.diagramEvents)} 
+                  selectionChange={this.diagramEvents.selectionChange.bind(this.diagramEvents)}
                   positionChange={this.diagramEvents.nodePositionChange.bind(this.diagramEvents)}
-                  historyChange={this.diagramEvents.historyChange.bind(this.diagramEvents)} 
+                  historyChange={this.diagramEvents.historyChange.bind(this.diagramEvents)}
                   created={this.created.bind(this)}
                   sizeChange={this.diagramEvents.nodeSizeChange.bind(this.diagramEvents)}
                   rotateChange={this.diagramEvents.nodeRotationChange.bind(this.diagramEvents)}
-                  scrollChange={this.scrollChange.bind(this)} 
-                  getConnectorDefaults={this.getConnectorDefaults.bind(this)} 
+                  scrollChange={this.scrollChange.bind(this)}
+                  getNodeDefaults={this.getNodeDefaults.bind(this)}
+                  getConnectorDefaults={this.getConnectorDefaults.bind(this)}
                   contextMenuSettings={this.contextMenu}
                   collectionChange={this.diagramEvents.collectionChange.bind(this.diagramEvents)}
-                  contextMenuClick={this.diagramEvents.contextMenuClick.bind(this)} 
-                  contextMenuOpen={this.diagramEvents.contextMenuOpen.bind(this)} 
+                  contextMenuClick={this.diagramEvents.contextMenuClick.bind(this)}
+                  contextMenuOpen={this.diagramEvents.contextMenuOpen.bind(this)}
                   dragEnter={this.diagramEvents.dragEnter.bind(this)}
+                  onUserHandleMouseDown={this.diagramEvents.userHandleClick.bind(this)}
                 />
               </div>
 
@@ -619,11 +621,11 @@ class App extends React.Component {
                     <ButtonComponent id="hide-properties" style={{ float: 'right', marginTop: "-5px" }} iconCss="sf-icon-close" cssClass="e-flat" onClick={propertyPanel} />
                   </div>
                   <div className="row db-prop-row">
-                    <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}></div>
-                    <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
+                    <div className="row db-prop-header-text" style={{ paddingTop: '10px', paddingBottom: "5px" }}>Format</div>
+                    <DropDownListComponent id='pageformat' ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} change={this.diagramPropertyBinding.paperListChange.bind(this.diagramPropertyBinding)} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
                   </div>
                   <div className="row db-prop-header-text" style={{ paddingTop: '10px' }}>Orientation</div>
-                  <div className="row db-prop-row" id="pageOrientation" style={{ paddingTop: '10px' }}>
+                  <div className="row db-prop-row" id="pageOrientation" >
                     <div className="col-xs-6 db-prop-col-style" style={{ marginRight: "0px", paddingTop: '10px' }}>
                       <ButtonComponent id="pagePortrait" isPrimary='true' isToggle="true" name='pageSettings' style={{ fontSize: '12px' }} iconCss="sf-icon-portrait" cssClass="e-flat e-primary" onClick={this.diagramPropertyBinding.pageOrientationChange.bind(this.diagramPropertyBinding)} content="Portrait" />
                     </div>
@@ -685,7 +687,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetX => (this.nodeOffsetX = nodeOffsetX)} id="nodeOffsetX" format="n0"
-                              value={this.selectedItem.nodeProperties.offsetX}
+                              // value={this.selectedItem.nodeProperties.offsetX}
                               change={offsetXChange} />
                           </div>
                         </div>
@@ -697,7 +699,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={nodeOffsetY => (this.nodeOffsetY = nodeOffsetY)} id="nodeOffsetY" format="n0"
-                              value={this.selectedItem.nodeProperties.offsetY}
+                              // value={this.selectedItem.nodeProperties.offsetY}
                               change={offsetYchange} />
                           </div>
                         </div>
@@ -711,7 +713,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={width => (this.width = width)} id="nodeWidth" min={1} format="n0"
-                              value={this.selectedItem.nodeProperties.width}
+                              // value={this.selectedItem.nodeProperties.width}
                               change={nodeWidthChange} />
                           </div>
                         </div>
@@ -723,10 +725,14 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent style={{ width: "72px" }} ref={height => (this.height = height)} id="nodeHeight" min={1} format="n0"
-                              value={this.selectedItem.nodeProperties.height}
+                              // value={this.selectedItem.nodeProperties.height}
                               change={nodeHeightChange} />
                           </div>
                         </div>
+                      </div>
+                      <div className="col-xs-2 db-col-left" style={{ width: "20px", paddingLeft: "7px" }}>
+                        <ButtonComponent style={{ height: '26px', width: '26px', backgroundColor: '#ffff' }} ref={aspectRatio => (this.aspectRatio = aspectRatio)} onClick={aspectRatioClick}
+                          id='aspectRatioBtn' iconCss="sf-icon-unlock" isToggle={true} cssClass="e-flat"/>
                       </div>
                     </div>
                     <div className="row db-prop-row">
@@ -742,7 +748,7 @@ class App extends React.Component {
                           </div>
                           <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
                             <NumericTextBoxComponent ref={rotate => (this.rotate = rotate)} id="nodeRotateAngle" format="n0"
-                              value={this.selectedItem.nodeProperties.rotateAngle}
+                              // value={this.selectedItem.nodeProperties.rotateAngle}
                               change={rotationChange} />
                           </div>
                         </div>
@@ -751,7 +757,7 @@ class App extends React.Component {
                     <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }} />
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
-                        <ButtonComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} id='insertHyperlink' content="Insert Link" onClick={hyperlinkInsert} cssClass="e-outline" isPrimary="true" />
+                        <ButtonComponent ref={nodeInsert => (this.nodeInsert = nodeInsert)} style={{ fontSize: '10px' }} id='insertHyperlink' content="Insert Link" onClick={hyperlinkInsert} cssClass="e-outline" isPrimary="true" />
 
                       </div>
                     </div>
@@ -763,25 +769,27 @@ class App extends React.Component {
                         Background Type
                       </div>
                       <div className="row db-prop-row">
-                        <div className="col-xs-6 db-col-left">
-                          <div className="db-color-container">
-                            <div className="db-color-input">
-                              <ColorPickerComponent ref={fillColor => (this.fillColor = fillColor)} showButtons='false' type="color" mode="Palette" value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} id="nodeFillColor" />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-xs-4 db-col-left">
-                          <CheckBoxComponent ref={gradient => (this.gradient = gradient)} id='gradient' label="Gradient" checked={this.selectedItem.nodeProperties.gradient} change={gradientChange} />
+                        <div className="col-xs-12 db-col-left">
+                          <DropDownListComponent id="backgroundTypeDropdown" ref={backgroundType => this.backgroundType = backgroundType} value={"Solid"} dataSource={this.dropDownDataSources.backgroundTypes} fields={this.dropdownListFields} popupHeight={"200px"}
+                            select={this.selectedItem.backgroundTypeSelect} />
                         </div>
                       </div>
                       <div id='gradientStyle' className="row db-prop-row db-gradient-style-hide">
-                        <div className="col-xs-6 db-col-center">
-                          <DropDownListComponent ref={gradientDirection => this.gradientDirection = gradientDirection} value={this.selectedItem.nodeProperties.gradientDirection} dataSource={this.dropDownDataSources.gradientDirections} fields={this.dropdownListFields} popupHeight={"200px"} change={gradientDirectionChange} />
+                        <div className="col-xs-5 db-col-left">
+                          <div className="db-color-container">
+                            <div className="db-color-input">
+                              <ColorPickerComponent type="color" mode="Palette" showButtons='' ref={fillColor => this.fillColor = fillColor} value={this.selectedItem.nodeProperties.fillColor} change={nodeFillColor} />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-xs-3 db-col-center">
+                          <DropDownButtonComponent id="gradientDirection" iconCss='sf-icon-gradient-alignment' ref={gradientDirection => this.gradientDirection = gradientDirection} items={this.dropDownDataSources.gradientDirections}
+                            fields={this.dropdownListFields} style={{ height: '26px', width: "48px" }} select={gradientDirectionChange} />
                         </div>
                         <div className="col-xs-4 db-col-right">
                           <div className="db-color-container">
                             <div className="db-color-input">
-                              <ColorPickerComponent type="color" mode="Palette" showButtons='false' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} change={gradientColorChange} />
+                              <ColorPickerComponent type="color" mode="Palette" showButtons='' ref={gradientColor => this.gradientColor = gradientColor} value={this.selectedItem.nodeProperties.gradientColor} id="nodeGradientColor" change={gradientColorChange} />
                             </div>
                           </div>
                         </div>
@@ -810,14 +818,14 @@ class App extends React.Component {
                         <div className="col-xs-2 db-col-center">
                           <div className="db-color-container" style={{ width: "55px", height: "26px", marginLeft: "0px" }}>
                             <div className="db-color-input">
-                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='false' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
+                              <ColorPickerComponent id="nodeStrokeColor" ref={strokeColor => this.strokeColor = strokeColor} type="color" showButtons='' mode="Palette" value={this.selectedItem.nodeProperties.strokeColor} change={strokeColorChange} />
                             </div>
                           </div>
                         </div>
                         <div className="col-xs-4 db-col-center" style={{ width: "70px", marginLeft: "25px" }}>
                           <div className="db-text-container" style={{ width: "70px" }}>
                             <div className="db-text-input">
-                              <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} style={{ width: "70px" }} id="nodeStrokeWidth" min={0} step={0.5} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
+                              <NumericTextBoxComponent ref={strokeWidth => this.strokeWidth = strokeWidth} style={{ width: "70px" }} id="nodeStrokeWidth" min={0} step={0.5} format={"n0"} value={this.selectedItem.nodeProperties.strokeWidth} change={strokeWidthChange} />
                             </div>
                           </div>
                         </div>
@@ -827,7 +835,9 @@ class App extends React.Component {
                           <span className="db-prop-text-style">Opacity</span>
                         </div>
                         <div className="col-xs-8 db-col-left" style={{ width: "130px", paddingRight: "10px" }}>
-                          <SliderComponent ref={opacity => this.opacity = opacity} value={this.selectedItem.nodeProperties.opacity} min={0} max={100} step={10} type='MinRange' change={opacityChange} />
+                          <SliderComponent ref={opacity => this.opacity = opacity}
+                            // value={this.selectedItem.nodeProperties.opacity} 
+                            min={0} max={100} step={10} type='MinRange' change={opacityChange} />
                         </div>
                         <div className="col-xs-2 db-col-right">
                           <input id='nodeOpacitySliderText' type="text" value={this.selectedItem.nodeProperties.opacityText} readOnly={true} className="db-readonly-input" />
@@ -857,7 +867,7 @@ class App extends React.Component {
                     <div className="col-xs-4 db-col-left">
                       <div className="db-color-container" style={{ width: '77px', marginLeft: "18px" }}>
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={lineColor => this.lineColor = lineColor} showButtons="false" mode="Palette" type="color" id="lineColor" value={this.selectedItem.connectorProperties.lineColor} change={lineColorChange} />
+                          <ColorPickerComponent ref={lineColor => this.lineColor = lineColor} showButtons="" mode="Palette" type="color" id="lineColor" value={this.selectedItem.connectorProperties.lineColor} change={lineColorChange} />
                         </div>
                       </div>
                     </div>
@@ -872,12 +882,12 @@ class App extends React.Component {
                   </div>
                   <div className="row">
                     <div className="col-xs-6 db-col-left">
-                      <DropDownListComponent ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.borderStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
+                      <DropDownListComponent popupWidth={'160px'} ref={lineStyle => this.lineStyle = lineStyle} id="lineStyle" value={this.selectedItem.connectorProperties.lineStyle} dataSource={this.dropDownDataSources.lineStyles} fields={this.dropdownListFields} itemTemplate={this.lineItemTemplate} valueTemplate={this.lineValueTemplate} change={lineStyleChange} />
                     </div>
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} min={0.5} step={0.5} ref={lineWidth => this.lineWidth = lineWidth} value={this.selectedItem.connectorProperties.lineWidth} change={lineWidthChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} min={0.5} step={0.5} format={"n0"} ref={lineWidth => this.lineWidth = lineWidth} value={this.selectedItem.connectorProperties.lineWidth} change={lineWidthChange} />
                         </div>
                       </div>
                     </div>
@@ -897,7 +907,7 @@ class App extends React.Component {
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} ref={sourceSize => this.sourceSize = sourceSize} min={1} step={1} value={this.selectedItem.connectorProperties.sourceSize} change={sourceSizeChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} format={"n0"} ref={sourceSize => this.sourceSize = sourceSize} min={1} step={1} value={this.selectedItem.connectorProperties.sourceSize} change={sourceSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -917,19 +927,19 @@ class App extends React.Component {
                     <div className="col-xs-6 db-col-right">
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} ref={targetSize => this.targetSize = targetSize} min={1} step={1} value={this.selectedItem.connectorProperties.targetSize} change={targetSizeChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} format={"n0"} ref={targetSize => this.targetSize = targetSize} min={1} step={1} value={this.selectedItem.connectorProperties.targetSize} change={targetSizeChange} />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-6 db-col-left" style={{ marginTop: "5px" }}>
+                    <div className="col-xs-6 db-col-left">
                       <CheckBoxComponent ref={bridge => this.bridge = bridge} id='lineJump' label="Bridging" checked={this.selectedItem.connectorProperties.lineJump} change={bridgeChange} />
                     </div>
                     <div className="col-xs-6 db-col-right" id="lineJumpSizeDiv" style={{ display: "none" }}>
                       <div className="db-text-container" style={{ width: "77px", marginLeft: "20px" }}>
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: "74px" }} ref={bridgeSize => this.bridgeSize = bridgeSize} min={1} step={1} value={this.selectedItem.connectorProperties.lineJumpSize} change={bridgeSizeChange} />
+                          <NumericTextBoxComponent style={{ width: "74px" }} format={"n0"} ref={bridgeSize => this.bridgeSize = bridgeSize} min={1} step={1} value={this.selectedItem.connectorProperties.lineJumpSize} change={bridgeSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -939,10 +949,12 @@ class App extends React.Component {
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
                     <div className="col-xs-8 db-col-left" style={{ paddingRight: "15px", paddingLeft: '15px' }}>
-                      <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} value={this.selectedItem.connectorProperties.opacity} min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
+                      <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} 
+                      // value={this.selectedItem.connectorProperties.opacity} 
+                      min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
-                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} type="text" readOnly={true} className="db-readonly-input" />
+                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} readOnly={true}  type="text" className="db-readonly-input" />
                     </div>
                   </div>
                 </div>
@@ -961,19 +973,19 @@ class App extends React.Component {
                     <div className="col-xs-4 db-col-right">
                       <div className="db-text-container">
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: '75px' }} min={1} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
+                          <NumericTextBoxComponent style={{ width: '75px' }} min={1} format={"n0"} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row db-prop-row">
                     <div className="col-xs-8 db-col-left" id="textPositionDiv" style={{ width: '140px' }}>
-                      <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={4} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
+                      <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.selectedItem.textProperties.textPositionDataSource} index={3} fields={this.dropdownListFields} change={this.diagramPropertyBinding.textPositionChange.bind(this.diagramPropertyBinding)} />
                     </div>
                     <div className="col-xs-4 db-col-right" id="textColorDiv" style={{ width: '75px', }}>
                       <div className="db-color-container">
                         <div className="db-color-input">
-                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} showButtons='false' mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
+                          <ColorPickerComponent ref={fontColor => this.fontColor = fontColor} showButtons='' mode="Palette" type="color" value={this.selectedItem.textProperties.fontColor} change={fontColorChange} />
                         </div>
                       </div>
                     </div>
@@ -1089,6 +1101,7 @@ class App extends React.Component {
     this.selectedItem.nodeProperties.offsetY = this.nodeOffsetY;
     this.selectedItem.nodeProperties.width = this.width;
     this.selectedItem.nodeProperties.height = this.height;
+    this.selectedItem.nodeProperties.aspectRatio = this.aspectRatio;
     this.selectedItem.nodeProperties.rotateAngle = this.rotate;
     this.selectedItem.nodeProperties.fillColor = this.fillColor;
     this.selectedItem.nodeProperties.gradientDirection = this.gradientDirection;
@@ -1134,7 +1147,7 @@ class App extends React.Component {
       }
     }
   }
-  // To define the behavior and options of the context menu
+  // To define the behavior and options of the context menu for Design Memu tab
   designContextMenuOpen(args) {
     if (args.element.classList.contains('e-menu-parent')) {
       const popup = document.querySelector('#btnDesignMenu-popup');
@@ -1142,10 +1155,17 @@ class App extends React.Component {
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
     }
   }
-  //To customize the context menu behavior and options for specific nodes, connectors or the diagram.
+  //To customize the context menu behavior and options for specific nodes, connectors or the diagram for Edit Men tab
   editContextMenuOpen(args) {
     if (args.element.classList.contains('e-menu-parent')) {
       var popup = document.querySelector('#btnEditMenu-popup');
+      args.element.style.left = formatUnit(parseInt(args.element.style.left, 10) - parseInt(popup.style.left, 10));
+      args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
+    }
+  }
+  toolContextMenuOpen(args) {
+    if (args.element.classList.contains('e-menu-parent')) {
+      var popup = document.querySelector('#btnToolsMenu-popup');
       args.element.style.left = formatUnit(parseInt(args.element.style.left, 10) - parseInt(popup.style.left, 10));
       args.element.style.top = formatUnit(parseInt(args.element.style.top, 10) - parseInt(popup.style.top, 10));
     }
@@ -1415,9 +1435,13 @@ class App extends React.Component {
         break;
       case 'Group':
         diagram.group();
+        args.item.prefixIcon = 'sf-icon-ungroup';
+        args.item.tooltipText = 'UnGroup';
         break;
       case 'UnGroup':
         diagram.unGroup();
+        args.item.prefixIcon = 'sf-icon-group';
+        args.item.tooltipText = 'Group';
         break;
       case 'AlignLeft':
         diagram.align('Left');
@@ -1467,26 +1491,32 @@ class App extends React.Component {
         this.removeSelectedToolbarItem();
         args.item.cssClass += ' tb-item-selected';
       }
+      document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
     }
     diagram.dataBind();
   };
+
   //To remove the selected icon css on toolbar option selection change
   removeSelectedToolbarItem() {
-    var toolbarObj = document.getElementById("toolbarEditor").ej2_instances[0];
-    for (var i = 0; i < toolbarObj.items.length; i++) {
-      var item = toolbarObj.items[i];
+    var toolbarEditor = document.getElementById("toolbarEditor").ej2_instances[0];
+    for (var i = 0; i < toolbarEditor.items.length; i++) {
+      var item = toolbarEditor.items[i];
       if (item.cssClass.indexOf('tb-item-selected') !== -1) {
         item.cssClass = item.cssClass.replace(' tb-item-selected', '');
       }
     }
-    toolbarObj.dataBind();
+    // toolbarEditor.dataBind();
     // document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
-
+    setTimeout(() => {
+      let con = document.getElementById('btnDrawConnector');
+      con.classList.remove('tb-item-selected');
+    }, 50);
   };
+
   // Function to render the DropDown template for the zoom toolbar
   zoomTemplate() {
     return (<div id="template_toolbar">
-      <DropDownButtonComponent id="btnZoomIncrement" items={this.dropDownDataSources.zoomMenuItems} content={this.selectedItem.scrollSettings.currentZoom} select={zoomchange} />
+      <DropDownButtonComponent id="btnZoomIncrement" items={this.dropDownDataSources.zoomMenuItems} content={Math.round(this.selectedItem.selectedDiagram.scrollSettings.currentZoom* 100)} select={zoomchange} />
     </div>);
   }
   //Method to change the values of zoom dropdown in toolbar
@@ -1548,7 +1578,7 @@ class App extends React.Component {
   // Function to render the DropDown template for the draw connector button
   connectorTool() {
     return (<div id="template_toolbar">
-      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} iconCss='sf-icon-orthogonal_line' />
+      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} iconCss='sf-icon-orthogonal_line' cssClass='tb-item-middle tb-item-selected'/>
     </div>);
   }
   //To hide or show the Property panel on button click
@@ -1559,21 +1589,21 @@ class App extends React.Component {
   //function to enable draw connector tool
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
-    let toolbarObj = document.getElementById('toolbarEditor').ej2_instances[0];
-    diagram.drawingObject = { type: args.item.text }
+    
     diagram.clearSelection();
+    diagram.drawingObject.sourceID = '';
+    diagram.drawingObject = { type: args.item.text };
+    diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
     diagram.tool = DiagramTools.ContinuousDraw;
-    this.removeSelectedToolbarItem();
     diagram.selectedItems.userHandles = [];
     diagram.dataBind();
-    // var d=document.getElementById('btnDrawConnector').ej2_instances[0]
-    // this.connectorbutton.classList.add("tb-item-selected")
-    toolbarObj.items[5].cssClass += ' tb-item-selected';
+    this.removeSelectedToolbarItem();
     setTimeout(() => {
-      document.getElementById('btnDrawConnector').classList.add('tb-item-selected');
-    }, 10);
-
-    // args.item.cssClass += ' tb-item-selected';
+      // let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
+      // toolbarEditor.items[5].cssClass += 'tb-item-selected';
+      let con = document.getElementById('btnDrawConnector');
+      con.classList.add('tb-item-selected');
+    }, 100);
   }
 
   // Function to add keyboard shortcut key for a specific action 
@@ -1641,8 +1671,11 @@ class App extends React.Component {
   }
   //Triggers when diagram created event triggered
   created() {
+    document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
     var diagram = this.selectedItem.selectedDiagram;
     diagram.fitToPage({ mode: 'Width' });
+    var btnZoomIncrement = document.getElementById("btnZoomIncrement").ej2_instances[0];
+    btnZoomIncrement.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
   }
   // Function to handle changes in the scroll state and update the zoom content when scrolling in the diagram.
   scrollChange(args) {
@@ -1652,6 +1685,13 @@ class App extends React.Component {
       btnZoomIncrement.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
     }
   }
+  // Function to define default properties for a nodes in the diagram.
+  getNodeDefaults(obj) {
+    obj.userHandles = [];
+    obj.ports = this.getNodePorts(obj);
+    return obj;
+  }
+
   // Function to define default properties for a connector in the diagram.
   getConnectorDefaults(connector) {
     // connector.type = 'Orthogonal';
@@ -1660,7 +1700,21 @@ class App extends React.Component {
       controlPointsVisibility: ControlPointsVisibility.Source | ControlPointsVisibility.Target
       , smoothness: BezierSmoothness.SymmetricDistance
     }
+    if (connector.annotations.length > 0) {
+      connector.annotations[0].style.fill = 'White'
+    }
+    return connector;
   };
+  //function to define ports for node
+  getNodePorts(obj) {
+    var ports = [
+      { id: 'left', shape: 'Circle', offset: { x: 0, y: 0.5 } },
+      { id: 'bottom', shape: 'Circle', offset: { x: 0.5, y: 1 } },
+      { id: 'right', shape: 'Circle', offset: { x: 1, y: 0.5 } },
+      { id: 'top', shape: 'Circle', offset: { x: 0.5, y: 0 } }
+    ];
+    return ports;
+  }
   // Function to Arrange Menu ITems before Opening the context Menu bar Items,
   arrangeMenuBeforeOpen(args) {
     for (var i = 0; i < args.element.children.length; i++) {
@@ -1687,6 +1741,7 @@ class App extends React.Component {
     if (buttonElement) {
       buttonElement.classList.remove('e-btn-hover');
     }
+    let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
     const diagram = this.selectedItem.selectedDiagram;
     const commandType = args.item.text;
     switch (commandType) {
@@ -1765,6 +1820,18 @@ class App extends React.Component {
         diagram.tool = DiagramTools.ZoomPan;
         this.removeSelectedToolbarItem();
         break;
+      case 'Orthogonal':
+        diagram.clearSelection();
+        this.connectorToolChange(args);
+        break;
+      case 'Straight':
+        diagram.clearSelection();
+        this.connectorToolChange(args);
+        break;
+      case 'Bezier':
+        diagram.clearSelection();
+        this.connectorToolChange(args);
+        break;
       case 'Show Lines':
         diagram.snapSettings.constraints = diagram.snapSettings.constraints ^ SnapConstraints.ShowLines;
         args.item.iconCss = args.item.iconCss ? '' : 'sf-icon-check-tick';
@@ -1800,11 +1867,15 @@ class App extends React.Component {
         args.item.parentObj.items[1].iconCss = '';
         args.item.iconCss = 'sf-icon-check-tick';
         diagram.pageSettings.orientation = 'Landscape';
+        document.getElementById('pageLandscape').classList.add('e-active');
+        document.getElementById('pagePortrait').classList.remove('e-active');
         break;
       case 'Portrait':
         args.item.parentObj.items[0].iconCss = '';
         args.item.iconCss = 'sf-icon-check-tick';
         diagram.pageSettings.orientation = 'Portrait';
+        document.getElementById('pagePortrait').classList.add('e-active');
+        document.getElementById('pageLandscape').classList.remove('e-active');
         break;
       case 'Letter (8.5 in x 11 in)':
       case 'Legal (8.5 in x 14 in)':
@@ -1813,68 +1884,26 @@ class App extends React.Component {
       case 'A5 (148 mm x 210 mm)':
       case 'A6 (105 mm x 148 mm)':
       case 'Tabloid (279 mm x 432 mm)':
-        this.paperListChange(args, diagram)
+        this.diagramPropertyBinding.paperListChange(args, diagram)
+        this.diagramPropertyBinding.updateSelection(args.item);
         this.selectedItem.pageSettings.paperSize = args.item.value;
-        this.updateSelection(args.item);
+        var pageformat = document.getElementById('pageformat').ej2_instances[0];
+        pageformat.element.value = args.item.text;
         break;
+    }
+    if (commandType === 'Pan Tool') {
+      if (toolbarEditor.items[3].cssClass.indexOf('tb-item-selected') === -1) {
+        toolbarEditor.items[3].cssClass += ' tb-item-selected';
+      }
+    }
+    else if (commandType === 'Selection Tool') {
+      if (toolbarEditor.items[4].cssClass.indexOf('tb-item-selected') === -1) {
+        toolbarEditor.items[4].cssClass += ' tb-item-selected';
+      }
     }
     diagram.dataBind();
   }
-  //To update the Paper Slection change
-  paperListChange(args, diagram) {
-    var value = args.item.value;
-    var paperSize = this.UtilityMethods.getPaperSize(value);
-    var pageWidth = paperSize.pageWidth;
-    var pageHeight = paperSize.pageHeight;
-    if (pageWidth && pageHeight) {
-      if (diagram.pageSettings.orientation === 'Portrait') {
-        if (pageWidth > pageHeight) {
-          var temp = pageWidth;
-          pageWidth = pageHeight;
-          pageHeight = temp;
-        }
-      }
-      else {
-        if (pageHeight > pageWidth) {
-          var temp = pageHeight;
-          pageHeight = pageWidth;
-          pageWidth = temp;
-        }
-      }
-      diagram.pageSettings.width = pageWidth;
-      diagram.pageSettings.height = pageHeight;
-    }
-    else {
-      diagram.pageSettings.width = 1460;
-      diagram.pageSettings.height = 600;
-    }
-    let designContextMenu = document.getElementById('designContextMenu').ej2_instances[0];
-    this.updatePaperSelection(designContextMenu.items[1], args.item.value);
-    diagram.dataBind();
-  };
-  //To update the selected paper size icon based on the current value in a list of items.
-  updatePaperSelection(items, value) {
-    for (var i = 0; i < items.items.length; i++) {
-      if (value === items.items[i].value) {
-        items.items[i].iconCss = 'sf-icon-check-tick';
-      }
-      else {
-        items.items[i].iconCss = '';
-      }
-    }
-  };
-  // update the selection icon based on check and uncheck values of the Menubar Items.
-  updateSelection(item) {
-    for (var i = 0; i < item.parentObj.items.length; i++) {
-      if (item.text === item.parentObj.items[i].text) {
-        item.parentObj.items[i].iconCss = 'sf-icon-check-tick';
-      }
-      else {
-        item.parentObj.items[i].iconCss = '';
-      }
-    }
-  };
- 
+
 
   //Function To save the diagram
   download(data) {
@@ -2005,23 +2034,14 @@ class App extends React.Component {
   }
   // Function to handle changes in the fill color of a node when it is interactively adjusted.
   nodeFillColorChange(args) {
+    this.selectedItem.nodeProperties.fillColor.value = args.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'fillColor', propertyValue: args.currentValue.hex });
-  }
-  // Function to changes to Gradient color of a node from solid fill color
-  nodeGradientChange(args) {
-    this.selectedItem.nodeProperties.gradient = args.value;
-    const gradientElement = document.getElementById('gradientStyle');
-    if (args.checked) {
-      gradientElement.className = 'row db-prop-row db-gradient-style-show';
-    }
-    else {
-      gradientElement.className = 'row db-prop-row db-gradient-style-hide';
-    }
-    this.selectedItem.nodePropertyChange({ propertyName: 'gradient', propertyValue: args });
   }
   // To set gradient color direction in a node from the gradient dropdown menu.
   gradientDropDownChange(args) {
+    this.selectedItem.nodeProperties.gradientDirection.value = args.item.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'gradientDirection', propertyValue: args });
+    // this.selectedItem.nodeProperties.getGradient(this.selectedItem.diagram.selectedItems.nodes[0]);
   }
   // Function to handle changes in the gradient color of a node when it is interactively adjusted.
   nodeGradientColorChange(args) {
@@ -2048,12 +2068,12 @@ class App extends React.Component {
     this.selectedItem.connectorProperties.lineStyle.value = args.value;
     this.selectedItem.connectorPropertyChange({ propertyName: 'lineStyle', propertyValue: args });
   }
-   //To change the stroke width of the connector
+  //To change the stroke width of the connector
   ConnectorLineWidthChnage(args) {
     this.selectedItem.connectorProperties.lineWidth.value = args.value;
     this.selectedItem.connectorPropertyChange({ propertyName: 'lineWidth', propertyValue: args });
   }
-   //To change the sourceDecorator shape of the selected connector
+  //To change the sourceDecorator shape of the selected connector
   connectorSourceType(args) {
     this.selectedItem.connectorProperties.sourceType.value = args.value;
     this.selectedItem.connectorPropertyChange({ propertyName: 'sourceType', propertyValue: args });
@@ -2098,22 +2118,22 @@ class App extends React.Component {
     this.selectedItem.textProperties.fontFamily.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'fontFamily', propertyValue: args });
   }
-   //To change the annotation font size of the selected node/connector
+  //To change the annotation font size of the selected node/connector
   nodeFontSizeChange(args) {
     this.selectedItem.textProperties.fontSize.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'fontSize', propertyValue: args });
   }
-   //To change the annotation font color of the selected node/connector
+  //To change the annotation font color of the selected node/connector
   nodeFontColor(args) {
     this.selectedItem.textProperties.fontColor.value = args.currentValue.hex;
     this.selectedItem.textPropertyChange({ propertyName: 'fontColor', propertyValue: args });
   }
-   //To change the annotation font opacity level of the selected node/connector
+  //To change the annotation font opacity level of the selected node/connector
   fontOpacityChangeEvent(args) {
     this.selectedItem.textProperties.opacity.value = args.value;
     this.selectedItem.textPropertyChange({ propertyName: 'opacity', propertyValue: args });
   }
-   //To change the stroke line width of the connector of selected Item
+  //To change the stroke line width of the connector of selected Item
   nodeStrokeWidthChange(args) {
     this.selectedItem.nodeProperties.strokeWidth.value = args.value;
     this.selectedItem.nodePropertyChange({ propertyName: 'strokeWidth', propertyValue: args });
@@ -2128,6 +2148,22 @@ class App extends React.Component {
     this.selectedItem.nodeProperties.strokeColor.value = args.currentValue.hex;
     this.selectedItem.nodePropertyChange({ propertyName: 'strokeColor', propertyValue: args });
   }
+  //set the aspect ratio constraints to the node
+  aspectRatioClick(args) {
+    let diagram = this.selectedItem.selectedDiagram;
+    let node = diagram.selectedItems.nodes[0];
+    var isAspect = true;
+    let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
+    if (document.getElementById('aspectRatioBtn').classList.contains('e-active')) {
+      isAspect = true;
+      aspectRatioBtn.iconCss = 'sf-icon-lock'
+    }
+    else {
+      isAspect = false;
+      aspectRatioBtn.iconCss = 'sf-icon-unlock';
+    }
+    this.selectedItem.nodePropertyChange({ propertyName: 'aspectRatio', propertyValue: isAspect });
+  };
 }
 
 export default App;
