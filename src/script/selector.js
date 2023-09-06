@@ -677,7 +677,7 @@ export class SelectorViewModel {
                             document.getElementById('connectorOpacitySliderText').value = this.connectorProperties.opacity.value + '%';
                             break;
                         case 'linejump':
-                            if (this.connectorProperties.lineJump.value) {
+                            if (this.connectorProperties.lineJump.checked) {
                                 connector.constraints = connector.constraints | ConnectorConstraints.Bridging;
                             }
                             else {

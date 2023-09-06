@@ -954,7 +954,7 @@ class App extends React.Component {
                       min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
-                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} readOnly={true}  type="text" className="db-readonly-input" />
+                      <input id='connectorOpacitySliderText' type="text" value={this.selectedItem.connectorProperties.opacityText} readOnly={true}  className="db-readonly-input" />
                     </div>
                   </div>
                 </div>
@@ -968,7 +968,7 @@ class App extends React.Component {
                   </div>
                   <div className="row db-prop-row" style={{ marginTop: '5px' }}>
                     <div className="col-xs-8 db-col-left" style={{ width: "140px" }}>
-                      <DropDownListComponent style={{ height: '35px' }} ref={fontFamily => this.fontFamily = fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
+                      <DropDownListComponent style={{ height: '35px' }} ref={fontFamily => this.fontFamily = fontFamily} value={this.selectedItem.textProperties.fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
                     </div>
                     <div className="col-xs-4 db-col-right">
                       <div className="db-text-container">
@@ -2151,7 +2151,6 @@ class App extends React.Component {
   //set the aspect ratio constraints to the node
   aspectRatioClick(args) {
     let diagram = this.selectedItem.selectedDiagram;
-    let node = diagram.selectedItems.nodes[0];
     var isAspect = true;
     let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
     if (document.getElementById('aspectRatioBtn').classList.contains('e-active')) {
