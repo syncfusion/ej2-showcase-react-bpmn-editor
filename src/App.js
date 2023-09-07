@@ -945,16 +945,16 @@ class App extends React.Component {
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{ paddingTop: "6px" }}>
+                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{marginRight: "15px",paddingTop: "6px" }}>
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
-                    <div className="col-xs-8 db-col-left" style={{ paddingRight: "15px", paddingLeft: '15px' }}>
-                      <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} 
-                      // value={this.selectedItem.connectorProperties.opacity} 
+                    <div className="col-xs-8 db-col-left" style={{ width: "130px",paddingRight: "15px",}}>
+                      <SliderComponent ref={connectorOpacity => this.connectorOpacity = connectorOpacity} 
+                      value={this.selectedItem.connectorProperties.opacity} 
                       min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
-                      <input id='connectorOpacitySliderText' value={this.selectedItem.connectorProperties.opacityText} readOnly={true}  type="text" className="db-readonly-input" />
+                      <input id='connectorOpacitySliderText' type="text" value={this.selectedItem.connectorProperties.opacityText} readOnly={true}  className="db-readonly-input" />
                     </div>
                   </div>
                 </div>
@@ -968,7 +968,7 @@ class App extends React.Component {
                   </div>
                   <div className="row db-prop-row" style={{ marginTop: '5px' }}>
                     <div className="col-xs-8 db-col-left" style={{ width: "140px" }}>
-                      <DropDownListComponent style={{ height: '35px' }} ref={fontFamily => this.fontFamily = fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
+                      <DropDownListComponent style={{ height: '35px' }} ref={fontFamily => this.fontFamily = fontFamily} value={this.selectedItem.textProperties.fontFamily} dataSource={this.dropDownDataSources.fontFamilyList} fields={this.dropdownListFields} change={fontFamilyChange} />
                     </div>
                     <div className="col-xs-4 db-col-right">
                       <div className="db-text-container">
@@ -1589,14 +1589,16 @@ class App extends React.Component {
   //function to enable draw connector tool
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
-    
     diagram.clearSelection();
-    diagram.drawingObject.sourceID = '';
-    diagram.drawingObject = { type: args.item.text };
-    diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
-    diagram.tool = DiagramTools.ContinuousDraw;
-    diagram.selectedItems.userHandles = [];
-    diagram.dataBind();
+    if(diagram.drawingObject)
+    {
+      diagram.drawingObject.sourceID = '';
+      diagram.drawingObject = { type: args.item.text };
+      diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
+      diagram.tool = DiagramTools.ContinuousDraw;
+      diagram.selectedItems.userHandles = [];
+      diagram.dataBind();
+    }
     this.removeSelectedToolbarItem();
     setTimeout(() => {
       // let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
@@ -2151,7 +2153,6 @@ class App extends React.Component {
   //set the aspect ratio constraints to the node
   aspectRatioClick(args) {
     let diagram = this.selectedItem.selectedDiagram;
-    let node = diagram.selectedItems.nodes[0];
     var isAspect = true;
     let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
     if (document.getElementById('aspectRatioBtn').classList.contains('e-active')) {

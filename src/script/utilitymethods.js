@@ -1,7 +1,7 @@
 /**
  *  Home page handler
  */
- import { NodeConstraints, Node } from '@syncfusion/ej2-diagrams';
+ import { NodeConstraints, Node,ConnectorConstraints } from '@syncfusion/ej2-diagrams';
  import { Ajax } from '@syncfusion/ej2-base';
 
  export class PaperSize {
@@ -26,9 +26,15 @@
          selectedItem.nodeProperties.fillColor.value = this.getHexColor(node.style.fill);
          selectedItem.nodeProperties.opacity.value = node.style.opacity * 100;
          selectedItem.nodeProperties.opacityText = selectedItem.nodeProperties.opacity.value + '%';
-         selectedItem.nodeProperties.aspectRatio = node.constraints & NodeConstraints.AspectRatio ? true : false;
-         let   aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
-         node.constraints & NodeConstraints.AspectRatio ? aspectRatioBtn.iconCss = 'sf-icon-lock': aspectRatioBtn.iconCss = 'sf-icon-unlock';
+         selectedItem.nodeProperties.aspectRatio.checked = node.constraints & NodeConstraints.AspectRatio ? true : false;
+         let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
+         if (node.constraints & NodeConstraints.AspectRatio) {
+             aspectRatioBtn.iconCss = 'sf-icon-lock';
+             document.getElementById('aspectRatioBtn').classList.add('e-active');
+         } else {
+             aspectRatioBtn.iconCss = 'sf-icon-unlock';
+             document.getElementById('aspectRatioBtn').classList.remove('e-active');
+         }
          selectedItem.nodeProperties.gradient = node.style.gradient.type !== 'None' ? true : false;
          const gradientElement = document.getElementById('gradientStyle');
          var backgroundType = document.getElementById('backgroundTypeDropdown');
@@ -117,9 +123,9 @@
          selectedItem.connectorProperties.sourceType.value = connector.sourceDecorator.shape;
          selectedItem.connectorProperties.targetType.value = connector.targetDecorator.shape;
          selectedItem.connectorProperties.opacity.value = connector.style.opacity * 100;
-         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity.value + '%';
+         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity + '%';
          selectedItem.connectorProperties.lineJumpSize.value = connector.bridgeSpace;
-         selectedItem.connectorProperties.lineJump.value = connector.constraints ? true : false;
+         selectedItem.connectorProperties.lineJump.checked = connector.constraints & ConnectorConstraints.Bridging ? true : false;
          if (selectedItem.connectorProperties.lineJump.checked) {
              document.getElementById('lineJumpSizeDiv').style.display = '';
          }

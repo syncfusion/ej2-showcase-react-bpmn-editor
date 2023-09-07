@@ -1,4 +1,5 @@
 import { Node, Connector, ShapeAnnotation, PathAnnotation,SelectorConstraints } from '@syncfusion/ej2-diagrams';
+import { DiagramTools} from "@syncfusion/ej2-react-diagrams";
 
 
 export class DiagramClientSideEvents {
@@ -25,63 +26,67 @@ export class DiagramClientSideEvents {
     
     //Method for Selection Change event
     selectionChange(args) {
-        
+        const diagram = this.selectedItem.selectedDiagram;
         if (args.state === 'Changed') {
-            const diagram = this.selectedItem.selectedDiagram;
             var multiSelect;
             var toolbarEditor = document.getElementById("toolbarEditor").ej2_instances[0];
-                let selectedItems = diagram.selectedItems.nodes;
-                selectedItems = selectedItems.concat(this.selectedItem.selectedDiagram.selectedItems.connectors);
-                this.enableToolbarItems(selectedItems);
-                var nodeContainer = document.getElementById('nodePropertyContainer');
-                nodeContainer.classList.remove('multiple');
-                nodeContainer.classList.remove('connector');
-                if (selectedItems.length > 1) {
-                    multiSelect = true;
-                    for(var i =7;i<=26;i++){
-                        toolbarEditor.items[i].visible = true;
-                    }
-                    this.multipleSelectionSettings(selectedItems);
-                    toolbarEditor.items[8].tooltipText = 'Group';
-                    toolbarEditor.items[8].prefixIcon = 'sf-icon-group';
+            let selectedItems = diagram.selectedItems.nodes;
+            selectedItems = selectedItems.concat(this.selectedItem.selectedDiagram.selectedItems.connectors);
+            this.enableToolbarItems(selectedItems);
+            var nodeContainer = document.getElementById('nodePropertyContainer');
+            nodeContainer.classList.remove('multiple');
+            nodeContainer.classList.remove('connector');
+            if (selectedItems.length > 1) {
+                multiSelect = true;
+                for (var i = 7; i <= 26; i++) {
+                    toolbarEditor.items[i].visible = true;
                 }
-                else if (selectedItems.length === 1) {
-                    multiSelect = false;
-                    this.singleSelectionSettings(selectedItems[0]);
-                    for(var i=7;i<=26;i++){
-                        if(i<=17)
-                        {
-                            toolbarEditor.items[i].visible = false;
-                        }
-                        else{
-                            toolbarEditor.items[i].visible = true;
-    
-                        }
+                this.multipleSelectionSettings(selectedItems);
+                toolbarEditor.items[8].tooltipText = 'Group';
+                toolbarEditor.items[8].prefixIcon = 'sf-icon-group';
+            }
+            else if (selectedItems.length === 1) {
+                multiSelect = false;
+                this.singleSelectionSettings(selectedItems[0]);
+                for (var j = 7; j <= 26; j++) {
+                    if (j <= 17) {
+                        toolbarEditor.items[j].visible = false;
                     }
-                    if(selectedItems[0].children && selectedItems[0].children.length>0)
-                    {
-                        toolbarEditor.items[8].tooltipText = 'UnGroup';
-                        toolbarEditor.items[8].prefixIcon = 'sf-icon-ungroup';
-                        toolbarEditor.items[8].visible = true;
-                    }
-                    
-                }
-                else {
-                    this.selectedItem.utilityMethods.objectTypeChange('diagram');//diagram
-                    for(var i =7;i<=26;i++){
-                        toolbarEditor.items[i].visible = false;
-                    } 
-                }
-                if(args.newValue.length>0 && (args.newValue[0]).type === undefined){
-                    diagram.selectedItems = { constraints: SelectorConstraints.All|SelectorConstraints.UserHandle, userHandles: this.handles};
-                    if(diagram.selectedItems.nodes.length>0){
-                        this.drawingNode = diagram.selectedItems.nodes[diagram.selectedItems.nodes.length-1];
+                    else {
+                        toolbarEditor.items[j].visible = true;
+
                     }
                 }
-                else{
-                diagram.selectedItems = { constraints:SelectorConstraints.All&~SelectorConstraints.UserHandle };
+                if (selectedItems[0].children && selectedItems[0].children.length > 0) {
+                    toolbarEditor.items[8].tooltipText = 'UnGroup';
+                    toolbarEditor.items[8].prefixIcon = 'sf-icon-ungroup';
+                    toolbarEditor.items[8].visible = true;
                 }
 
+            }
+            else {
+                this.selectedItem.utilityMethods.objectTypeChange('diagram');
+                for (var k = 7; k <= 26; k++) {
+                    toolbarEditor.items[k].visible = false;
+                }
+            }
+            if (args.newValue.length > 0 && (args.newValue[0]).type === undefined) {
+                diagram.selectedItems = { constraints: SelectorConstraints.All | SelectorConstraints.UserHandle, userHandles: this.handles };
+                if (diagram.selectedItems.nodes.length > 0) {
+                    this.drawingNode = diagram.selectedItems.nodes[diagram.selectedItems.nodes.length - 1];
+                }
+            }
+            else {
+                diagram.selectedItems = { constraints: SelectorConstraints.All & ~SelectorConstraints.UserHandle };
+            }
+        }
+        if (diagram.tool !== DiagramTools.ContinuousDraw) {
+            setTimeout(() => {
+                let con = document.getElementById('btnDrawConnector');
+                if (con) {
+                    con.classList.remove('tb-item-selected');
+                }
+            }, 50);
         }
     }
 
@@ -299,11 +304,11 @@ export class DiagramClientSideEvents {
                 document.getElementById('textColorDiv').className = 'col-xs-6 db-col-right';
                 if (showConTextPanel) {
                     this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getConnectorTextPositions();
-                    this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
+                    // this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
                 }
                 else {
                     this.ddlTextPosition.dataSource = this.selectedItem.textProperties.getNodeTextPositions();
-                    this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
+                    // this.selectedItem.utilityMethods.bindTextProperties(selectItem1.connectors[0].annotations[0].style, this.selectedItem);
                 }
                 this.ddlTextPosition.dataBind();
             }
@@ -897,7 +902,7 @@ export class DiagramPropertyBinding {
             case 'underline':
                 this.selectedItem.textProperties.textDecoration = !this.selectedItem.textProperties.textDecoration;
                 annotation.textDecoration = annotation.textDecoration === 'None' || !annotation.textDecoration ? 'Underline' : 'None';
-                this.updateToolbarState('toolbarTextStyle', this.selectedItem.textProperties.textDecoration, 2);
+                this.updateToolbarState('toolbarTextStyle', annotation.textDecoration!=='None', 2);
                 break;
             case 'aligntextleft':
             case 'aligntextright':
