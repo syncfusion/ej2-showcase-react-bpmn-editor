@@ -902,7 +902,7 @@ export class DiagramPropertyBinding {
             case 'underline':
                 this.selectedItem.textProperties.textDecoration = !this.selectedItem.textProperties.textDecoration;
                 annotation.textDecoration = annotation.textDecoration === 'None' || !annotation.textDecoration ? 'Underline' : 'None';
-                this.updateToolbarState('toolbarTextStyle', this.selectedItem.textProperties.textDecoration, 2);
+                this.updateToolbarState('toolbarTextStyle', annotation.textDecoration!=='None', 2);
                 break;
             case 'aligntextleft':
             case 'aligntextright':
