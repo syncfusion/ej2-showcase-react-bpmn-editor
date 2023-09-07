@@ -945,12 +945,12 @@ class App extends React.Component {
                     </div>
                   </div>
                   <div className="row db-prop-row">
-                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{ paddingTop: "6px" }}>
+                    <div className="col-xs-2 db-col-right db-prop-text-style" style={{marginRight: "15px",paddingTop: "6px" }}>
                       <span className="db-prop-text-style">Opacity</span>
                     </div>
-                    <div className="col-xs-8 db-col-left" style={{ paddingRight: "15px", paddingLeft: '15px' }}>
-                      <SliderComponent id='default' ref={connectorOpacity => this.connectorOpacity = connectorOpacity} 
-                      // value={this.selectedItem.connectorProperties.opacity} 
+                    <div className="col-xs-8 db-col-left" style={{ width: "130px",paddingRight: "15px",}}>
+                      <SliderComponent ref={connectorOpacity => this.connectorOpacity = connectorOpacity} 
+                      value={this.selectedItem.connectorProperties.opacity} 
                       min={0} max={100} step={10} type='MinRange' change={connectorOpacityChange} />
                     </div>
                     <div className="col-xs-2 db-col-right">
@@ -1589,14 +1589,16 @@ class App extends React.Component {
   //function to enable draw connector tool
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
-    
     diagram.clearSelection();
-    diagram.drawingObject.sourceID = '';
-    diagram.drawingObject = { type: args.item.text };
-    diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
-    diagram.tool = DiagramTools.ContinuousDraw;
-    diagram.selectedItems.userHandles = [];
-    diagram.dataBind();
+    if(diagram.drawingObject)
+    {
+      diagram.drawingObject.sourceID = '';
+      diagram.drawingObject = { type: args.item.text };
+      diagram.drawingObject.shape = { type: 'Bpmn', sequence: 'Normal' };
+      diagram.tool = DiagramTools.ContinuousDraw;
+      diagram.selectedItems.userHandles = [];
+      diagram.dataBind();
+    }
     this.removeSelectedToolbarItem();
     setTimeout(() => {
       // let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];

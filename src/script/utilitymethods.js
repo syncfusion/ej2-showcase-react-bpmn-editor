@@ -123,7 +123,7 @@
          selectedItem.connectorProperties.sourceType.value = connector.sourceDecorator.shape;
          selectedItem.connectorProperties.targetType.value = connector.targetDecorator.shape;
          selectedItem.connectorProperties.opacity.value = connector.style.opacity * 100;
-         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity.value + '%';
+         selectedItem.connectorProperties.opacityText = selectedItem.connectorProperties.opacity + '%';
          selectedItem.connectorProperties.lineJumpSize.value = connector.bridgeSpace;
          selectedItem.connectorProperties.lineJump.checked = connector.constraints & ConnectorConstraints.Bridging ? true : false;
          if (selectedItem.connectorProperties.lineJump.checked) {
