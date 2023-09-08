@@ -182,6 +182,7 @@ export class DiagramClientSideEvents {
                 if(diagram.drawingObject !== undefined){
                 diagram.drawingObject.shape = {};
                 diagram.drawingObject.type = diagram.drawingObject.type?diagram.drawingObject.type:'Orthogonal';
+                this.drawingNode=diagram.selectedItems.nodes[diagram.selectedItems.nodes.length - 1];
                 diagram.drawingObject.sourceID = this.drawingNode.id;
                 diagram.dataBind();
                 }
