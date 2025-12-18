@@ -1,5 +1,4 @@
-import { Node, Connector, ShapeAnnotation, PathAnnotation,SelectorConstraints } from '@syncfusion/ej2-diagrams';
-import { DiagramTools} from "@syncfusion/ej2-react-diagrams";
+import { Node, Connector, ShapeAnnotation, PathAnnotation,SelectorConstraints,randomId } from '@syncfusion/ej2-diagrams';
 
 
 export class DiagramClientSideEvents {
@@ -28,7 +27,6 @@ export class DiagramClientSideEvents {
     selectionChange(args) {
         const diagram = this.selectedItem.selectedDiagram;
         if (args.state === 'Changed') {
-            var multiSelect;
             var toolbarEditor = document.getElementById("toolbarEditor").ej2_instances[0];
             let selectedItems = diagram.selectedItems.nodes;
             selectedItems = selectedItems.concat(this.selectedItem.selectedDiagram.selectedItems.connectors);
@@ -37,7 +35,6 @@ export class DiagramClientSideEvents {
             nodeContainer.classList.remove('multiple');
             nodeContainer.classList.remove('connector');
             if (selectedItems.length > 1) {
-                multiSelect = true;
                 for (var i = 7; i <= 26; i++) {
                     toolbarEditor.items[i].visible = true;
                 }
@@ -46,7 +43,6 @@ export class DiagramClientSideEvents {
                 toolbarEditor.items[8].prefixIcon = 'sf-icon-group';
             }
             else if (selectedItems.length === 1) {
-                multiSelect = false;
                 this.singleSelectionSettings(selectedItems[0]);
                 for (var j = 7; j <= 26; j++) {
                     if (j <= 17) {
@@ -80,17 +76,9 @@ export class DiagramClientSideEvents {
                 diagram.selectedItems = { constraints: SelectorConstraints.All & ~SelectorConstraints.UserHandle };
             }
         }
-        if (diagram.tool !== DiagramTools.ContinuousDraw) {
-            setTimeout(() => {
-                let con = document.getElementById('btnDrawConnector');
-                if (con) {
-                    con.classList.remove('tb-item-selected');
-                }
-            }, 50);
-        }
     }
 
-    //To enable the Toolbar items
+    //To enable the toolbar items
     enableToolbarItems(selectedItems) {
         const toolbarContainer = document.getElementsByClassName('db-toolbar-container')[0];
         let toolbarClassName = 'db-toolbar-container';
@@ -189,6 +177,8 @@ export class DiagramClientSideEvents {
                 else{
                     diagram.drawingObject = {type:'Orthogonal', sourceID: this.drawingNode.id,shape:{type:'Bpmn',sequence:'Normal'}};
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -406,7 +396,7 @@ export class DiagramClientSideEvents {
             var selectedObjects = diagram.selectedItems.nodes.concat(diagram.selectedItems.connectors);
             if ((diagram.selectedItems.nodes.length || diagram.selectedItems.connectors.length) && canAllow && selectedObjects.length === 1) {
                 
-                    var item = args.items[i];
+                    let item = args.items[i];
                     if(diagram.selectedItems.nodes.length< 1 && diagram.selectedItems.connectors.length)
                     {
                         if(diagram.selectedItems.connectors[0].shape && diagram.selectedItems.connectors[0].shape.type === 'Bpmn')
@@ -530,7 +520,7 @@ export class DiagramClientSideEvents {
             let bpmnShape = diagram.selectedItems.nodes[0].shape ;
             if (args.item.iconCss) {
                 if (args.item.iconCss.indexOf('e-adhocs') > -1) {
-                    bpmnShape.activity.subProcess.adhoc = args.item.id === 'AdhocNone' ? false : true;
+                    bpmnShape.activity.subProcess.adhoc = !bpmnShape.activity.subProcess.adhoc;
                 }
                 if (args.item.iconCss.indexOf('e-event') > -1) {
                     bpmnShape.event.event = args.item.id;
@@ -600,6 +590,16 @@ export class DiagramClientSideEvents {
                     bpmnShape.activity.subProcess.collapsed = true;
                 }
             }
+            if (args.item.id === 'SubProcess' || args.item.id === 'Task') {
+                if (args.item.id === 'Task') {
+                    bpmnShape.activity.activity = 'Task';
+                    bpmnShape.activity.subProcess.collapsed = false;
+                }
+                else {
+                    bpmnShape.activity.activity = 'SubProcess';
+                    bpmnShape.activity.subProcess.collapsed = true;
+                }
+            }
             
             diagram.dataBind();
         }
@@ -652,7 +652,7 @@ export class DiagramClientSideEvents {
           diagram.remove();
         }
         if(args.item.id === 'TextAnnotation'){
-            diagram.addTextAnnotation({ id: 'newAnnotation', text: 'Text', length: 150, angle: 290 }, diagram.selectedItems.nodes[0])
+            diagram.addTextAnnotation({ id: 'newAnnotation_'+randomId(), text: 'Text', length: 150, angle: 290 }, diagram.selectedItems.nodes[0])
         }
         diagram.dataBind();
       
@@ -680,6 +680,7 @@ export class DiagramPropertyBinding {
     paperListChange(args) {
         if (args.element) {
             const diagram = this.selectedItem.selectedDiagram;
+            const viewmenu = document.getElementById('diagram-menu').ej2_instances[0];
             document.getElementById('pageDimension').style.display = 'none';
             document.getElementById('pageOrientation').style.display = '';
             var value = args.value || args.item.value;
@@ -711,8 +712,7 @@ export class DiagramPropertyBinding {
                 diagram.pageSettings.width = 1460;
                 diagram.pageSettings.height = 600;
             }
-            let designContextMenu = document.getElementById('designContextMenu').ej2_instances[0];
-            this.updatePaperSelection(designContextMenu.items[1], args.value);
+            this.updatePaperSelection(viewmenu.items[4], args.value);
             diagram.dataBind();
         }
     }
@@ -775,8 +775,8 @@ export class DiagramPropertyBinding {
     pageOrientationChange(args) {
         if (args) {
             const target = args.currentTarget;
-            var designContextMenu = document.getElementById('designContextMenu').ej2_instances[0];
-            var items = designContextMenu.items;
+           const viewMenu = document.getElementById('diagram-menu').ej2_instances[0];
+        var items = viewMenu.items[2].items;
             const diagram = this.selectedItem.selectedDiagram;
             // eslint-disable-next-line
             switch (target.id) {

@@ -17,7 +17,7 @@ export class NodeProperties {
         this.mOpacity = 100;
         this.mAspectRatio = false;
         this.mGradient = false;
-        this.mGradientDirection = 'BottomToTop';
+        this.mGradientDirection = 'Bottom To Top';
         this.mGradientColor = '#ffffff';
     }
     get offsetX() {
@@ -159,13 +159,15 @@ export class NodeProperties {
         }
     }
     getGradient(node) {
-        const gradientValue = this.getGradientDirectionValue(this.gradientDirection.value);
+        let grandientValue = typeof this.gradientDirection === 'string' ? this.gradientDirection : this.gradientDirection.value;
+        let gradientColor = typeof this.gradientColor === 'string' ? this.gradientColor : this.gradientColor.value;
+        const gradientValue = this.getGradientDirectionValue(grandientValue);
         node.style.gradient = {
             type: 'Linear',
             x1: gradientValue.x1, x2: gradientValue.x2, y1: gradientValue.y1, y2: gradientValue.y2,
             stops: [
                 { color: node.style.fill, offset: 0 },
-                { color: this.getColor(this.gradientColor.value), offset: 1 }
+                { color: this.getColor(gradientColor), offset: 1 }
             ]
         };
     }
@@ -175,13 +177,13 @@ export class NodeProperties {
         let x2 = 0;
         let y1 = 0;
         let y2 = 0;
-        if (direction === 'Left To Right') {
+        if (direction === 'Left To Right' || direction === 'North') {
             x1 = 100;
         }
-        else if (direction === 'Bottom To Top') {
+        else if (direction === 'Bottom To Top' || direction === 'South') {
             y2 = 100;
         }
-        else if (direction === 'Right To Left') {
+        else if (direction === 'Right To Left' || direction === 'East') {
             x2 = 100;
         }
         else {
@@ -412,67 +414,7 @@ export class ExportSettings {
         this.mRegion = region;
     }
 }
-export class PrintSettings {
-    constructor() {
-        this.mRegion = 'PageSettings';
-        this.mPageWidth = 0;
-        this.mPageHeight = 0;
-        this.mIsPortrait = true;
-        this.mIsLandscape = false;
-        this.mMultiplePage = true;
-        this.mPaperSize = 'Letter';
-    }
-    get region() {
-        return this.mRegion;
-    }
-    set region(region) {
-        this.mRegion = region;
-    }
-    get pageWidth() {
-        return this.mPageWidth;
-    }
-    set pageWidth(pageWidth) {
-        this.mPageWidth = pageWidth;
-    }
-    get pageHeight() {
-        return this.mPageHeight;
-    }
-    set pageHeight(pageHeight) {
-        this.mPageHeight = pageHeight;
-    }
-    get isPortrait() {
-        return this.mIsPortrait;
-    }
-    set isPortrait(isPortrait) {
-        this.mIsPortrait = isPortrait;
-    }
-    get isLandscape() {
-        return this.mIsLandscape;
-    }
-    set isLandscape(isLandscape) {
-        this.mIsLandscape = isLandscape;
-    }
-    get multiplePage() {
-        return this.mMultiplePage;
-    }
-    set multiplePage(multiplePage) {
-        this.mMultiplePage = multiplePage;
-    }
-    get paperSize() {
-        return this.mPaperSize;
-    }
-    set paperSize(paperSize) {
-        this.mPaperSize = paperSize;
-        document.getElementById('printCustomSize').style.display = 'none';
-        document.getElementById('printOrientation').style.display = 'none';
-        if (paperSize === 'Custom') {
-            document.getElementById('printCustomSize').style.display = '';
-        }
-        else {
-            document.getElementById('printOrientation').style.display = '';
-        }
-    }
-}
+
 export class PageSettings {
     constructor() {
         this.pageWidth = 1056;
@@ -518,7 +460,6 @@ export class SelectorViewModel {
         this.textProperties = new TextProperties();
         this.connectorProperties = new ConnectorProperties();
         this.exportSettings = new ExportSettings();
-        this.printSettings = new PrintSettings();
         this.pageSettings = new PageSettings();
         this.utilityMethods = new UtilityMethods();
         this.scrollSettings = new ScrollSettings();
@@ -535,11 +476,13 @@ export class SelectorViewModel {
         return window.location.pathname;
     }
     nodePropertyChange(args) {
+        // eslint-disable-next-line
+        let diagramInstance = diagram.ej2_instances[0];
         if (!this.preventPropertyChange) {
-            const diagram = this.selectedDiagram;
+            const diagram = this.selectedDiagram || diagramInstance;
             if (diagram) {
                 if (diagram.selectedItems.nodes.length > 0) {
-                    const selectedNodes = this.selectedDiagram.selectedItems.nodes;
+                    const selectedNodes = diagram.selectedItems.nodes;
                     for (const value of selectedNodes) {
                         const node = value;
                         const propertyName1 = args.propertyName.toString().toLowerCase();
@@ -747,7 +690,6 @@ export class SelectorViewModel {
         return colorName;
     }
     applyNodeStyle(propertyName, node, value) {
-        // const addInfo: any = node.addInfo || {};
         // eslint-disable-next-line
         switch (propertyName) {
             case 'fillcolor':
@@ -770,7 +712,7 @@ export class SelectorViewModel {
                 document.getElementById('nodeOpacitySliderText').value = (this.nodeProperties.opacity.value) + '%';
                 break;
             case 'gradient':
-                if (value && value.value === 'Solid') {
+                if (value && value.itemData && value.itemData.value === 'Solid') {
                     node.style.gradient.type = 'None';
                 }
                 else {
@@ -784,13 +726,16 @@ export class SelectorViewModel {
         }
     }
     backgroundTypeSelect(args){
+        let selector = new SelectorViewModel();
         const gradientElement = document.getElementById('gradientStyle');
         if(args.itemData.text === 'Gradient'){
               gradientElement.className = 'row db-prop-row db-gradient-style-show';
+              selector.nodeProperties.gradient = true
         }
         else{
-            // this.selectedItem.nodeProperties.gradient = false;
             gradientElement.className = 'row db-prop-row db-gradient-style-hide';
+            selector.nodeProperties.gradient = false
         }
+        selector.nodePropertyChange({ propertyName: 'gradient', propertyValue: args });
     };
 }

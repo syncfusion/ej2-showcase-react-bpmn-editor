@@ -1,15 +1,15 @@
 import { createElement, closest, formatUnit } from "@syncfusion/ej2-base";
-import { DiagramComponent, SymbolPaletteComponent, DiagramAction, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
-import { Diagram, SnapConstraints, ControlPointsVisibility, BezierSmoothness } from "@syncfusion/ej2-react-diagrams";
+import { DiagramComponent, SymbolPaletteComponent, DiagramTools, NodeConstraints, ConnectorConstraints, UndoRedo, DiagramContextMenu, Snapping, DataBinding, PrintAndExport, BpmnDiagrams, ConnectorBridging, LayoutAnimation, SymbolPalette } from "@syncfusion/ej2-react-diagrams";
+import { Diagram, SnapConstraints, ControlPointsVisibility, BezierSmoothness, FlipDirection } from "@syncfusion/ej2-react-diagrams";
 import { DropDownButtonComponent } from "@syncfusion/ej2-react-splitbuttons";
 import { DiagramClientSideEvents } from "./script/events";
 import { DialogComponent } from "@syncfusion/ej2-react-popups";
-import { ToolbarComponent, ItemsDirective, ItemDirective, ContextMenuComponent, ContextMenuSettingsModel } from '@syncfusion/ej2-react-navigations';
+import { ToolbarComponent, ItemsDirective, ItemDirective, ContextMenuComponent,MenuComponent } from '@syncfusion/ej2-react-navigations';
 import * as React from 'react';
-import { NumericTextBoxComponent, ColorPickerComponent, SliderComponent, TextBoxComponent } from "@syncfusion/ej2-react-inputs";
+import { NumericTextBoxComponent, ColorPickerComponent, SliderComponent } from "@syncfusion/ej2-react-inputs";
 import { Uploader } from '@syncfusion/ej2-react-inputs';
-import { RadioButtonComponent, ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
-import { DropDownListComponent, MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
+import { ButtonComponent, CheckBoxComponent } from "@syncfusion/ej2-react-buttons";
+import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { Palettes } from "./script/palettes";
 import { DropDownDataSources } from './script/dropdowndatasource';
 import { DiagramPropertyBinding } from './script/events';
@@ -38,7 +38,6 @@ export let connectorTool;
 export let connectorToolChange;
 export let propertyPanel;
 export let footTemplate;
-export let printTemplateChange;
 export let hyperLinkTemplate;
 export let offsetXChange;
 export let offsetYchange;
@@ -70,6 +69,7 @@ export let strokeWidthChange;
 export let fontOpacityChange;
 export let btnHyperLink;
 export let hyperlinkInsert;
+let isConToolActive = false;
 
 
 class App extends React.Component {
@@ -420,6 +420,110 @@ class App extends React.Component {
     this.exportingButtons = this.getDialogButtons('export');
     this.printingButtons = this.getDialogButtons('print');
     this.hyperlinkButtons = this.getDialogButtons('hyperlink');
+    this.menuItems = [
+        {
+            text: 'File',
+            items: [
+                { text: 'New', iconCss: 'sf-icon-new' }, { text: 'Open', iconCss: 'sf-icon-open' }, { separator: true },
+                { text: 'Save', iconCss: 'sf-icon-save' },
+                { text: 'Export', iconCss: 'sf-icon-export' }, { separator: true },
+                { text: 'Print', iconCss: 'sf-icon-print' }
+            ]
+        },
+        {
+            text: 'Edit',
+            items: [
+                { text: 'Undo', iconCss: 'sf-icon-undo' },
+                { text: 'Redo', iconCss: 'sf-icon-redo' },
+                { separator: true },
+                { text: 'Cut', iconCss: 'sf-icon-cut' },
+                { text: 'Copy', iconCss: 'sf-icon-copy' },
+                { text: 'Paste', iconCss: 'sf-icon-paste' },
+                { separator: true },
+                {
+                    text: 'Rotate', iconCss: 'sf-icon-rotate',
+                    items: [
+                        { text: 'Rotate Right 90', iconCss: 'sf-icon-rotate-clockwise' },
+                        { text: 'Rotate Left 90', iconCss: 'sf-icon-rotate-counter-clockwise' },
+                        { text: 'Flip Vertical', iconCss: 'sf-icon-flip-vertical' },
+                        { text: 'Flip Horizontal', iconCss: 'sf-icon-flip-horizontal' },
+                    ]
+                },
+                { text: 'Delete', iconCss: 'sf-icon-delete' },
+                { separator: true },
+                {
+                    text: 'Order Commands', iconCss: 'sf-icon-Order',
+                    items: [{ text: 'Bring Forward', iconCss: 'sf-icon-bring-forward' },
+                    { text: 'Bring To Front', iconCss: 'sf-icon-bring-to-front' },
+                    { text: 'Send Backward', iconCss: 'sf-icon-send-backward' },
+                    { text: 'Send To Back', iconCss: 'sf-icon-send-to-back' },
+                    ]
+                }
+            ]
+        },
+        {
+            text: 'Design',
+            items: [
+                {
+                    text: 'Orientation', iconCss: 'sf-icon-page_orientation',
+                    items: [
+                        { text: 'Landscape', iconCss: 'sf-icon-check-tick' },
+                        { text: 'Portrait', iconCss: '' }
+                    ]
+                },
+                {
+                text: 'Page Size', items: [
+                  { text: 'Letter (8.5 in x 11 in)', value: 'Letter', iconCss: 'sf-icon-check-tick' },
+                  { text: 'Legal (8.5 in x 14 in)', value: 'Legal' },
+                  { text: 'Tabloid (279 mm x 432 mm)', value: 'Tabloid' },
+                  { text: 'A3 (297 mm x 420 mm)', value: 'A3' },
+                  { text: 'A4 (210 mm x 297 mm)', value: 'A4' },
+                  { text: 'A5 (148 mm x 210 mm)', value: 'A5' },
+                  { text: 'A6 (105 mm x 148 mm)', value: 'A6' },
+              ]
+          },
+            ]
+        },
+        {
+            text: 'Select',
+            items: [
+                { text: 'Select All', },
+                { text: 'Select All Nodes', },
+                { text: 'Select All Connectors', },
+                { text: 'Deselect All', }
+            ]
+        },
+        {
+            text: 'Tools',
+            items: [
+                { text: 'Selection Tool', iconCss: 'sf-icon-pointer' },
+                { text: 'Pan Tool', iconCss: 'sf-icon-pan tb-icons' },
+                { separator: true },
+                {
+                    text: 'Connector Tool', iconCss: 'sf-icon-orthogonal_line',
+                    items: [
+                        { text: 'Straight', iconCss: 'sf-icon-straight_line' },
+                        { text: 'Orthogonal', iconCss: 'sf-icon-orthogonal_line' },
+                        { text: 'Bezier', iconCss: 'sf-icon-bezier' },
+                    ]
+                }
+            ]
+        },
+        {
+            text: 'View',
+            items: [
+                { text: 'Show Lines', iconCss: 'sf-icon-check-tick' },
+                { text: 'Snap To Grid', iconCss: 'sf-icon-check-tick' },
+                { text: 'Snap To Object', iconCss: 'sf-icon-check-tick' },
+                { text: 'Show Ruler', iconCss: 'sf-icon-check-tick' },
+                { text: 'Show Page Breaks', iconCss: '' },
+                { text: 'Show Multiple Page', iconCss: '' },
+                { separator: true },
+                { text: 'Fit To Width' },
+                { text: 'Fit To Page' },
+            ]
+        },
+    ];
 
     loadDiagram = this.loadDiagram.bind(this);
     beforItem = this.beforeItemRender.bind(this);
@@ -436,7 +540,6 @@ class App extends React.Component {
     connectorTool = this.connectorTool.bind(this);
     connectorToolChange = this.connectorToolChange.bind(this);
     footTemplate = this.footerTemplate.bind(this);
-    printTemplateChange = this.printTemplate.bind(this);
     diagramName = this.diagramNameChange.bind(this);
     hyperLinkTemplate = this.hyperlinkTemplate.bind(this);
     btnHyperLink = this.btnHyperLink.bind(this);
@@ -495,38 +598,22 @@ class App extends React.Component {
               <input id='diagramEditable' type="text" className="db-diagram-name" onKeyDown={this.diagramNameKeyDown} onBlur={this.diagramNameChange} />
               <span id='diagramreport' className="db-diagram-name db-save-text" style={{ float: "right" }} />
             </div>
-            <div className='db-menu-container'>
-              <div className="db-menu-style">
-                <DropDownButtonComponent id="btnFileMenu" cssClass={"db-dropdown-menu"} content="File" items={this.dropDownDataSources.fileMenuItems} select={menuclick}
-                  beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
-              </div>
-              <div className="db-menu-style">
-                < DropDownButtonComponent id="btnEditMenu" cssClass={"db-dropdown-menu"} content="Edit"
-                  items={this.dropDownDataSources.editMenuItems} select={menuclick} target='.e-contextmenu-wrapper.editMenu'
-                  beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
-              </div>
-              <div className="db-menu-style">
-                <DropDownButtonComponent id="btnDesignMenu" cssClass={"db-dropdown-menu"} content="Design" target='.e-contextmenu-wrapper.designMenu' items={this.dropDownDataSources.designMenuItems} select={menuclick}
-                  beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
-              </div>
-              <div className="db-menu-style">
-                <DropDownButtonComponent id="btnSelectMenu" cssClass={"db-dropdown-menu"} content="Select" items={this.dropDownDataSources.selectMenuItems} select={menuclick}
-                  beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
-              </div>
-              <div className="db-menu-style">
-                <DropDownButtonComponent id="btnToolsMenu" cssClass={"db-dropdown-menu"} content="Tools" target='.e-contextmenu-wrapper.toolMenu' items={this.dropDownDataSources.toolsMenuItems} select={menuclick}
-                  beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
-              </div>
-              <div className="db-menu-style">
-                <DropDownButtonComponent id="btnViewMenu" cssClass={"db-dropdown-menu"} content="View" items={this.dropDownDataSources.viewMenuItems} select={menuclick}
-                  beforeItemRender={beforItem} beforeOpen={beforeOpen} beforeClose={beforeClose} />
-
+            <div className="diagram-menu-control">
+              <div className='menu-control'  >
+                <MenuComponent
+                  id="diagram-menu"
+                  items={this.menuItems}
+                  select={menuclick}
+                  beforeOpen={beforeOpen}
+                  beforeClose={beforeClose}
+                  beforeItemRender={beforItem}
+                ></MenuComponent>
               </div>
             </div>
           </div>
           <div className='db-toolbar-editor' >
             <div className='db-toolbar-container'>
-              <ToolbarComponent ref={toolbar => (this.toolbarEditor) = toolbar} id='toolbarEditor' overflowMode='Scrollable' clicked={tooledit} >
+              <ToolbarComponent ref={toolbar => (this.toolbarEditor) = toolbar} id='toolbarEditor' created={this.toolbarCreated.bind(this)} overflowMode='Scrollable' clicked={tooledit} >
                 <ItemsDirective>
 
                   <ItemDirective prefixIcon='sf-icon-undo tb-icons' tooltipText='Undo' cssClass='tb-item-start tb-item-undo' />
@@ -740,20 +827,28 @@ class App extends React.Component {
                         <span className="db-prop-header-text">Rotate</span>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-xs-6 db-col-left">
-                        <div className="db-text-container">
-                          <div className="db-text" style={{ marginTop: '0px' }}>
-                            <ButtonComponent iconCss='sf-icon-rotate tb-icons' />
-                          </div>
-                          <div className="db-text-input" style={{ paddingRight: '0px', paddingTop: '0px' }}>
-                            <NumericTextBoxComponent ref={rotate => (this.rotate = rotate)} id="nodeRotateAngle" format="n0"
-                              // value={this.selectedItem.nodeProperties.rotateAngle}
-                              change={rotationChange} />
+                      <div className='row db-prop-row'>
+                        <div className='col-xs-6 db-col-left' style={{ width: '97px' }}>
+                          <div className='db-text-container'>
+                            <div className='db-text'>
+                              <ButtonComponent
+                                style={{ margin: '-5px 0px 0px 0px' }}
+                                iconCss='sf-icon-rotate'
+                                id="rotateIconBtn"
+                              />
+                            </div>
+                            <div className='db-text-input'>
+                              <NumericTextBoxComponent
+                                style={{ width: '72px' }}
+                                id="nodeRotateAngle"
+                                ref={rotate => (this.rotate = rotate)}
+                                format="n0"
+                                change={rotationChange}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
                     <div className="db-prop-separator" style={{ backgroundColor: '#b5b5b5', marginBottom: '15px' }} />
                     <div className="row db-prop-row">
                       <div className="col-xs-6 db-col-left">
@@ -973,7 +1068,7 @@ class App extends React.Component {
                     <div className="col-xs-4 db-col-right">
                       <div className="db-text-container">
                         <div className="db-text-input">
-                          <NumericTextBoxComponent style={{ width: '75px' }} min={1} format={"n0"} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
+                          <NumericTextBoxComponent style={{ width: '75px' }} min={5} max={40} format={"n0"} ref={fontSize => this.fontSize = fontSize} step={1} value={this.selectedItem.textProperties.fontSize} change={fontSizeChange} />
                         </div>
                       </div>
                     </div>
@@ -1011,6 +1106,7 @@ class App extends React.Component {
                     </div>
                   </div>
                   <div className="row db-prop-row" id='toolbarTextAlignmentDiv' style={{ marginTop: '20px' }}>
+                    {/*eslint-disable-next-line no-self-assign*/}
                     <ToolbarComponent id='toolbarTextAlignment' ref={toolbarTextAlignment => toolbarTextAlignment = toolbarTextAlignment} overflowMode='Scrollable' clicked={this.diagramPropertyBinding.toolbarTextAlignChange.bind(this.diagramPropertyBinding)}>
                       <ItemsDirective>
                         <ItemDirective prefixIcon="sf-icon-align-text-left tb-icons" tooltipText="Align Right" cssClass="tb-item-start" />
@@ -1040,7 +1136,6 @@ class App extends React.Component {
         </div>
       </div>
       <DialogComponent ref={dialog => this.exportDialog = dialog} id="exportDialog" width={"400px"} header='Export Diagram' target={this.dlgTarget} isModal={true} animationSettings={this.dialogAnimationSettings} buttons={this.exportingButtons} showCloseIcon={true} content={footTemplate} visible={this.dialogVisibility} />
-      <DialogComponent id="printDialog" ref={dialog => this.printDialog = dialog} width={"335px"} header='Print Diagram' target={this.dlgTarget} isModal={true} animationSettings={this.dialogAnimationSettings} buttons={this.printingButtons} content={printTemplateChange} visible={this.dialogVisibility} />
       <DialogComponent id="hyperlinkDialog" ref={dialog => this.hyperlinkDialog = dialog} width={"400px"} header='Insert Link' target={this.dlgTarget} isModal={true} visible={this.dialogVisibility} animationSettings={this.dialogAnimationSettings} showCloseIcon={true} buttons={this.hyperlinkButtons} content={hyperLinkTemplate} />
     </div>);
   }
@@ -1085,6 +1180,7 @@ class App extends React.Component {
     var reader = new FileReader();
     reader.readAsText(file);
     reader.onloadend = loadDiagram;
+    this.clearAll();
   }
 
   //Load the diagraming object.
@@ -1210,60 +1306,6 @@ class App extends React.Component {
       </div>
     </div>);
   }
-  //Returns the HTML Template for the Print Dialog box
-  printTemplate() {
-    return (<div id="printDialogContent">
-      <div className="row">
-        <div className="row">
-          Region
-        </div>
-        <div className="row db-dialog-child-prop-row">
-          <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} value={this.selectedItem.printSettings.region} dataSource={this.dropDownDataSources.diagramRegions} fields={this.dropdownListFields} />
-        </div>
-      </div>
-      <div className="row db-dialog-prop-row">
-        <div className="row">
-          Print Settings
-        </div>
-        <div className="row db-dialog-child-prop-row">
-          <DropDownListComponent ref={dropdown => this.ddlTextPosition = dropdown} dataSource={this.dropDownDataSources.paperList} fields={this.dropdownListFields} value={this.selectedItem.pageSettings.paperSize} />
-        </div>
-      </div>
-      <div id="printCustomSize" className="row db-dialog-prop-row" style={{ display: "none", height: "28px" }}>
-        <div className="col-xs-6 db-col-left">
-          <div className="db-text-container">
-            <div className="db-text">
-              <span>W</span>
-            </div>
-            <div className="db-text-input">
-              <NumericTextBoxComponent id="printPageWidth" min={100} step={1} format="n0" value={this.selectedItem.printSettings.pageWidth} />
-            </div>
-          </div>
-        </div>
-        <div className="col-xs-6 db-col-right">
-          <div className="db-text-container">
-            <div className="db-text">
-              <span>H</span>
-            </div>
-            <div className="db-text-input">
-              <NumericTextBoxComponent id="printPageHeight" min={100} step={1} format="n0" value={this.selectedItem.printSettings.pageHeight} />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="printOrientation" className="row db-dialog-prop-row" style={{ height: "28px", padding: "5px 0px" }}>
-        <div className="col-xs-3 db-prop-col-style" style={{ marginRight: "8px" }}>
-          <RadioButtonComponent id='printPortrait' label="Portrait" name="printSettings" checked={this.selectedItem.printSettings.isPortrait} />
-        </div>
-        <div className="col-xs-3 db-prop-col-style">
-          <RadioButtonComponent id='printLandscape' label="Landscape" name="printSettings" checked={this.selectedItem.printSettings.isLandscape} />
-        </div>
-      </div>
-      <div className="row db-dialog-prop-row" style={{ marginTop: "16px" }}>
-        <CheckBoxComponent id='printMultiplePage' label="Scale to fit 1 page" checked={this.selectedItem.printSettings.multiplePage} />
-      </div>
-    </div>);
-  }
   //Returns the HTML Template for the insert hyperlink Dialog box
   hyperlinkTemplate() {
     return (<div id="hyperlinkDialogContent">
@@ -1323,35 +1365,10 @@ class App extends React.Component {
   }
   // Function to handle the print button click and initiate the print process.
   btnPrintClick() {
-    let pageWidth = this.selectedItem.printSettings.pageWidth;
-    let pageHeight = this.selectedItem.printSettings.pageHeight;
-    const paperSize = this.UtilityMethods.getPaperSize(this.selectedItem.printSettings.paperSize);
-    if (paperSize.pageHeight && paperSize.pageWidth) {
-      pageWidth = paperSize.pageWidth;
-      pageHeight = paperSize.pageHeight;
-    }
-    if (this.selectedItem.pageSettings.isPortrait) {
-      if (pageWidth > pageHeight) {
-        const temp = pageWidth;
-        pageWidth = pageHeight;
-        pageHeight = temp;
-      }
-    }
-    else {
-      if (pageHeight > pageWidth) {
-        const temp = pageHeight;
-        pageHeight = pageWidth;
-        pageWidth = temp;
-      }
-    }
     const diagram = this.selectedItem.selectedDiagram;
     diagram.print({
-      "region": this.selectedItem.printSettings.region,
-      "pageHeight": pageHeight, "pageWidth": pageWidth,
-      "multiplePage": !this.selectedItem.printSettings.multiplePage,
-      "pageOrientation": this.selectedItem.printSettings.isPortrait ? 'Portrait' : 'Landscape'
+      "region": 'Content',
     });
-    this.printDialog.hide();
   }
   // Function to handle the insert hyperlink button click
   hyperlinkInsert() {
@@ -1399,9 +1416,6 @@ class App extends React.Component {
       case 'exportDialog':
         this.exportDialog.hide();
         break;
-      case 'printDialog':
-        this.printDialog.hide();
-        break;
       case 'hyperlinkDialog':
         this.hyperlinkDialog.hide();
 
@@ -1420,14 +1434,17 @@ class App extends React.Component {
         diagram.redo();
         break;
       case 'Select Tool':
+        isConToolActive = false;
         diagram.clearSelection();
         diagram.tool = DiagramTools.Default;
         break;
       case 'Pan Tool':
+        isConToolActive = false;
         diagram.clearSelection()
         diagram.tool = DiagramTools.ZoomPan;
         break;
       case 'Text Tool':
+        isConToolActive = false;
         diagram.clearSelection()
         diagram.selectedItems.userHandles = [];
         diagram.drawingObject = { shape: { type: 'Text' }, };
@@ -1485,6 +1502,8 @@ class App extends React.Component {
       case 'Delete':
         diagram.remove();
         break;
+      default:
+        break;
     }
     if (item === 'Select Tool' || item === 'Pan Tool' || item === 'Text Tool') {
       if (args.item.cssClass.indexOf('tb-item-selected') === -1) {
@@ -1505,12 +1524,6 @@ class App extends React.Component {
         item.cssClass = item.cssClass.replace(' tb-item-selected', '');
       }
     }
-    // toolbarEditor.dataBind();
-    // document.getElementById('btnDrawConnector').classList.remove('tb-item-selected');
-    setTimeout(() => {
-      let con = document.getElementById('btnDrawConnector');
-      con.classList.remove('tb-item-selected');
-    }, 50);
   };
 
   // Function to render the DropDown template for the zoom toolbar
@@ -1570,6 +1583,8 @@ class App extends React.Component {
           diagram.zoomTo(zoom);
         }
         break;
+      default:
+        break;
     }
 
     zoomCurrentValue.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
@@ -1578,7 +1593,7 @@ class App extends React.Component {
   // Function to render the DropDown template for the draw connector button
   connectorTool() {
     return (<div id="template_toolbar">
-      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} iconCss='sf-icon-orthogonal_line' cssClass='tb-item-middle tb-item-selected'/>
+      <DropDownButtonComponent id="btnDrawConnector" items={this.dropDownDataSources.drawConnectorsList} select={connectorToolChange} iconCss='sf-icon-orthogonal_line' cssClass='tb-item-middle'/>
     </div>);
   }
   //To hide or show the Property panel on button click
@@ -1590,6 +1605,7 @@ class App extends React.Component {
   connectorToolChange(args) {
     var diagram = this.selectedItem.selectedDiagram;
     diagram.clearSelection();
+    isConToolActive = true;
     if(diagram.drawingObject)
     {
       diagram.drawingObject.sourceID = '';
@@ -1601,8 +1617,6 @@ class App extends React.Component {
     }
     this.removeSelectedToolbarItem();
     setTimeout(() => {
-      // let toolbarEditor = document.getElementById('toolbarEditor').ej2_instances[0];
-      // toolbarEditor.items[5].cssClass += 'tb-item-selected';
       let con = document.getElementById('btnDrawConnector');
       con.classList.add('tb-item-selected');
     }, 100);
@@ -1678,6 +1692,12 @@ class App extends React.Component {
     diagram.fitToPage({ mode: 'Width' });
     var btnZoomIncrement = document.getElementById("btnZoomIncrement").ej2_instances[0];
     btnZoomIncrement.content = Math.round(diagram.scrollSettings.currentZoom * 100) + ' %';
+  }
+  toolbarCreated() {
+    if (isConToolActive) {
+      let con = document.getElementById('btnDrawConnector');
+      con.classList.add('tb-item-selected');
+    }
   }
   // Function to handle changes in the scroll state and update the zoom content when scrolling in the diagram.
   scrollChange(args) {
@@ -1759,20 +1779,12 @@ class App extends React.Component {
         this.download(diagram.saveDiagram());
         break;
       case 'Print':
-        this.selectedItem.printSettings.pageHeight = this.selectedItem.pageSettings.pageHeight;
-        this.selectedItem.printSettings.pageWidth = this.selectedItem.pageSettings.pageWidth;
-        this.selectedItem.printSettings.paperSize = this.selectedItem.pageSettings.paperSize;
-        this.selectedItem.printSettings.isPortrait = this.selectedItem.pageSettings.isPortrait;
-        this.selectedItem.printSettings.isLandscape = !this.selectedItem.pageSettings.isPortrait;
-        this.printDialog.show();
+        this.btnPrintClick();
         break;
       case 'Export':
         var filename = this.UtilityMethods.fileName();
         document.getElementById('exportfileName').value = filename;
         this.exportDialog.show();
-        break;
-      case 'Open':
-        document.getElementsByClassName('e-file-select-wrap')[0].querySelector('button').click();
         break;
       case 'Undo':
         diagram.undo();
@@ -1795,6 +1807,12 @@ class App extends React.Component {
       case 'Rotate Left 90':
         diagram.rotate(diagram.selectedItems, -90);
         break;
+      case 'Flip Vertical':
+        this.flipObjects('Vertical',diagram);
+        break;
+      case 'Flip Horizontal':
+        this.flipObjects('Horizontal',diagram);
+        break;
       case 'Delete':
         diagram.remove();
         break;
@@ -1814,23 +1832,28 @@ class App extends React.Component {
         diagram.clearSelection();
         break;
       case 'Selection Tool':
+        isConToolActive = false;
         diagram.tool = DiagramTools.Default;
         this.removeSelectedToolbarItem();
         break;
       case 'Pan Tool':
+        isConToolActive = false;
         diagram.clearSelection();
         diagram.tool = DiagramTools.ZoomPan;
         this.removeSelectedToolbarItem();
         break;
       case 'Orthogonal':
+        isConToolActive = true;
         diagram.clearSelection();
         this.connectorToolChange(args);
         break;
       case 'Straight':
+        isConToolActive = true;
         diagram.clearSelection();
         this.connectorToolChange(args);
         break;
       case 'Bezier':
+        isConToolActive = true;
         diagram.clearSelection();
         this.connectorToolChange(args);
         break;
@@ -1855,7 +1878,7 @@ class App extends React.Component {
         diagram.pageSettings.showPageBreaks = !diagram.pageSettings.showPageBreaks;
         //showPageBreaks.checked = !showPageBreaks.checked;
         break;
-      case 'Show Multiple page':
+      case 'Show Multiple Page':
         args.item.iconCss = args.item.iconCss ? '' : 'sf-icon-check-tick';
         diagram.pageSettings.multiplePage = !diagram.pageSettings.multiplePage;
         break;
@@ -1892,6 +1915,8 @@ class App extends React.Component {
         var pageformat = document.getElementById('pageformat').ej2_instances[0];
         pageformat.element.value = args.item.text;
         break;
+      default:
+        break;
     }
     if (commandType === 'Pan Tool') {
       if (toolbarEditor.items[3].cssClass.indexOf('tb-item-selected') === -1) {
@@ -1906,6 +1931,14 @@ class App extends React.Component {
     diagram.dataBind();
   }
 
+  flipObjects(flipType , diagram) {
+    let selectedObjects = diagram.selectedItems.nodes.concat(diagram.selectedItems.connectors);
+    for(let i = 0;i<selectedObjects.length;i++)
+      {
+         selectedObjects[i].flip ^= flipType === 'Horizontal'? FlipDirection.Horizontal:FlipDirection.Vertical;
+      }
+      diagram.dataBind();
+  }
 
   //Function To save the diagram
   download(data) {
@@ -1962,6 +1995,7 @@ class App extends React.Component {
     var contextInstance = document.getElementById('editContextMenu');
     var contextMenu = contextInstance.ej2_instances[0];
     var selectedItems = diagram.selectedItems.nodes;
+    // eslint-disable-next-line
     selectedItems = selectedItems.concat(diagram.selectedItems.connectors);
     for (var i = 0; i < contextMenu.items.length; i++) {
       contextMenu.enableItems([contextMenu.items[i].text], false);
@@ -2152,7 +2186,6 @@ class App extends React.Component {
   }
   //set the aspect ratio constraints to the node
   aspectRatioClick(args) {
-    let diagram = this.selectedItem.selectedDiagram;
     var isAspect = true;
     let aspectRatioBtn = document.getElementById('aspectRatioBtn').ej2_instances[0];
     if (document.getElementById('aspectRatioBtn').classList.contains('e-active')) {

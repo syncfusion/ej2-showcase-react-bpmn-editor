@@ -1,8 +1,7 @@
 /**
  *  Home page handler
  */
- import { NodeConstraints, Node,ConnectorConstraints } from '@syncfusion/ej2-diagrams';
- import { Ajax } from '@syncfusion/ej2-base';
+ import { NodeConstraints, ConnectorConstraints } from '@syncfusion/ej2-diagrams';
 
  export class PaperSize {
  }
@@ -256,6 +255,8 @@
                             return true;
                         case 'delete':
                             return true;
+                        default:
+                            break;
                     }
                 }
                 if (!(diagram.commandHandler.clipboardData.pasteIndex !== undefined
@@ -429,7 +430,7 @@
          }
          if (diagram.selectedItems.connectors.length > 0) {
              var bpmnConnector = diagram.selectedItems.connectors[0];
-             var checked = boolean;
+             let checked = boolean;
              if (((bpmnConnector.shape)).type === 'Bpmn') {
                  if ((bpmnConnector.shape).flow === 'Association') {
                      if (!args.parentItem) {
@@ -499,7 +500,8 @@
      };
      viewSelectionChange(diagram)
      {
-        var items = (document.getElementById('btnViewMenu')).ej2_instances[0].items;
+        const viewMenu = document.getElementById('diagram-menu').ej2_instances[0];
+        var items = viewMenu.items[5].items;
         items[4].iconCss = diagram.pageSettings.showPageBreaks ? 'sf-icon-check-tick':'';
         items[5].iconCss = diagram.pageSettings.multiplePage ? 'sf-icon-check-tick':'';
         var showPageBreaks = document.getElementById('showPageBreaks').ej2_instances[0];
